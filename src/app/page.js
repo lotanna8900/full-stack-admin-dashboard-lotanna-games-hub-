@@ -14,6 +14,7 @@ export default function HomePage() {
     const [posts, setPosts] = useState([]);
     const [snippets, setSnippets] = useState([]);
     const [announcements, setAnnouncements] = useState([]);
+    const [subscriptions, setSubscriptions] = useState([]);
 
     // state for authentication and user role
     const [session, setSession] = useState(null); // The user's session data
@@ -720,48 +721,214 @@ export default function HomePage() {
     const fetchNotifications = async () => {
       if (!session) return; // Only run if logged in
 
-      const { data, error, count } = await supabase
+      // 1. Get the count of specifically UNREAD notifications for the badge
+      const { count: unread, error: countError } = await supabase
         .from('notifications')
-        .select('*', { count: 'exact' }) // Get all columns and the total count
+        .select('*', { count: 'exact', head: true }) // head:true makes it faster
+        .eq('user_id', session.user.id)
+        .eq('is_read', false); // Count only unread
+
+      if (countError) {
+        console.error("Error fetching unread count:", countError);
+        setUnreadCount(0); // Default to 0 on error
+      } else {
+        setUnreadCount(unread || 0); // Set the count for the bell
+      }
+
+      // 2. Get the list of ALL recent notifications (read and unread) for the dropdown
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
         .eq('user_id', session.user.id) // Only for the current user
-        .eq('is_read', false) // Only unread ones
+        // NO filter for is_read here
         .order('created_at', { ascending: false }) // Newest first
-        .limit(10); // Limit to the latest 10 unread for the dropdown
+        .limit(20); // Fetch recent history (e.g., last 20)
 
       if (error) {
-        console.error('Error fetching notifications:', error);
+        console.error('Error fetching notifications list:', error);
+        setNotifications([]); // Default to empty list on error
       } else {
-        setNotifications(data || []);
-        setUnreadCount(count || 0);
+        setNotifications(data || []); // Set the list for the dropdown
       }
     };
 
 
     // Notification Click Handler
     const handleNotificationClick = async (notificationId, linkUrl) => {
-      // 1. Mark the notification as read in the database
-      const { error } = await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .eq('id', notificationId);
+      // --- Mark as read ---
+      const notification = notifications.find(n => n.id === notificationId);
+      const wasUnread = notification && !notification.is_read;
+      let updateError = false;
 
-      if (error) {
-        console.error('Error marking notification as read:', error);
-      } else {
-        // 2. Update the local state immediately
-        setNotifications(notifications.filter(n => n.id !== notificationId));
-        setUnreadCount(prevCount => Math.max(0, prevCount - 1));
+      if (wasUnread) {
+        const { error } = await supabase
+          .from('notifications')
+          .update({ is_read: true })
+          .eq('id', notificationId);
+
+        if (error) {
+          console.error('Error marking notification as read:', error);
+          updateError = true;
+          alert('Failed to mark notification as read.');
+        }
       }
-      
-      // 3. Close the dropdown
+
+      // --- Update local state ---
+      if (!updateError) {
+        setNotifications(currentNotifications =>
+            currentNotifications.map(n =>
+              n.id === notificationId ? { ...n, is_read: true } : n
+            )
+        );
+        if (wasUnread) {
+            setUnreadCount(prevCount => Math.max(0, prevCount - 1));
+        }
+      }
+
+      // --- Close dropdown ---
       setIsNotificationDropdownOpen(false);
 
-      // 4. Navigate INTERNALLY if there's a link (using state)
-      if (linkUrl === '/announcements') { // Check if the link is for announcements
-          showSection('announcements'); // switch view
-      } else if (linkUrl) {
-          // For other potential future links
-          window.location.href = linkUrl; 
+      // --- Navigation Logic ---
+      if (linkUrl) {
+        const urlParts = linkUrl.split('?');
+        const path = urlParts[0];
+        const params = new URLSearchParams(urlParts[1] || '');
+
+        // Handle Blog Post/Reply Links
+        if (path === '/blog') {
+          const postId = params.get('post');
+          const replyId = params.get('reply');
+          
+          showSection('blog'); // Switch view
+
+          setTimeout(() => {
+            // Scroll to reply if specified, otherwise scroll to post
+            const targetId = replyId || postId; 
+            const targetSelector = replyId ? `[data-comment-id="${targetId}"]` : `[data-post-id="${postId}"]`; // Need to add data-post-id to post card
+            
+            const targetElement = document.querySelector(targetSelector);
+            if (targetElement) {
+              targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // Optional highlight
+              targetElement.style.transition = 'background-color 0.5s ease';
+              targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
+              setTimeout(() => { targetElement.style.backgroundColor = ''; }, 2000);
+            } else {
+              console.warn(`Could not find element with selector: ${targetSelector}`);
+            }
+          }, 100);
+        } 
+        // Handle Announcements Link
+        else if (path === '/announcements') {
+          const announcementId = params.get('id');
+          console.log('Attempting to navigate to announcement:', announcementId);
+
+          showSection('announcements');
+
+          setTimeout(() => {
+            const targetSelector = `[data-announcement-id="${announcementId}"]`;
+            console.log('Searching for selector:', targetSelector);
+            const targetElement = document.querySelector(targetSelector);
+
+            if (targetElement) {
+              console.log('Element found! Scrolling...');
+              targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              
+              targetElement.style.transition = 'background-color 0.5s ease';
+              targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.2)'; // Yellow highlight
+              setTimeout(() => {
+                  targetElement.style.backgroundColor = ''; // Remove highlight after 2 seconds
+              }, 2000);
+            } else {
+              console.error(`ERROR: Element not found for selector: ${targetSelector}`);
+            }
+          }, 100);
+        }
+        // Handle Projects Link
+        else if (path === '/projects') {
+            const projectId = params.get('project'); // Get the project ID
+            
+            showSection('projects'); // Switch view
+
+            // Add scrolling logic
+            setTimeout(() => {
+                const targetSelector = `[data-project-id="${projectId}"]`; // Selector using the data attribute
+                const targetElement = document.querySelector(targetSelector);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Optional highlight
+                    targetElement.style.transition = 'background-color 0.5s ease';
+                    targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
+                    setTimeout(() => { targetElement.style.backgroundColor = ''; }, 2000);
+                } else {
+                    console.warn(`Could not find element with selector: ${targetSelector}`);
+                }
+            }, 100);
+        }
+        // Fallback for external links
+        else {
+          window.location.href = linkUrl;
+        }
+      }
+    };
+
+
+
+    // Subscription Handlers 
+
+    const handleSubscribe = async (contentType, contentId) => {
+      if (!session) return;
+
+      // Determine which column to set based on content type
+      const insertData = { user_id: session.user.id };
+      if (contentType === 'post') {
+        insertData.post_id = contentId;
+      } else if (contentType === 'project') {
+        insertData.project_id = contentId;
+      } else {
+        return; // Invalid type
+      }
+
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .insert(insertData)
+        .select('post_id, project_id') // Select the key columns
+        .single();
+
+      if (error) {
+        console.error(`Error subscribing to ${contentType}:`, error);
+        alert(`Failed to subscribe.`);
+      } else if (data) {
+        // Add the new subscription to local state
+        setSubscriptions([...subscriptions, data]); 
+      }
+    };
+
+    const handleUnsubscribe = async (contentType, contentId) => {
+      if (!session) return;
+
+      // Determine which column to filter by
+      let query = supabase.from('subscriptions').delete().eq('user_id', session.user.id);
+      if (contentType === 'post') {
+        query = query.eq('post_id', contentId);
+      } else if (contentType === 'project') {
+        query = query.eq('project_id', contentId);
+      } else {
+        return; // Invalid type
+      }
+
+      const { error } = await query;
+
+      if (error) {
+        console.error(`Error unsubscribing from ${contentType}:`, error);
+        alert(`Failed to unsubscribe.`);
+      } else {
+        // Remove the subscription from local state
+        if (contentType === 'post') {
+            setSubscriptions(subscriptions.filter(sub => sub.post_id !== contentId));
+        } else if (contentType === 'project') {
+            setSubscriptions(subscriptions.filter(sub => sub.project_id !== contentId));
+        }
       }
     };
 
@@ -864,16 +1031,65 @@ export default function HomePage() {
     }
   }, [profile]);
 
-  // Notification Fetching Effect 
+  // --- Notification & Subscription Fetching Effect ---
   useEffect(() => {
-    // 1. Only run this if the session object exists (user is logged in)
-    if (session) {
-      fetchNotifications();
-    } else {
-      setNotifications([]);
-      setUnreadCount(0);
-    }
-  }, [session]);
+    const fetchUserData = async () => {
+      // Only proceed if the session exists (user is logged in)
+      if (session) {
+        
+        // 1. Get the count of specifically UNREAD notifications for the badge
+        const { count: unread, error: countError } = await supabase
+          .from('notifications')
+          .select('*', { count: 'exact', head: true }) // head:true makes it faster
+          .eq('user_id', session.user.id)
+          .eq('is_read', false); // Count only unread
+
+        if (countError) {
+          console.error("Error fetching unread count:", countError);
+          setUnreadCount(0); // Default to 0 on error
+        } else {
+          setUnreadCount(unread || 0); // Set the count for the bell
+        }
+
+        // 2. Get the list of ALL recent notifications (read and unread) for the dropdown
+        const { data: notificationsData, error: notificationsError } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', session.user.id) // Only for the current user
+          // NO filter for is_read here
+          .order('created_at', { ascending: false }) // Newest first
+          .limit(20); // Fetch recent history (e.g., last 20)
+
+        if (notificationsError) {
+          console.error('Error fetching notifications list:', notificationsError);
+          setNotifications([]); // Default to empty list on error
+        } else {
+          setNotifications(notificationsData || []); // Set the list for the dropdown
+        }
+
+        // 3. Fetch Subscriptions
+        const { data: subscriptionsData, error: subscriptionsError } = await supabase
+          .from('subscriptions')
+          .select('post_id, project_id') // I Only need the IDs
+          .eq('user_id', session.user.id);
+
+        if (subscriptionsError) {
+          console.error("Error fetching subscriptions:", subscriptionsError);
+        } else {
+          setSubscriptions(subscriptionsData || []);
+        }
+
+      } else {
+        // Clear user-specific data on logout
+        setNotifications([]);
+        setUnreadCount(0);
+        setSubscriptions([]);
+      }
+    };
+
+    fetchUserData(); // Call the function to fetch data when session changes
+
+  }, [session]); 
 
 
     
@@ -962,7 +1178,10 @@ export default function HomePage() {
                     <div 
                       key={notification.id} 
                       onClick={() => handleNotificationClick(notification.id, notification.link_url)}
-                      style={{ padding: '1rem', borderBottom: '1px solid var(--grey-dark)', cursor: 'pointer' }}
+                      style={{ padding: '1rem', borderBottom: '1px solid var(--grey-dark)', cursor: 'pointer', opacity: notification.is_read ? 0.6 : 1,
+                      background: notification.is_read ? 'transparent' : 'rgba(255, 255, 255, 0.05)' // Slight background for unread
+
+                      }}
                     >
                       <p style={{ margin: 0, fontSize: '0.9rem' }}>{notification.content}</p>
                       <small style={{ color: 'var(--grey-light)' }}>{new Date(notification.created_at).toLocaleDateString()}</small>
@@ -1122,29 +1341,54 @@ export default function HomePage() {
             {projects
             .sort((a, b) => b.is_pinned - a.is_pinned)
             .map((project) => (
-                <div key={project.id} className="content-card">
+                <div key={project.id} 
+                  className="content-card"
+                  data-project-id={project.id}
+                >
                 <div className="content-header">
-                    <div>
+                  <div>
                     <h2 className="content-title">{project.title}</h2>
                     <p className="content-meta">Sci-fi Adventure • 185,000 words • In Development</p>
-                    </div>
-                    <span className="content-badge">Active</span>
+                  </div>
+                  {/* Project Status Badge */}
+                  <span className="content-badge">Active</span>
 
-                    {/* Admin-only Pin Button for Projects */}
-                    {userRole === 'admin' && (
-                      <button className="btn-link" onClick={() => handlePinProject(project.id, project.is_pinned)}>
-                        {project.is_pinned ? 'Unpin' : 'Pin 📌'}
-                      </button>
-                    )}
+                  {/* Subscribe Button */}
+                  {session && ( 
+                    subscriptions.some(sub => sub.project_id === project.id) ? (
+                      <button className="btn btn-secondary" onClick={() => handleUnsubscribe('project', project.id)}>Unsubscribe</button>
+                    ) : (
+                      <button className="btn" onClick={() => handleSubscribe('project', project.id)}>Subscribe</button>
+                    )
+                  )}
+
+                  {/* Admin Pin Button */}
+                  {userRole === 'admin' && (
+                    <button className="btn-link" onClick={() => handlePinProject(project.id, project.is_pinned)}>
+                      {project.is_pinned ? 'Unpin' : 'Pin 📌'}
+                    </button>
+                  )}
                 </div>
+
+                {/* Pinned Badge */}
                 {project.is_pinned && <span className="pinned-badge">Pinned</span>}
-                <p>{project.description}</p>
+
+                {/* CORRECTED: Only ONE description, outside the header, with the style */}
+                <p style={{ whiteSpace: 'pre-wrap' }}>{project.description}</p>
+
+                {/* Buttons Div */}
+                
                 <div style={{ marginTop: '1.5rem' }}>
-                    <button className="btn" style={{ marginLeft: '1rem' }}>View Stats</button>
                     
-                    {/* ADMIN CHECK: Protect Edit/Delete buttons */}
+                    {/* ADMIN CHECK: Protect Stats/Edit/Delete buttons */}
                     {userRole === 'admin' && (
                         <>
+                        <button 
+                            className="btn" 
+                            style={{ marginLeft: '1rem' }}
+                        >
+                            View Stats
+                        </button>
                         <button 
                             className="btn"
                             onClick={() => openEditProjectModal(project)} 
@@ -1284,9 +1528,22 @@ You wake up in a mysterious room with no memory of how you got there.
                   {posts
                   .sort((a, b) => b.is_pinned - a.is_pinned)
                   .map((post) => (
-                    <div key={post.id} className="content-card">
+                    <div key={post.id} 
+                    className="content-card"
+                    data-post-id={post.id}
+                    >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h2 className="content-title">{post.title}</h2>
+
+                        {/* Subscribe Button for Posts */}
+                        {session && ( // Only show if logged in
+                          subscriptions.some(sub => sub.post_id === post.id) ? (
+                            <button className="btn btn-secondary" onClick={() => handleUnsubscribe('post', post.id)}>Unsubscribe</button>
+                          ) : (
+                            <button className="btn" onClick={() => handleSubscribe('post', post.id)}>Subscribe</button>
+                          )
+                        )}
+
                         {/* Admin-only Pin Button for Posts */}
                         {userRole === 'admin' && (
                           <button className="btn-link" onClick={() => handlePinPost(post.id, post.is_pinned)}>
@@ -1307,7 +1564,7 @@ You wake up in a mysterious room with no memory of how you got there.
                       {post.is_pinned && <span className="pinned-badge">Pinned</span>}
 
                       <p className="content-meta">Published on {new Date(post.created_at).toISOString().split('T')[0]}</p>
-                      <p>{post.content}</p>
+                      <p style={{ whiteSpace: 'pre-wrap' }}>{post.content}</p>
 
                       {/* --- Comments Section --- */}
                       <div className="comments-section" style={{ marginTop: '2rem', borderTop: '1px solid var(--grey-dark)', paddingTop: '1rem' }}>
@@ -1319,7 +1576,11 @@ You wake up in a mysterious room with no memory of how you got there.
                             .sort((a, b) => b.is_pinned - a.is_pinned) // Pinned comments first
                             .filter(comment => !comment.parent_id)
                             .map((comment) => (
-                              <div key={comment.id} className="comment-item" style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--grey-dark)' }}>
+                              <div key={comment.id} 
+                                className="comment-item" 
+                                data-comment-id={comment.id} 
+                                style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--grey-dark)' }}
+                              >
 
                                 {/* Conditionally render Edit Form or Comment Content */}
                                 {editingCommentId === comment.id ? (
@@ -1337,7 +1598,7 @@ You wake up in a mysterious room with no memory of how you got there.
                                 ) : (
                                   <>
                                     {comment.is_pinned && <span className="pinned-badge" style={{ float: 'right', fontSize: '0.8rem', fontWeight: 'bold' }}>📌 Pinned</span>}
-                                    <p>{comment.content}</p>
+                                    <p style={{ whiteSpace: 'pre-wrap' }}>{comment.content}</p>
                                     <p className="content-meta" style={{ fontSize: '0.8rem' }}>
                                       Comment by <strong>{comment.author ? comment.author.username : 'Anonymous'}</strong> on {new Date(comment.created_at).toISOString().split('T')[0]}
                                     </p>
@@ -1365,7 +1626,11 @@ You wake up in a mysterious room with no memory of how you got there.
                                     .sort((a, b) => b.is_pinned - a.is_pinned) // Pinned replies first
                                     .filter(reply => reply.parent_id === comment.id)
                                     .map((reply) => (
-                                      <div key={reply.id} className="comment-item" style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--grey-dark)' }}>
+                                      <div key={reply.id} 
+                                        className="comment-item" 
+                                        data-comment-id={reply.id}
+                                        style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--grey-dark)' }}
+                                      >
       
                                         {/* Conditionally render Edit Form or Reply Content */}
                                         {editingCommentId === reply.id ? (
@@ -1383,7 +1648,7 @@ You wake up in a mysterious room with no memory of how you got there.
                                         ) : (
                                           <>
                                             {reply.is_pinned && <span className="pinned-badge" style={{ float: 'right', fontSize: '0.8rem', fontWeight: 'bold' }}>📌 Pinned</span>}
-                                            <p>{reply.content}</p>
+                                            <p style={{ whiteSpace: 'pre-wrap' }}>{reply.content}</p>
                                             <p className="content-meta" style={{ fontSize: '0.8rem' }}>
                                               Reply by <strong>{reply.author ? reply.author.username : 'Anonymous'}</strong> on {new Date(reply.created_at).toISOString().split('T')[0]}
                                             </p>
@@ -1617,7 +1882,11 @@ You wake up in a mysterious room with no memory of how you got there.
 
                 <div className="announcements-list">
                   {announcements.map((announcement) => (
-                    <div key={announcement.id} className="card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
+                    <div key={announcement.id} 
+                      className="card" 
+                      data-announcement-id={announcement.id}
+                      style={{ marginBottom: '1.5rem', padding: '1.5rem' }}
+                    >
                       <h2 className="content-title">{announcement.title}</h2>
                       <p className="content-meta">
                         Posted on {new Date(announcement.created_at).toLocaleDateString()}
