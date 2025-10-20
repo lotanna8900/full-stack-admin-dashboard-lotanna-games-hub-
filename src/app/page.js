@@ -1,6 +1,7 @@
 "use client";
 import {useState, useEffect} from "react";
 import { supabase } from './utils/supabaseClient';
+import ReactMarkdown from 'react-markdown';
 
 export default function HomePage() {
     // state for navigation and modals
@@ -12,6 +13,7 @@ export default function HomePage() {
     const [projects, setProjects] = useState([]);
     const [posts, setPosts] = useState([]);
     const [snippets, setSnippets] = useState([]);
+    const [announcements, setAnnouncements] = useState([]);
 
     // state for authentication and user role
     const [session, setSession] = useState(null); // The user's session data
@@ -58,6 +60,16 @@ export default function HomePage() {
     const [newSnippetDescription, setNewSnippetDescription] = useState('');
     const [newSnippetGameUrl, setNewSnippetGameUrl] = useState('');
     const [newSnippetImageUrl, setNewSnippetImageUrl] = useState('');
+
+    // State for the new announcement modal
+    const [isNewAnnouncementModalOpen, setIsNewAnnouncementModalOpen] = useState(false);
+    const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
+    const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
+
+    // Notification state
+    const [notifications, setNotifications] = useState([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
 
     //fetch project data initially
     useEffect(() => {
@@ -599,11 +611,11 @@ export default function HomePage() {
       }
     };
 
-    // --- File Fetching Effect ---
+    // File Fetching Effect
     useEffect(() => {
-      // 1. Only run this if the user is authenticated as an admin
+      // 1. I want this to only run this if the user is authenticated as an admin
       if (userRole === 'admin') {
-        // 2. We now know the role, so we can safely fetch the files!
+        // 2. I now know the role, so I can safely fetch the files!
         fetchFiles();
       }
       // 3. The effect runs whenever the userRole changes
@@ -626,8 +638,8 @@ export default function HomePage() {
       setUploading(false);
 
       if (error) {
-        console.error('Error uploading file:', error); // <-- THIS LINE
-        alert('File upload failed. Check the browser console for details.'); // <-- MAKE SURE alert IS PRESENT
+        console.error('Error uploading file:', error); //
+        alert('File upload failed. Check the browser console for details.'); // <-- This one will hlep me MAKE SURE alert IS PRESENT
       } else {
         alert('File uploaded successfully!');
         setSelectedFile(null);
@@ -653,7 +665,7 @@ export default function HomePage() {
       }
     };
 
-    // 4. Function to get a signed URL (allows temporary public access for viewing/downloading)
+    // 4. Function to get a signed URL (allows me temporary public access for viewing/downloading)
     const getPublicUrl = async (fileName) => {
       // Supabase RLS policies will allow only the admin will successfully get the URL
       const { data } = await supabase.storage
@@ -662,6 +674,98 @@ export default function HomePage() {
 
       return data?.signedUrl;
     };
+
+
+
+    // Announcement Modal Handlers 
+
+    const openNewAnnouncementModal = () => setIsNewAnnouncementModalOpen(true);
+
+    const closeNewAnnouncementModal = () => {
+      setIsNewAnnouncementModalOpen(false);
+      // Reset form fields
+      setNewAnnouncementTitle('');
+      setNewAnnouncementContent('');
+    };
+
+    // Form Submission Handler for Announcements
+
+    const handleCreateAnnouncement = async (event) => {
+      event.preventDefault();
+      if (!session) return;
+
+      const { data, error } = await supabase
+        .from('announcements')
+        .insert([{
+          title: newAnnouncementTitle,
+          content: newAnnouncementContent,
+          author_id: session.user.id
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating announcement:', error);
+        alert('Failed to create announcement.');
+      } else {
+        // This is add my new announcement to the top of the list for an instant UI update
+        setAnnouncements([data, ...announcements]);
+        closeNewAnnouncementModal();
+      }
+    };
+
+
+
+    // Notification Fetching Handler
+    const fetchNotifications = async () => {
+      if (!session) return; // Only run if logged in
+
+      const { data, error, count } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact' }) // Get all columns and the total count
+        .eq('user_id', session.user.id) // Only for the current user
+        .eq('is_read', false) // Only unread ones
+        .order('created_at', { ascending: false }) // Newest first
+        .limit(10); // Limit to the latest 10 unread for the dropdown
+
+      if (error) {
+        console.error('Error fetching notifications:', error);
+      } else {
+        setNotifications(data || []);
+        setUnreadCount(count || 0);
+      }
+    };
+
+
+    // Notification Click Handler
+    const handleNotificationClick = async (notificationId, linkUrl) => {
+      // 1. Mark the notification as read in the database
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', notificationId);
+
+      if (error) {
+        console.error('Error marking notification as read:', error);
+      } else {
+        // 2. Update the local state immediately
+        setNotifications(notifications.filter(n => n.id !== notificationId));
+        setUnreadCount(prevCount => Math.max(0, prevCount - 1));
+      }
+      
+      // 3. Close the dropdown
+      setIsNotificationDropdownOpen(false);
+
+      // 4. Navigate INTERNALLY if there's a link (using state)
+      if (linkUrl === '/announcements') { // Check if the link is for announcements
+          showSection('announcements'); // switch view
+      } else if (linkUrl) {
+          // For other potential future links
+          window.location.href = linkUrl; 
+      }
+    };
+
+
 
 
 
@@ -721,6 +825,14 @@ export default function HomePage() {
 
       // 6. Fetch Files (Admin Only)
       fetchFiles(); 
+
+      // Fetch Announcements
+      const { data: announcementsData, error: announcementsError } = await supabase
+        .from('announcements')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (announcementsError) console.error('Error fetching announcements:', announcementsError);
+      else setAnnouncements(announcementsData || []);
       
       setLoadingSession(false);
     };
@@ -752,6 +864,17 @@ export default function HomePage() {
     }
   }, [profile]);
 
+  // Notification Fetching Effect 
+  useEffect(() => {
+    // 1. Only run this if the session object exists (user is logged in)
+    if (session) {
+      fetchNotifications();
+    } else {
+      setNotifications([]);
+      setUnreadCount(0);
+    }
+  }, [session]);
+
 
     
 
@@ -768,9 +891,31 @@ export default function HomePage() {
             <li><a href="#community">Community</a></li>
           </ul>
           <div className="user-menu">
-            <div className="notification-bell">
+            <div
+              className="notification-bell"
+              onClick={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}
+              style={{ position: 'relative', cursor: 'pointer' }}
+            >
               🔔
-              <span className="notification-dot"></span>
+              {/* Display count if > 0 */}
+              {unreadCount > 0 && (
+                <span
+                  className="notification-dot"
+                  style={{
+                    position: 'absolute',
+                    top: '-5px',
+                    right: '-5px',
+                    background: 'red',
+                    color: 'white',
+                    borderRadius: '50%',
+                    padding: '2px 6px',
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {unreadCount}
+                </span>
+              )}
             </div>
             {/* 1. AVATAR: Goes to Profile or Login */}
             <div 
@@ -791,6 +936,44 @@ export default function HomePage() {
             >
                 {session ? 'LOG OUT' : 'SIGN IN'}
             </div>
+
+            {/* Notification Dropdown */}
+            {isNotificationDropdownOpen && (
+              <div 
+                className="notification-dropdown" 
+                style={{
+                  position: 'absolute',
+                  top: '60px', /* Adjust as needed based on your navbar height */
+                  right: '20px',
+                  width: '300px',
+                  maxHeight: '400px',
+                  overflowY: 'auto',
+                  background: 'var(--dark)',
+                  border: '1px solid var(--grey-dark)',
+                  borderRadius: '4px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                  zIndex: 1000,
+                  color: 'var(--white)'
+                }}
+              >
+                <h4 style={{ padding: '1rem', borderBottom: '1px solid var(--grey-dark)', margin: 0 }}>Notifications</h4>
+                {notifications.length > 0 ? (
+                  notifications.map((notification) => (
+                    <div 
+                      key={notification.id} 
+                      onClick={() => handleNotificationClick(notification.id, notification.link_url)}
+                      style={{ padding: '1rem', borderBottom: '1px solid var(--grey-dark)', cursor: 'pointer' }}
+                    >
+                      <p style={{ margin: 0, fontSize: '0.9rem' }}>{notification.content}</p>
+                      <small style={{ color: 'var(--grey-light)' }}>{new Date(notification.created_at).toLocaleDateString()}</small>
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ padding: '1rem', textAlign: 'center' }}>No new notifications.</p>
+                )}
+                {/* Optional: Add a "Mark all as read" button here */}
+              </div>
+            )}
           </div>
         </div>
       </nav>
@@ -804,6 +987,7 @@ export default function HomePage() {
               <li><a href="#" className={activeSection === 'projects' ? 'active' : ''} onClick={() => showSection('projects')}>📁 Projects</a></li>
               <li><a href="#" className={activeSection === 'snippets' ? 'active' : ''} onClick={() => showSection('snippets')}>📝 Game Snippets</a></li>
               <li><a href="#" className={activeSection === 'blog' ? 'active' : ''} onClick={() => showSection('blog')}>✍️ Blog Posts</a></li>
+              <li><a href="#" className={activeSection === 'announcements' ? 'active' : ''} onClick={() => showSection('announcements')}>📢 Announcements</a></li>
             </ul>
           </div>
           <div className="sidebar-section">
@@ -826,7 +1010,7 @@ export default function HomePage() {
               {userRole !== 'guest' && (
                 <li><a href="#" className={activeSection === 'settings' ? 'active' : ''} onClick={() => showSection('settings')}>👤 Profile</a></li>
               )}
-              
+
             </ul>
           </div>
           
@@ -1415,6 +1599,39 @@ You wake up in a mysterious room with no memory of how you got there.
               </div>
             )}
 
+            {/* Announcements Section */}
+            {activeSection === 'announcements' && (
+              <div id="announcements-section" className="section">
+                <div className="dashboard-header">
+                  <div className="dashboard-title">
+                    <h1>Announcements</h1>
+                    <p className="dashboard-subtitle">Latest news and updates for the community.</p>
+                  </div>
+                  <div className="action-buttons">
+                    {/* We'll add the "New Announcement" modal and button in the next step */}
+                    {userRole === 'admin' && (
+                      <button className="btn btn-primary" onClick={openNewAnnouncementModal}>New Announcement</button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="announcements-list">
+                  {announcements.map((announcement) => (
+                    <div key={announcement.id} className="card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
+                      <h2 className="content-title">{announcement.title}</h2>
+                      <p className="content-meta">
+                        Posted on {new Date(announcement.created_at).toLocaleDateString()}
+                      </p>
+                      <div className="announcement-content" style={{ marginTop: '1rem' }}>
+                      <ReactMarkdown>{announcement.content}</ReactMarkdown>
+                    </div>
+                    </div>
+                  ))}
+                  {announcements.length === 0 && <p>No announcements yet.</p>}
+                </div>
+              </div>
+            )}
+
             {/* Analytics Section */}
             {activeSection === 'stats' && (
             <div id="stats-section" className="section">
@@ -1720,6 +1937,45 @@ You wake up in a mysterious room with no memory of how you got there.
             <div style={{ textAlign: 'right', marginTop: '2rem' }}>
               <button type="button" className="btn" onClick={closeEditPostModal} style={{ marginRight: '1rem' }}>Cancel</button>
               <button type="submit" className="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )}
+
+
+    {/* New Announcement Modal */}
+    {isNewAnnouncementModalOpen && (
+      <div id="new-announcement-modal" className="modal active">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h2>Create New Announcement</h2>
+            <span className="modal-close" onClick={closeNewAnnouncementModal}>&times;</span>
+          </div>
+          <form onSubmit={handleCreateAnnouncement}>
+            <div className="form-group">
+              <label className="form-label">Title</label>
+              <input
+                type="text"
+                className="form-input"
+                value={newAnnouncementTitle}
+                onChange={(e) => setNewAnnouncementTitle(e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Content</label>
+              <textarea
+                className="form-textarea"
+                style={{ minHeight: '200px' }}
+                value={newAnnouncementContent}
+                onChange={(e) => setNewAnnouncementContent(e.target.value)}
+                required
+              ></textarea>
+            </div>
+            <div style={{ textAlign: 'right', marginTop: '2rem' }}>
+              <button type="button" className="btn" onClick={closeNewAnnouncementModal} style={{ marginRight: '1rem' }}>Cancel</button>
+              <button type="submit" className="btn btn-primary">Post Announcement</button>
             </div>
           </form>
         </div>

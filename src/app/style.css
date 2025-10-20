@@ -1142,3 +1142,93 @@ nav {
 .comments-list::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* Announcement Links Styling */
+.content-card a,
+.announcement-content a {
+  color: #667eea; 
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.content-card a:hover,
+.announcement-content a:hover {
+  color: #8b9eff; 
+  text-decoration: underline;
+}
+
+.content-card a:visited,
+.announcement-content a:visited {
+  color: #7c8adb; 
+}
+
+/* Notification Dropdown Styling */
+.notification-dropdown {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+  backdrop-filter: blur(10px);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.notification-dropdown h4 {
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--white);
+  font-weight: 600;
+}
+
+.notification-dropdown > div {
+  transition: background 0.2s ease;
+}
+
+.notification-dropdown > div:hover {
+  background: rgba(102, 126, 234, 0.15);
+}
+
+/* Unread notification indicator (optional) */
+.notification-item-unread {
+  background: rgba(102, 126, 234, 0.08);
+  border-left: 3px solid #667eea;
+}
+
+/* Custom scrollbar for notifications */
+.notification-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-dropdown::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.5);
+  border-radius: 3px;
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.7);
+}
+
+/* Notification bell pulse animation when there are unread notifications */
+.notification-bell {
+  position: relative;
+}
+
+.notification-bell.has-unread {
+  animation: bellPulse 2s ease-in-out infinite;
+}
+
+@keyframes bellPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
