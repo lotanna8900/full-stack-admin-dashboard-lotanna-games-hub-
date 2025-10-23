@@ -1434,7 +1434,7 @@ export default function HomePage() {
             <div className="dashboard-header">
               <div className="dashboard-title">
                 <h1>Dashboard</h1>
-                <p className="dashboard-subtitle">Welcome back! Here's what's happening with your interactive fiction.</p>
+                <p className="dashboard-subtitle">Welcome back! Here&apos;s what&apos;s happening with your interactive fiction.</p>
               </div>
               <div className="action-buttons">
                 {userRole === 'admin' && (
@@ -1514,8 +1514,11 @@ export default function HomePage() {
                           title="Go to comment"
                         >
                           <div className="activity-text">
-                            <strong>{activity.author?.username || 'Anonymous'}</strong> commented on "<strong>{activity.post?.title || 'a post'}</strong>":
-                            "{activity.content.substring(0, 50)}..."
+                            <div className="activity-text">
+                              <strong>{activity.author?.username || 'Anonymous'}</strong> commented on &quot;<strong>{activity.post?.title || 'a post'}</strong>&quot;:
+                              &quot;{activity.content.substring(0, 50)}...&quot;
+                            </div>
+                            &quot;{activity.content.substring(0, 50)}...&quot;
                           </div>
                           <div className="activity-time">{new Date(activity.created_at).toLocaleDateString()}</div>
                         </div>
@@ -1532,7 +1535,7 @@ export default function HomePage() {
                           className="activity-content" 
                           onClick={() => handleNotificationClick(null, `/blog?post=${activity.id}`)}
                           style={{ cursor: 'pointer' }}
-                          title="Go to Blog Post"
+                          title=&quot;Go to Blog Post&quot;
                         >
                           <div className="activity-text">
                             New Blog Post: "<strong>{activity.title}</strong>" was published.
@@ -1552,7 +1555,7 @@ export default function HomePage() {
                           className="activity-content" 
                           onClick={() => handleNotificationClick(null, `/projects?project=${activity.id}`)}
                           style={{ cursor: 'pointer' }}
-                          title="Go to Project"
+                          title=&quot;Go to Project&quot;
                         >
                           <div className="activity-text">
                             New Project Added: "<strong>{activity.title}</strong>"
