@@ -1538,7 +1538,7 @@ export default function HomePage() {
                           title="Go to Blog Post"
                         >
                           <div className="activity-text">
-                            New Blog Post: "<strong>{activity.title}</strong>" was published.
+                            New Blog Post: &quot;<strong>{activity.title}</strong>&quot; was published.
                           </div>
                           <div className="activity-time">{new Date(activity.created_at).toLocaleDateString()}</div>
                         </div>
@@ -1558,7 +1558,7 @@ export default function HomePage() {
                           title="Go to Project"
                         >
                           <div className="activity-text">
-                            New Project Added: "<strong>{activity.title}</strong>"
+                            New Project Added: &quot;<strong>{activity.title}</strong>&quot;
                           </div>
                           <div className="activity-time">{new Date(activity.created_at).toLocaleDateString()}</div>
                         </div>
