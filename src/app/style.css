@@ -1232,3 +1232,145 @@ nav {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.1); }
 }
+
+/* Blog Post Detail Page Styling */
+
+/* Container */
+.blog-post-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+/* Back Link */
+.blog-post-container a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.blog-post-container a:hover {
+  color: #8b9eff;
+  text-decoration: underline;
+}
+
+/* Post Title */
+.blog-post-container h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--white);
+  line-height: 1.2;
+}
+
+/* Post Metadata */
+.blog-post-container > p {
+  color: var(--grey-light);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+/* Post Image */
+.blog-post-container img {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Markdown Content Styling */
+.blog-post-container h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: var(--white);
+}
+
+.blog-post-container h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--white);
+}
+
+.blog-post-container p {
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+.blog-post-container code {
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.blog-post-container pre {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.blog-post-container pre code {
+  background: none;
+  padding: 0;
+}
+
+.blog-post-container blockquote {
+  border-left: 4px solid #667eea;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  color: var(--grey-light);
+  font-style: italic;
+}
+
+.blog-post-container ul,
+.blog-post-container ol {
+  margin: 1rem 0 1rem 2rem;
+  line-height: 1.8;
+}
+
+/* Comments Section */
+.blog-post-container h2 {
+  border-bottom: 2px solid var(--grey-dark);
+  padding-bottom: 0.5rem;
+}
+
+/* Comment Item (already styled but adding specific overrides) */
+.blog-post-container .comment-item {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1.25rem;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.blog-post-container .comment-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.blog-post-container .comment-item p {
+  margin-bottom: 0.5rem;
+}
+
+.blog-post-container .comment-item small {
+  color: var(--grey-light);
+}
+
+/* Replies Section */
+.blog-post-container .replies {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* Loading/Error States */
+.blog-post-container div[style*="Loading"],
+.blog-post-container div[style*="Error"] {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: var(--grey-light);
+}

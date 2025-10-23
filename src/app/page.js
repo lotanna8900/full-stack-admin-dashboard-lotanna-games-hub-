@@ -2,6 +2,13 @@
 import {useState, useEffect} from "react";
 import { supabase } from './utils/supabaseClient';
 import ReactMarkdown from 'react-markdown';
+import Link from 'next/link';
+import ViewsBarChart from '../components/ViewsBarChart';
+import TrendLineChart from '../components/TrendLineChart';
+
+const genreOptions = ['Fantasy', 'Science Fiction', 'Horror', 'Mystery', 'Romance', 'Historical', 'Thriller', 'Other'];
+const settingOptions = ['Medieval', 'Urban Fantasy', 'Space Opera', 'Cyberpunk', 'Post-Apocalyptic', 'Modern', 'Historical Era', 'Other'];
+const statusOptions = ['Active', 'Completed', 'Paused', 'Planning', 'Idea', 'Archived'];
 
 export default function HomePage() {
     // state for navigation and modals
@@ -31,13 +38,25 @@ export default function HomePage() {
     const [uploading, setUploading] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
 
+    // Stats state
+    const [projectCount, setProjectCount] = useState(0);
+    const [snippetCount, setSnippetCount] = useState(0);
+    const [memberCount, setMemberCount] = useState(0);
+
     //state for new project form inputs
     const [newProjectName, setNewProjectName] = useState('');
     const [newProjectDescription, setNewProjectDescription] = useState('');
+    const [newProjectGenre, setNewProjectGenre] = useState('');
+    const [newProjectSetting, setNewProjectSetting] = useState('');
+    const [newProjectGenderChoice, setNewProjectGenderChoice] = useState(false);
+    const [newProjectNbInclusive, setNewProjectNbInclusive] = useState(false);
+    const [newProjectTags, setNewProjectTags] = useState('');
+    const [newProjectStatus, setNewProjectStatus] = useState('Active');
 
     //state for new post form inputs
     const [newPostTitle, setNewPostTitle] = useState('');
     const [newPostContent, setNewPostContent] = useState('');
+    const [newPostImageUrl, setNewPostImageUrl] = useState('');
 
     // State for the edit functionality
     const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
@@ -55,6 +74,9 @@ export default function HomePage() {
     // New state to manage which comment's reply box is open
     const [replyingToCommentId, setReplyingToCommentId] = useState(null);
 
+    // View Replies state
+    const [expandedReplies, setExpandedReplies] = useState([]); 
+
     // State for the new snippet modal
     const [isNewSnippetModalOpen, setIsNewSnippetModalOpen] = useState(false);
     const [newSnippetTitle, setNewSnippetTitle] = useState('');
@@ -66,6 +88,15 @@ export default function HomePage() {
     const [isNewAnnouncementModalOpen, setIsNewAnnouncementModalOpen] = useState(false);
     const [newAnnouncementTitle, setNewAnnouncementTitle] = useState('');
     const [newAnnouncementContent, setNewAnnouncementContent] = useState('');
+
+    // State for analytics
+    const [topPosts, setTopPosts] = useState([]);
+    const [totalPostViews, setTotalPostViews] = useState(0);
+    const [totalSnippetViews, setTotalSnippetViews] = useState(0);
+    const [totalCommentCount, setTotalCommentCount] = useState(0);
+    const [dailyViewsData, setDailyViewsData] = useState([]);
+    const [dailySignupsData, setDailySignupsData] = useState([]);
+    const [recentActivity, setRecentActivity] = useState([]);
 
     // Notification state
     const [notifications, setNotifications] = useState([]);
@@ -101,9 +132,16 @@ export default function HomePage() {
     // Clear form fields when the form closes
     setNewProjectName('');
     setNewProjectDescription('');
+    setNewProjectGenre('');
+    setNewProjectSetting('');
+    setNewProjectGenderChoice(false);
+    setNewProjectNbInclusive(false);
+    setNewProjectTags('');
+    setNewProjectStatus('Active');
   };
 
     //Form submission handler
+    // Create Project
     const handleCreateProject = async (event) => {
     event.preventDefault(); // Prevent page reload
 
@@ -112,12 +150,24 @@ export default function HomePage() {
       return;
     }
 
+    // Convert comma-separated tags string to array for database
+    const tagsArray = newProjectTags.split(',').map(tag => tag.trim()).filter(tag => tag); 
+
     // Insert the new project into the Supabase 'projects' table
-    const { data, error } = await supabase
-      .from('projects')
-      .insert([{ title: newProjectName, description: newProjectDescription }])
-      .select() // returns the newly created row, very important stuff
-      .single(); // We only expect one row back
+      const { data, error } = await supabase
+        .from('projects')
+        .insert([{ 
+          title: newProjectName, 
+          description: newProjectDescription,
+          genre: newProjectGenre || null, // Send null if empty
+          setting: newProjectSetting || null,
+          gender_choice: newProjectGenderChoice,
+          non_binary_inclusive: newProjectNbInclusive,
+          tags: tagsArray,
+          status: newProjectStatus
+        }])
+        .select() 
+        .single();
 
     if (error) {
       console.error('Error creating project:', error);
@@ -189,9 +239,15 @@ export default function HomePage() {
     // Modal Handlers for Edit
     // Open Edit Project Modal and populate fields
     const openEditProjectModal = (project) => {
-        setEditingProject(project);// Set the project being edited
-        setNewProjectName(project.title); // Use existing data on the form to populate the fields
-        setNewProjectDescription(project.description);
+        setEditingProject(project);
+        setNewProjectName(project.title);
+        setNewProjectDescription(project.description || ''); 
+        setNewProjectGenre(project.genre || '');
+        setNewProjectSetting(project.setting || '');
+        setNewProjectGenderChoice(project.gender_choice);
+        setNewProjectNbInclusive(project.non_binary_inclusive);
+        setNewProjectTags((project.tags || []).join(', '));
+        setNewProjectStatus(project.status || 'Active'); 
         setIsEditProjectModalOpen(true);
     };
 
@@ -200,9 +256,15 @@ export default function HomePage() {
         setEditingProject(null);// Clear the editing project
         setNewProjectName('');
         setNewProjectDescription('');
+        setNewProjectGenre('');
+        setNewProjectSetting('');
+        setNewProjectGenderChoice(false);
+        setNewProjectNbInclusive(false);
+        setNewProjectTags('');
+        setNewProjectStatus('Active');
     };
 
-    // Open Edit Post Modal and populate fields
+    // Open Edit Snippet Modal and populate fields
     const openEditSnippetModal = (snippet) => {
       setEditingSnippet(snippet);
       setNewSnippetTitle(snippet.title);
@@ -227,6 +289,7 @@ export default function HomePage() {
       setEditingPost(post);
       setNewPostTitle(post.title);
       setNewPostContent(post.content);
+      setNewPostImageUrl(post.image_url || '');
       setIsEditPostModalOpen(true);
     };
 
@@ -248,11 +311,19 @@ export default function HomePage() {
 
         const projectId = editingProject.id;
 
+        const tagsArray = newProjectTags.split(',').map(tag => tag.trim()).filter(tag => tag);
+
         //send the updated data to supabase
         const { data, error } = await supabase
             .from('projects')
-            .update({ title: newProjectName, description: newProjectDescription }) // Data to use and update the project
-            .eq('id', projectId) // Important: Only update the row where the 'id' matches
+            .update({ title: newProjectName, 
+              description: newProjectDescription, 
+              genre: newProjectGenre || null, 
+              setting: newProjectSetting || null, gender_choice: newProjectGenderChoice, 
+              non_binary_inclusive: newProjectNbInclusive, 
+              tags: tagsArray }) // Data to use and update the project
+              status: newProjectStatus
+            .eq('id', projectId) 
             .select() 
             .single();
 
@@ -277,7 +348,7 @@ export default function HomePage() {
 
       const { data, error } = await supabase
         .from('posts')
-        .update({ title: newPostTitle, content: newPostContent })
+        .update({ title: newPostTitle, content: newPostContent, image_url: newPostImageUrl })
         .eq('id', editingPost.id)
         .select('*, comments(*, author:profiles(username))')
         .single();
@@ -338,7 +409,8 @@ export default function HomePage() {
         .insert([{ 
           title: newPostTitle, 
           content: newPostContent, 
-          author_id: authorId 
+          author_id: authorId, 
+          image_url: newPostImageUrl
         }])
         .select('*, comments(*)')
         .single();
@@ -393,6 +465,15 @@ export default function HomePage() {
         setReplyingToCommentId(null); // Close the reply box
       }
     };
+
+        // toggle function for replies 
+        const toggleReplies = (commentId) => {
+          setExpandedReplies(prev => 
+            prev.includes(commentId) 
+              ? prev.filter(id => id !== commentId) 
+              : [...prev, commentId]
+          );
+        };
 
         // New: Log Out Handler
         const handleLogout = async () => {
@@ -627,26 +708,49 @@ export default function HomePage() {
       e.preventDefault();
       if (!selectedFile) return;
 
-      setUploading(true);
-      
+      setUploading(true); 
+
       const file = selectedFile;
-      const filePath = `${Date.now()}_${file.name.replace(/\s/g, '_')}`; // Ensure unique path
+      // Create a unique file path using timestamp and original filename
+      const filePath = `${Date.now()}_${file.name.replace(/\s/g, '_')}`; 
 
-      const { error } = await supabase.storage
-        .from(BUCKET_NAME)
-        .upload(filePath, file);
+      // Upload the file ---
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET_NAME) 
+        .upload(filePath, file); 
 
-      setUploading(false);
-
-      if (error) {
-        console.error('Error uploading file:', error); //
-        alert('File upload failed. Check the browser console for details.'); // <-- This one will hlep me MAKE SURE alert IS PRESENT
-      } else {
-        alert('File uploaded successfully!');
-        setSelectedFile(null);
-        e.target.reset();
-        fetchFiles();
+      // Check for upload errors ---
+      if (uploadError) {
+        console.error('Error uploading file:', uploadError);
+        alert('File upload failed. Check the console for details.');
+        setUploading(false); 
+        return; 
       }
+
+      // Step 3: Get the public URL of the uploaded file
+      const { data: publicUrlData } = supabase.storage
+        .from(BUCKET_NAME)
+        .getPublicUrl(filePath); 
+
+      const permanentImageUrl = publicUrlData.publicUrl;
+      console.log('Permanent Public URL:', permanentImageUrl);
+
+      //  Handle success
+      setUploading(false); 
+      alert('File uploaded successfully! URL copied to clipboard.');
+      
+      // Copy URL to clipboard for easy use
+      if (permanentImageUrl) {
+          navigator.clipboard.writeText(permanentImageUrl)
+              .then(() => console.log('URL copied!'))
+              .catch(err => console.error('Failed to copy URL:', err));
+      }
+
+      setSelectedFile(null); 
+      if (e.target && typeof e.target.reset === 'function') {
+          e.target.reset(); 
+      }
+      fetchFiles(); 
     };
 
     // 3. Handle file deletion
@@ -760,7 +864,8 @@ export default function HomePage() {
       const wasUnread = notification && !notification.is_read;
       let updateError = false;
 
-      if (wasUnread) {
+      // Only mark as read if it's an actual notification (not just a link from activity feed)
+      if (notificationId && wasUnread) {
         const { error } = await supabase
           .from('notifications')
           .update({ is_read: true })
@@ -773,8 +878,8 @@ export default function HomePage() {
         }
       }
 
-      // --- Update local state ---
-      if (!updateError) {
+      // --- Update local state (only for actual notifications) ---
+      if (notificationId && !updateError) {
         setNotifications(currentNotifications =>
             currentNotifications.map(n =>
               n.id === notificationId ? { ...n, is_read: true } : n
@@ -785,85 +890,50 @@ export default function HomePage() {
         }
       }
 
-      // --- Close dropdown ---
+      // --- Close dropdown (if it was open) ---
       setIsNotificationDropdownOpen(false);
 
-      // --- Navigation Logic ---
+      // --- Navigation & Scrolling Logic ---
       if (linkUrl) {
         const urlParts = linkUrl.split('?');
         const path = urlParts[0];
         const params = new URLSearchParams(urlParts[1] || '');
 
-        // Handle Blog Post/Reply Links
-        if (path === '/blog') {
-          const postId = params.get('post');
-          const replyId = params.get('reply');
-          
-          showSection('blog'); // Switch view
-
+        // Helper function for scrolling and highlighting
+        const scrollAndHighlight = (selector) => {
           setTimeout(() => {
-            // Scroll to reply if specified, otherwise scroll to post
-            const targetId = replyId || postId; 
-            const targetSelector = replyId ? `[data-comment-id="${targetId}"]` : `[data-post-id="${postId}"]`; // Need to add data-post-id to post card
-            
-            const targetElement = document.querySelector(targetSelector);
+            const targetElement = document.querySelector(selector);
             if (targetElement) {
               targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              // Optional highlight
+              // Highlight effect
               targetElement.style.transition = 'background-color 0.5s ease';
               targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
               setTimeout(() => { targetElement.style.backgroundColor = ''; }, 2000);
             } else {
-              console.warn(`Could not find element with selector: ${targetSelector}`);
+              console.warn(`Could not find element with selector: ${selector}`);
             }
-          }, 100);
-        } 
+          }, 100); // Delay for UI update
+        };
+
+        // Handle Blog Post/Reply Links
+        if (path === '/blog') {
+          const postId = params.get('post');
+          const replyId = params.get('reply');
+          showSection('blog');
+          if (replyId) scrollAndHighlight(`[data-comment-id="${replyId}"]`);
+          else if (postId) scrollAndHighlight(`[data-post-id="${postId}"]`);
+        }
         // Handle Announcements Link
         else if (path === '/announcements') {
           const announcementId = params.get('id');
-          console.log('Attempting to navigate to announcement:', announcementId);
-
           showSection('announcements');
-
-          setTimeout(() => {
-            const targetSelector = `[data-announcement-id="${announcementId}"]`;
-            console.log('Searching for selector:', targetSelector);
-            const targetElement = document.querySelector(targetSelector);
-
-            if (targetElement) {
-              console.log('Element found! Scrolling...');
-              targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              
-              targetElement.style.transition = 'background-color 0.5s ease';
-              targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.2)'; // Yellow highlight
-              setTimeout(() => {
-                  targetElement.style.backgroundColor = ''; // Remove highlight after 2 seconds
-              }, 2000);
-            } else {
-              console.error(`ERROR: Element not found for selector: ${targetSelector}`);
-            }
-          }, 100);
+          if (announcementId) scrollAndHighlight(`[data-announcement-id="${announcementId}"]`);
         }
         // Handle Projects Link
         else if (path === '/projects') {
-            const projectId = params.get('project'); // Get the project ID
-            
-            showSection('projects'); // Switch view
-
-            // Add scrolling logic
-            setTimeout(() => {
-                const targetSelector = `[data-project-id="${projectId}"]`; // Selector using the data attribute
-                const targetElement = document.querySelector(targetSelector);
-                if (targetElement) {
-                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // Optional highlight
-                    targetElement.style.transition = 'background-color 0.5s ease';
-                    targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
-                    setTimeout(() => { targetElement.style.backgroundColor = ''; }, 2000);
-                } else {
-                    console.warn(`Could not find element with selector: ${targetSelector}`);
-                }
-            }, 100);
+            const projectId = params.get('project');
+            showSection('projects');
+            if (projectId) scrollAndHighlight(`[data-project-id="${projectId}"]`);
         }
         // Fallback for external links
         else {
@@ -989,6 +1059,128 @@ export default function HomePage() {
         .order('created_at', { ascending: false });
       if (snippetsError) console.error('Error fetching snippets:', snippetsError);
       else setSnippets(snippetsData || []);
+
+      // Fetch Counts for Dashboard ---
+
+      // Count Projects
+      const { count: projCount, error: projCountError } = await supabase
+        .from('projects')
+        .select('*', { count: 'exact', head: true }); // head:true makes it faster
+      if (!projCountError) setProjectCount(projCount || 0);
+
+      // Count Snippets
+      const { count: snipCount, error: snipCountError } = await supabase
+        .from('snippets')
+        .select('*', { count: 'exact', head: true });
+      if (!snipCountError) setSnippetCount(snipCount || 0);
+
+      // Count Members (Users in profiles table)
+      const { count: memCount, error: memCountError } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+      if (!memCountError) setMemberCount(memCount || 0);
+
+
+      // --- Fetch Analytics Data ---
+      // Fetch top 10 posts by view count
+      const { data: postsByViews, error: postsViewsError } = await supabase
+        .from('posts')
+        .select('id, title, view_count')
+        .order('view_count', { ascending: false })
+        .limit(10);
+      if (!postsViewsError) setTopPosts(postsByViews || []);
+
+      // --- Count Total Comments ---
+      const { count: commentCount, error: commentCountError } = await supabase
+        .from('comments')
+        .select('*', { count: 'exact', head: true });
+      if (!commentCountError) setTotalCommentCount(commentCount || 0);
+
+      // --- Calculate Total Post Views ---
+      const { data: totalViewsData, error: totalViewsError } = await supabase
+        .from('posts')
+        .select('view_count', { count: 'exact' }); // Fetch all view counts
+
+      if (totalViewsError) {
+        console.error("Error fetching total post views:", totalViewsError);
+      } else if (totalViewsData) {
+        // Sum up the view counts from all posts
+        const total = totalViewsData.reduce((sum, post) => sum + (post.view_count || 0), 0);
+        setTotalPostViews(total);
+      }
+
+      // --- Fetch Time-Series Data ---
+
+      // Fetch Daily Post Views Trend
+      const { data: viewsTrend, error: viewsTrendError } = await supabase
+        .rpc('get_daily_post_views', { days_limit: 30 }); 
+      if (viewsTrendError) console.error("Error fetching daily views:", viewsTrendError);
+      else setDailyViewsData(viewsTrend || []);
+
+      // Fetch Daily Signups Trend
+      const { data: signupsTrend, error: signupsTrendError } = await supabase
+        .rpc('get_daily_signups', { days_limit: 30 }); 
+      if (signupsTrendError) console.error("Error fetching daily signups:", signupsTrendError);
+      else setDailySignupsData(signupsTrend || []);
+
+      // --- Fetch Recent Activity ---
+      let combinedActivity = [];
+
+      // Fetch Latest 5 Comments
+      const { data: recentCommentsData, error: recentCommentsError } = await supabase
+        .from('comments')
+        .select('*, post:posts(id, title), author:profiles(username)') // Need post ID for links
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (recentCommentsError) {
+        console.error("Error fetching recent comments:", recentCommentsError);
+      } else {
+        // Add comment type for rendering later
+        combinedActivity.push(...(recentCommentsData || []).map(c => ({ ...c, type: 'comment' })));
+      }
+
+      // Fetch Latest Post
+      const { data: latestPostData, error: latestPostError } = await supabase
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      const latestPost = latestPostData?.[0];
+
+      // Fetch Latest Project
+      const { data: latestProjectData, error: latestProjectError } = await supabase
+        .from('projects')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      const latestProject = latestProjectData?.[0];
+
+      // Determine the single newest content item
+      let newestContentItem = null;
+      if (latestPost && latestProject) {
+        newestContentItem = new Date(latestPost.created_at) > new Date(latestProject.created_at)
+          ? { ...latestPost, type: 'post' }
+          : { ...latestProject, type: 'project' };
+      } else if (latestPost) {
+        newestContentItem = { ...latestPost, type: 'post' };
+      } else if (latestProject) {
+        newestContentItem = { ...latestProject, type: 'project' };
+      }
+
+      // Add the newest content item if it exists
+      if (newestContentItem) {
+        combinedActivity.push(newestContentItem);
+      }
+
+      // Sort combined activity by creation date (newest first)
+      combinedActivity.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      // Update state with combined feed (limit if needed)
+      setRecentActivity(combinedActivity.slice(0, 6)); // Show latest 6 items total
+
+      // For now, i'll focus on displaying the top items. I can use a seperate dedicated query later if I like.
+
 
       // 6. Fetch Files (Admin Only)
       fetchFiles(); 
@@ -1257,23 +1449,43 @@ export default function HomePage() {
             <div className="stats-grid">
               <div className="stat-card">
                 <div className="stat-label">Total Reads</div>
-                <div className="stat-value">24,531</div>
-                <div className="stat-change">+12% this week</div>
+                {/* UPDATED: Use the state variable */}
+                <div className="stat-value">{totalPostViews}</div>
+                {/* Keep the 'change' static for now */}
+                {/* <div className="stat-change">+12% this week</div> */}
               </div>
-              <div className="stat-card">
+
+              {/* Clickable Active Projects Card */}
+              <div 
+                className="stat-card" 
+                onClick={() => showSection('projects')} 
+                style={{ cursor: 'pointer' }}
+                title="Go to Projects" 
+              >
                 <div className="stat-label">Active Projects</div>
-                <div className="stat-value">3</div>
-                <div className="stat-change">1 near completion</div>
+                <div className="stat-value">{projectCount}</div>
               </div>
-              <div className="stat-card">
+
+              {/* Clickable Game Snippets Card */}
+              <div 
+                className="stat-card" 
+                onClick={() => showSection('snippets')} 
+                style={{ cursor: 'pointer' }}
+                title="Go to Game Snippets"
+              >
                 <div className="stat-label">Game Snippets</div>
-                <div className="stat-value">47</div>
-                <div className="stat-change">5 new this month</div>
+                <div className="stat-value">{snippetCount}</div>
               </div>
-              <div className="stat-card">
+
+              {/* Clickable Community Members Card (Links to Blog for now */}
+              <div 
+                className="stat-card" 
+                onClick={() => showSection('blog')} 
+                style={{ cursor: 'pointer' }}
+                title="Go to Blog / Community Hub"
+              >
                 <div className="stat-label">Community Members</div>
-                <div className="stat-value">892</div>
-                <div className="stat-change">+45 this week</div>
+                <div className="stat-value">{memberCount}</div>
               </div>
             </div>
 
@@ -1282,40 +1494,82 @@ export default function HomePage() {
                 <div className="content-header">
                   <div>
                     <h2 className="content-title">Recent Activity</h2>
-                    <p className="content-meta">Your latest updates and interactions</p>
+                    <p className="content-meta">Latest comments across the platform</p>
                   </div>
                 </div>
                 <div className="activity-feed">
-                  <div className="activity-item">
-                    <div className="activity-icon">📝</div>
-                    <div className="activity-content">
-                      <div className="activity-text">Published new snippet: "Advanced Choice Logic"</div>
-                      <div className="activity-time">2 hours ago</div>
-                    </div>
-                  </div>
-                  <div className="activity-item">
-                    <div className="activity-icon">💬</div>
-                    <div className="activity-content">
-                      <div className="activity-text">15 new comments on "Building Complex Narratives"</div>
-                      <div className="activity-time">5 hours ago</div>
-                    </div>
-                  </div>
-                  <div className="activity-item">
-                    <div className="activity-icon">🎮</div>
-                    <div className="activity-content">
-                      <div className="activity-text">Project "Echoes of Tomorrow" reached 10k plays</div>
-                      <div className="activity-time">1 day ago</div>
-                    </div>
-                  </div>
-                  <div className="activity-item">
-                    <div className="activity-icon">✨</div>
-                    <div className="activity-content">
-                      <div className="activity-text">New follower milestone: 500 followers</div>
-                      <div className="activity-time">2 days ago</div>
-                    </div>
-                  </div>
-                </div>
+                {recentActivity.map((activity) => {
+                  // --- Render Comment Activity ---
+                  if (activity.type === 'comment') {
+                    // Construct the link URL for the comment
+                    const commentLinkUrl = `/blog?post=${activity.post?.id}&reply=${activity.id}`;
+                    return (
+                      <div key={activity.id} className="activity-item">
+                        <div className="activity-icon">💬</div>
+                        {/* Make the content clickable */}
+                        <div 
+                          className="activity-content" 
+                          onClick={() => handleNotificationClick(null, commentLinkUrl)} // Reuse notification click logic! Pass null for ID as because I don't need to mark read.
+                          style={{ cursor: 'pointer' }} 
+                          title="Go to comment"
+                        >
+                          <div className="activity-text">
+                            <strong>{activity.author?.username || 'Anonymous'}</strong> commented on "<strong>{activity.post?.title || 'a post'}</strong>":
+                            "{activity.content.substring(0, 50)}..."
+                          </div>
+                          <div className="activity-time">{new Date(activity.created_at).toLocaleDateString()}</div>
+                        </div>
+                      </div>
+                    );
+                  } 
+                  // --- Render New Post Activity ---
+                  else if (activity.type === 'post') {
+                    return (
+                      <div key={activity.id} className="activity-item">
+                        <div className="activity-icon">✍️</div> 
+                        {/* Make the content clickable */}
+                        <div 
+                          className="activity-content" 
+                          onClick={() => handleNotificationClick(null, `/blog?post=${activity.id}`)}
+                          style={{ cursor: 'pointer' }}
+                          title="Go to Blog Post"
+                        >
+                          <div className="activity-text">
+                            New Blog Post: "<strong>{activity.title}</strong>" was published.
+                          </div>
+                          <div className="activity-time">{new Date(activity.created_at).toLocaleDateString()}</div>
+                        </div>
+                      </div>
+                    );
+                  } 
+                  // --- Render New Project Activity ---
+                  else if (activity.type === 'project') {
+                    return (
+                      <div key={activity.id} className="activity-item">
+                        <div className="activity-icon">📁</div> 
+                        {/* Make the content clickable */}
+                        <div 
+                          className="activity-content" 
+                          onClick={() => handleNotificationClick(null, `/projects?project=${activity.id}`)}
+                          style={{ cursor: 'pointer' }}
+                          title="Go to Project"
+                        >
+                          <div className="activity-text">
+                            New Project Added: "<strong>{activity.title}</strong>"
+                          </div>
+                          <div className="activity-time">{new Date(activity.created_at).toLocaleDateString()}</div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+                {recentActivity.length === 0 && (
+                  <p style={{ textAlign: 'center', padding: '1rem' }}>No recent activity.</p>
+                )}
               </div>
+              </div>
+              {/* Add other dashboard cards here if needed */}
             </div>
           </div>
             )}
@@ -1348,10 +1602,14 @@ export default function HomePage() {
                 <div className="content-header">
                   <div>
                     <h2 className="content-title">{project.title}</h2>
-                    <p className="content-meta">Sci-fi Adventure • 185,000 words • In Development</p>
+                    <p className="content-meta">
+                      {project.genre || 'Genre N/A'} {project.setting ? `• ${project.setting}` : ''}
+                      {project.gender_choice ? ' • Gender Choice' : ''} 
+                      {project.non_binary_inclusive ? ' • NB Inclusive' : ''} 
+                    </p>
                   </div>
                   {/* Project Status Badge */}
-                  <span className="content-badge">Active</span>
+                  <span className="content-badge">{project.status || 'Status N/A'}</span>
 
                   {/* Subscribe Button */}
                   {session && ( 
@@ -1383,12 +1641,6 @@ export default function HomePage() {
                     {/* ADMIN CHECK: Protect Stats/Edit/Delete buttons */}
                     {userRole === 'admin' && (
                         <>
-                        <button 
-                            className="btn" 
-                            style={{ marginLeft: '1rem' }}
-                        >
-                            View Stats
-                        </button>
                         <button 
                             className="btn"
                             onClick={() => openEditProjectModal(project)} 
@@ -1532,8 +1784,14 @@ You wake up in a mysterious room with no memory of how you got there.
                     className="content-card"
                     data-post-id={post.id}
                     >
+                      {/* Display image if URL exists */}
+                      {post.image_url && (
+                        <img src={post.image_url} alt={post.title} style={{ width: '100%', height: '200px', objectFit: 'cover', marginBottom: '1rem' }} />
+                      )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h2 className="content-title">{post.title}</h2>
+
+                        
 
                         {/* Subscribe Button for Posts */}
                         {session && ( // Only show if logged in
@@ -1565,6 +1823,11 @@ You wake up in a mysterious room with no memory of how you got there.
 
                       <p className="content-meta">Published on {new Date(post.created_at).toISOString().split('T')[0]}</p>
                       <p style={{ whiteSpace: 'pre-wrap' }}>{post.content}</p>
+                      <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <Link href={`/blog/${post.id}`} className="btn">
+                          Read More
+                        </Link>
+                      </div>
 
                       {/* --- Comments Section --- */}
                       <div className="comments-section" style={{ marginTop: '2rem', borderTop: '1px solid var(--grey-dark)', paddingTop: '1rem' }}>
@@ -1596,13 +1859,16 @@ You wake up in a mysterious room with no memory of how you got there.
                                     </div>
                                   </form>
                                 ) : (
-                                  <>
+                                  <> {/* Comment View */}
+                                    {/* Pinned Badge */}
                                     {comment.is_pinned && <span className="pinned-badge" style={{ float: 'right', fontSize: '0.8rem', fontWeight: 'bold' }}>📌 Pinned</span>}
+                                    {/* Comment Content */}
                                     <p style={{ whiteSpace: 'pre-wrap' }}>{comment.content}</p>
                                     <p className="content-meta" style={{ fontSize: '0.8rem' }}>
                                       Comment by <strong>{comment.author ? comment.author.username : 'Anonymous'}</strong> on {new Date(comment.created_at).toISOString().split('T')[0]}
                                     </p>
 
+                                    {/* Action Buttons */}
                                     <div className="comment-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                                       {session && (<button className="btn-link" onClick={() => setReplyingToCommentId(comment.id)}>Reply</button>)}
                                       
@@ -1616,60 +1882,74 @@ You wake up in a mysterious room with no memory of how you got there.
 
                                       {/* Admin Pin button */}
                                       {userRole === 'admin' && (<button className="btn-link" onClick={() => handlePinComment(comment.id, comment.is_pinned)}>{comment.is_pinned ? 'Unpin' : 'Pin'}</button>)}
+
+                                      {/* View replies logic */}
+                                      {(() => {
+                                        const replies = post.comments.filter(reply => reply.parent_id === comment.id);
+                                        const isRepliesExpanded = expandedReplies.includes(comment.id);
+                                        
+                                        return replies.length > 0 && (
+                                          <button className="btn-link" onClick={() => toggleReplies(comment.id)}>
+                                              {isRepliesExpanded ? 'Hide Replies' : `View ${replies.length} Replies`}
+                                          </button>
+                                        );
+                                      })()}
                                     </div>
                                   </>
                                 )}
 
                                 {/* Nested Replies */}
-                                <div className="replies" style={{ marginLeft: '2rem', marginTop: '1rem' }}>
-                                  {post.comments
-                                    .sort((a, b) => b.is_pinned - a.is_pinned) // Pinned replies first
-                                    .filter(reply => reply.parent_id === comment.id)
-                                    .map((reply) => (
-                                      <div key={reply.id} 
-                                        className="comment-item" 
-                                        data-comment-id={reply.id}
-                                        style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--grey-dark)' }}
-                                      >
-      
-                                        {/* Conditionally render Edit Form or Reply Content */}
-                                        {editingCommentId === reply.id ? (
-                                          <form onSubmit={(e) => handleUpdateComment(e, reply.id)}>
-                                            <textarea
-                                              className="form-textarea"
-                                              value={editingCommentContent}
-                                              onChange={(e) => setEditingCommentContent(e.target.value)}
-                                            ></textarea>
-                                            <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem' }}>
-                                              <button type="submit" className="btn btn-primary" style={{ padding: '0.25rem 0.5rem' }}>Save</button>
-                                              <button type="button" className="btn" onClick={() => setEditingCommentId(null)} style={{ padding: '0.25rem 0.5rem' }}>Cancel</button>
-                                            </div>
-                                          </form>
-                                        ) : (
-                                          <>
-                                            {reply.is_pinned && <span className="pinned-badge" style={{ float: 'right', fontSize: '0.8rem', fontWeight: 'bold' }}>📌 Pinned</span>}
-                                            <p style={{ whiteSpace: 'pre-wrap' }}>{reply.content}</p>
-                                            <p className="content-meta" style={{ fontSize: '0.8rem' }}>
-                                              Reply by <strong>{reply.author ? reply.author.username : 'Anonymous'}</strong> on {new Date(reply.created_at).toISOString().split('T')[0]}
-                                            </p>
-                                            
-                                            <div className="comment-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                              {/* User's own Edit/Delete buttons for the reply */}
-                                              {session && session.user.id === reply.author_id && (
-                                                <>
-                                                  <button className="btn-link" onClick={() => { setEditingCommentId(reply.id); setEditingCommentContent(reply.content); }}>Edit</button>
-                                                  <button className="btn-link" onClick={() => handleDeleteComment(reply.id)}>Delete</button>
-                                                </>
-                                              )}
+                                {expandedReplies.includes(comment.id) && (
+                                  <div className="replies" style={{ marginLeft: '2rem', marginTop: '1rem' }}>
+                                    {post.comments
+                                      .sort((a, b) => b.is_pinned - a.is_pinned) // Pinned replies first
+                                      .filter(reply => reply.parent_id === comment.id)
+                                      .map((reply) => (
+                                        <div key={reply.id} 
+                                          className="comment-item" 
+                                          data-comment-id={reply.id}
+                                          style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--grey-dark)' }}
+                                        >
+        
+                                          {/* Conditionally render Edit Form or Reply Content */}
+                                          {editingCommentId === reply.id ? (
+                                            <form onSubmit={(e) => handleUpdateComment(e, reply.id)}>
+                                              <textarea
+                                                className="form-textarea"
+                                                value={editingCommentContent}
+                                                onChange={(e) => setEditingCommentContent(e.target.value)}
+                                              ></textarea>
+                                              <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem' }}>
+                                                <button type="submit" className="btn btn-primary" style={{ padding: '0.25rem 0.5rem' }}>Save</button>
+                                                <button type="button" className="btn" onClick={() => setEditingCommentId(null)} style={{ padding: '0.25rem 0.5rem' }}>Cancel</button>
+                                              </div>
+                                            </form>
+                                          ) : (
+                                            <>
+                                              {reply.is_pinned && <span className="pinned-badge" style={{ float: 'right', fontSize: '0.8rem', fontWeight: 'bold' }}>📌 Pinned</span>}
+                                              <p style={{ whiteSpace: 'pre-wrap' }}>{reply.content}</p>
+                                              <p className="content-meta" style={{ fontSize: '0.8rem' }}>
+                                                Reply by <strong>{reply.author ? reply.author.username : 'Anonymous'}</strong> on {new Date(reply.created_at).toISOString().split('T')[0]}
+                                              </p>
+                                              
+                                              <div className="comment-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                                {/* User's own Edit/Delete buttons for the reply */}
+                                                {session && session.user.id === reply.author_id && (
+                                                  <>
+                                                    <button className="btn-link" onClick={() => { setEditingCommentId(reply.id); setEditingCommentContent(reply.content); }}>Edit</button>
+                                                    <button className="btn-link" onClick={() => handleDeleteComment(reply.id)}>Delete</button>
+                                                  </>
+                                                )}
 
-                                              {/* Admin Pin button for the reply */}
-                                              {userRole === 'admin' && (<button className="btn-link" onClick={() => handlePinComment(reply.id, reply.is_pinned)}>{reply.is_pinned ? 'Unpin' : 'Pin'}</button>)}
-                                            </div>
-                                          </>
-                                        )}
-                                      </div>
-                                    ))}
+                                                {/* Admin Pin button for the reply */}
+                                                {userRole === 'admin' && (<button className="btn-link" onClick={() => handlePinComment(reply.id, reply.is_pinned)}>{reply.is_pinned ? 'Unpin' : 'Pin'}</button>)}
+                                              </div>
+                                            </>
+                                          )}
+                                        </div>
+                                      ))}
                                 </div>
+                                )}
 
                                 {/* Reply Form */}
                                 {replyingToCommentId === comment.id && (
@@ -1840,7 +2120,7 @@ You wake up in a mysterious room with no memory of how you got there.
                             const url = await getPublicUrl(file.name);
                             if (url) {
                               navigator.clipboard.writeText(url);
-                              alert(`URL copied for ${file.name}. (Temporary link)`);
+                              alert(`URL copied for ${file.name}.`);
                             } else {
                               alert('Could not generate URL. Check admin permissions.');
                             }
@@ -1901,68 +2181,74 @@ You wake up in a mysterious room with no memory of how you got there.
               </div>
             )}
 
-            {/* Analytics Section */}
-            {activeSection === 'stats' && (
-            <div id="stats-section" className="section">
+            {/* Analytics Section (Admin Only) */}
+            {activeSection === 'stats' && userRole === 'admin' && (
+              <div id="stats-section" className="section">
                 <div className="dashboard-header">
-                    <div className="dashboard-title">
-                        <h1>Analytics</h1>
-                        <p className="dashboard-subtitle">Track your content performance and engagement</p>
-                    </div>
+                  {/* ... header ... */}
                 </div>
 
-                <div className="stats-grid">
-                    <div className="stat-card">
-                        <div className="stat-label">Views This Month</div>
-                        <div className="stat-value">15,432</div>
-                        <div className="stat-change">+23% from last month</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-label">Unique Visitors</div>
-                        <div className="stat-value">8,901</div>
-                        <div className="stat-change">+18% from last month</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-label">Engagement Rate</div>
-                        <div className="stat-value">67%</div>
-                        <div className="stat-change">+5% from last month</div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-label">New Followers</div>
-                        <div className="stat-value">124</div>
-                        <div className="stat-change">+31% from last month</div>
-                    </div>
+                {/* CHANGE: Use stats-grid for layout consistency */}
+                <div className="stats-grid"> 
+                  {/* NEW: Total Post Views Card */}
+                  <div className="stat-card">
+                    <div className="stat-label">Total Blog Post Views</div>
+                    <div className="stat-value">{totalPostViews}</div>
+                    {/* You can add comparison logic later */}
+                  </div>
+
+                  {/* NEW: Total Comments Card */}
+                  <div className="stat-card">
+                    <div className="stat-label">Total Comments</div>
+                    <div className="stat-value">{totalCommentCount}</div>
+                  </div>
+
+                </div> {/* End stats-grid */}
+
+                {/* Top Posts Chart Card */}
+                <div className="content-card" style={{ marginTop: '2rem' }}> {/* Add margin */}
+                  <h2 className="content-title">Top Performing Posts (by Views)</h2>
+                  <div style={{ marginTop: '1rem', height: '300px' }}>
+                    <ViewsBarChart
+                      data={topPosts}
+                      dataKey="view_count"
+                      nameKey="title"
+                    />
+                  </div>
                 </div>
 
-                <div className="content-grid">
-                    <div className="content-card">
-                        <h2 className="content-title">Top Performing Content</h2>
-                        <div className="activity-feed">
-                            <div className="activity-item">
-                                <div className="activity-icon">📝</div>
-                                <div className="activity-content">
-                                    <div className="activity-text">Advanced Choice Logic Snippet</div>
-                                    <div className="activity-time">2,341 views • 89 likes</div>
-                                </div>
-                            </div>
-                            <div className="activity-item">
-                                <div className="activity-icon">📖</div>
-                                <div className="activity-content">
-                                    <div className="activity-text">Building Complex Narratives</div>
-                                    <div className="activity-time">1,876 views • 67 likes</div>
-                                </div>
-                            </div>
-                            <div className="activity-item">
-                                <div className="activity-icon">🎮</div>
-                                <div className="activity-content">
-                                    <div className="activity-text">Echoes of Tomorrow Demo</div>
-                                    <div className="activity-time">1,234 plays • 156 favorites</div>
-                                </div>
-                            </div>
-                        </div>
+                {/* Trend Charts */}
+                <div className="content-grid" style={{ marginTop: '2rem' }}> 
+
+                  {/* Daily Views Trend Card */}
+                  <div className="content-card">
+                    <h2 className="content-title">Daily Post Views (Last 30 Days)</h2>
+                    <div style={{ marginTop: '1rem', height: '300px' }}>
+                      <TrendLineChart
+                        data={dailyViewsData}
+                        xDataKey="view_date"     
+                        yDataKey="daily_views"   
+                        yAxisLabel="Views"
+                      />
                     </div>
+                  </div>
+
+                  {/* Daily Signups Trend Card */}
+                  <div className="content-card">
+                    <h2 className="content-title">Daily Signups (Last 30 Days)</h2>
+                    <div style={{ marginTop: '1rem', height: '300px' }}>
+                      <TrendLineChart
+                        data={dailySignupsData}
+                        xDataKey="signup_date"   
+                        yDataKey="daily_signups" 
+                        yAxisLabel="Signups"
+                      />
+                    </div>
+                  </div>
+
                 </div>
-            </div>
+
+              </div>
             )}
         </main>
     </div>
@@ -2056,6 +2342,18 @@ You wake up in a mysterious room with no memory of how you got there.
                   onChange={(e) => setNewPostContent(e.target.value)}
                 ></textarea>
               </div>
+
+              <div className="form-group">
+                <label className="form-label">Header Image URL (Optional)</label>
+                <input
+                  type="url"
+                  className="form-input"
+                  placeholder="Copy URL from File Manager..."
+                  value={newPostImageUrl}
+                  onChange={(e) => setNewPostImageUrl(e.target.value)}
+                />
+              </div>
+
               <div style={{ textAlign: 'right', marginTop: '2rem' }}>
                 <button type="button" className="btn" onClick={closeNewPostModal} style={{ marginRight: '1rem' }}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Publish Post</button>
@@ -2077,7 +2375,7 @@ You wake up in a mysterious room with no memory of how you got there.
             <form onSubmit={handleCreateProject}>
               <div className="form-group">
                 <label className="form-label">Project Name</label>
-                {/* Input is now controlled by state */}
+                {/* Input area */}
                 <input 
                   type="text" 
                   className="form-input" 
@@ -2089,7 +2387,7 @@ You wake up in a mysterious room with no memory of how you got there.
               </div>
               <div className="form-group">
                 <label className="form-label">Description</label>
-                {/* Textarea is now controlled by state */}
+                {/* Textarea */}
                 <textarea 
                   className="form-textarea" 
                   placeholder="Describe your interactive fiction project..."
@@ -2098,7 +2396,59 @@ You wake up in a mysterious room with no memory of how you got there.
                 ></textarea>
               </div>
               
-              {/* Other form fields like Genre can be added here later */}
+              {/* NEW FIELDS */}
+              <div className="form-group">
+                <label className="form-label">Genre</label>
+                <select
+                  className="form-select" // Use form-select or form-input class
+                  value={newProjectGenre}
+                  onChange={(e) => setNewProjectGenre(e.target.value)}
+                >
+                  <option value="">-- Select Genre --</option> {/* Add a default empty option */}
+                  {genreOptions.map(option => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Setting</label>
+                <select
+                  className="form-select"
+                  value={newProjectSetting}
+                  onChange={(e) => setNewProjectSetting(e.target.value)}
+                >
+                  <option value="">-- Select Setting --</option>
+                  {settingOptions.map(option => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Status</label>
+                <select
+                  className="form-select" // Or form-input
+                  value={newProjectStatus}
+                  onChange={(e) => setNewProjectStatus(e.target.value)}
+                >
+                  {statusOptions.map(option => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <label className="form-label" style={{ marginBottom: 0 }}>
+                  <input type="checkbox" checked={newProjectGenderChoice} onChange={(e) => setNewProjectGenderChoice(e.target.checked)} /> Gender Choice?
+                </label>
+                <label className="form-label" style={{ marginBottom: 0 }}>
+                  <input type="checkbox" checked={newProjectNbInclusive} onChange={(e) => setNewProjectNbInclusive(e.target.checked)} /> Non-Binary Inclusive?
+                </label>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Tags (comma-separated)</label>
+                <input type="text" className="form-input" placeholder="e.g., Superpowers, Magic, Political" value={newProjectTags} onChange={(e) => setNewProjectTags(e.target.value)} />
+              </div>
+              {/* END NEW FIELDS */}
 
               <div style={{ textAlign: 'right', marginTop: '2rem' }}>
                 <button type="button" className="btn" onClick={closeNewProjectModal} style={{ marginRight: '1rem' }}>Cancel</button>
@@ -2139,6 +2489,62 @@ You wake up in a mysterious room with no memory of how you got there.
                             value={newProjectDescription}
                             onChange={(e) => setNewProjectDescription(e.target.value)}
                         ></textarea>
+                    </div>
+
+                    {/* NEW FIELDS  */}
+                    <div className="form-group">
+                      <label className="form-label">Genre</label>
+                      <select
+                        className="form-select" // Or form-input
+                        value={newProjectGenre} // Connects to state
+                        onChange={(e) => setNewProjectGenre(e.target.value)}
+                      >
+                        <option value="">-- Select Genre --</option>
+                        {/* THIS MAP IS CRUCIAL */}
+                        {genreOptions.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Setting</label>
+                      <select
+                        className="form-select" // Or form-input
+                        value={newProjectSetting} // Connects to state
+                        onChange={(e) => setNewProjectSetting(e.target.value)}
+                      >
+                        <option value="">-- Select Setting --</option>
+                        {/* THIS MAP IS CRUCIAL */}
+                        {settingOptions.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Status</label>
+                      <select
+                        className="form-select" // Or form-input
+                        value={newProjectStatus}
+                        onChange={(e) => setNewProjectStatus(e.target.value)}
+                      >
+                        {statusOptions.map(option => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                      <label className="form-label" style={{ marginBottom: 0 }}>
+                        <input type="checkbox" checked={newProjectGenderChoice} onChange={(e) => setNewProjectGenderChoice(e.target.checked)} /> Gender Choice?
+                      </label>
+                      <label className="form-label" style={{ marginBottom: 0 }}>
+                        <input type="checkbox" checked={newProjectNbInclusive} onChange={(e) => setNewProjectNbInclusive(e.target.checked)} /> Non-Binary Inclusive?
+                      </label>
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Tags (comma-separated)</label>
+                      <input type="text" className="form-input" placeholder="e.g., Superpowers, Magic, Political" value={newProjectTags} onChange={(e) => setNewProjectTags(e.target.value)} />
                     </div>
                     
                     <div style={{ textAlign: 'right', marginTop: '2rem' }}>
@@ -2203,6 +2609,18 @@ You wake up in a mysterious room with no memory of how you got there.
               <label className="form-label">Content</label>
               <textarea className="form-textarea" style={{ minHeight: '300px' }} value={newPostContent} onChange={(e) => setNewPostContent(e.target.value)}></textarea>
             </div>
+
+            <div className="form-group">
+              <label className="form-label">Header Image URL (Optional)</label>
+              <input
+                type="url"
+                className="form-input"
+                placeholder="Copy URL from File Manager..."
+                value={newPostImageUrl}
+                onChange={(e) => setNewPostImageUrl(e.target.value)}
+              />
+            </div>
+
             <div style={{ textAlign: 'right', marginTop: '2rem' }}>
               <button type="button" className="btn" onClick={closeEditPostModal} style={{ marginRight: '1rem' }}>Cancel</button>
               <button type="submit" className="btn btn-primary">Save Changes</button>
