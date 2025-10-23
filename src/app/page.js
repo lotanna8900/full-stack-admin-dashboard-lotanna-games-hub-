@@ -1535,7 +1535,7 @@ export default function HomePage() {
                           className="activity-content" 
                           onClick={() => handleNotificationClick(null, `/blog?post=${activity.id}`)}
                           style={{ cursor: 'pointer' }}
-                          title=&quot;Go to Blog Post&quot;
+                          title="Go to Blog Post"
                         >
                           <div className="activity-text">
                             New Blog Post: "<strong>{activity.title}</strong>" was published.
@@ -1555,7 +1555,7 @@ export default function HomePage() {
                           className="activity-content" 
                           onClick={() => handleNotificationClick(null, `/projects?project=${activity.id}`)}
                           style={{ cursor: 'pointer' }}
-                          title=&quot;Go to Project&quot;
+                          title="Go to Project"
                         >
                           <div className="activity-text">
                             New Project Added: "<strong>{activity.title}</strong>"
