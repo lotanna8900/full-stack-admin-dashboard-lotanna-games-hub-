@@ -1,4 +1,3 @@
-// src/components/TrendLineChart.jsx
 "use client";
 
 import React from 'react';

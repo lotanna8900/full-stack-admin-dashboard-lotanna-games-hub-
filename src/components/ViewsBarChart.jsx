@@ -1,4 +1,3 @@
-// src/components/ViewsBarChart.jsx
 "use client";
 
 import React from 'react';
