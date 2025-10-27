@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { supabase } from '../app/utils/supabaseClient';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AppLayout({ children }) {
   // STATE (Global: Auth & Notifications)
@@ -126,8 +127,17 @@ export default function AppLayout({ children }) {
     <>
       <nav>
         <div className="nav-container">
-          <div className="logo">
-            <Link href="/" title="Go to Dashboard">IF/Platform</Link>
+          <div className="logo" style={{ display: 'flex', alignItems: 'center' }}>
+            <Link href="/" title="Go to Dashboard" style={{ display: 'flex', alignItems: 'center' }}>
+              <Image
+                src="/logo.png" 
+                alt="Lota Labs Logo"
+                width={100}   
+                height={35}  
+                priority
+                style={{ height: '100%', width: 'auto' }} 
+              />
+            </Link>
           </div>
           <ul className="nav-links">
             <li><Link href="/">Dashboard</Link></li>
@@ -213,6 +223,9 @@ export default function AppLayout({ children }) {
                 <li><Link href="/profile">👤 Profile</Link></li>
               )}
             </ul>
+          </div>
+          <div className="sidebar-footer" style={{ padding: '1rem', textAlign: 'center', fontSize: '0.8rem', color: 'var(--grey-light)' }}>
+            <p>The rose that grew from concrete. 🌹</p>
           </div>
         </aside>
         

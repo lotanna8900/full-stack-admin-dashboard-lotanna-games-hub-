@@ -1379,3 +1379,26 @@ nav {
   font-size: 1.2rem;
   color: var(--grey-light);
 }
+
+/* Logo Styling */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; 
+}
+
+.logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.logo a:hover {
+  opacity: 0.8;
+}
+
+.logo img {
+  display: block;
+  object-fit: contain;
+}

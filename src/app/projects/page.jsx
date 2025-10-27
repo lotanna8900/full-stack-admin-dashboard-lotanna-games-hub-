@@ -1,15 +1,16 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { supabase } from '../utils/supabaseClient';
+import { useState, useEffect, Suspense } from 'react'; 
+import { useSearchParams } from 'next/navigation'; 
+import { supabase } from '../utils/supabaseClient'; 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 
-// --- Constants  ---
+// --- Constants (Defined outside the components) ---
 const genreOptions = ['Fantasy', 'Science Fiction', 'Horror', 'Mystery', 'Romance', 'Historical', 'Thriller', 'Other'];
 const settingOptions = ['Medieval', 'Urban Fantasy', 'Space Opera', 'Cyberpunk', 'Post-Apocalyptic', 'Modern', 'Historical Era', 'Other'];
 const statusOptions = ['Active', 'Completed', 'Paused', 'Planning', 'Idea', 'Archived'];
 
-export default function ProjectsPage() {
+// --- Inner Component ---
+function ProjectsPageContent() {
   // --- State Variables ---
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,29 +35,8 @@ export default function ProjectsPage() {
   const [userRole, setUserRole] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
 
+  // Call useSearchParams() INSIDE the component
   const searchParams = useSearchParams();
-
-  // Scroll to project if URL has ?project=ID
-  useEffect(() => {
-    const projectId = searchParams.get('project');
-    if (projectId && !loading) {
-      const targetSelector = `[data-project-id="${projectId}"]`;
-      const targetElement = document.querySelector(targetSelector);
-      
-      if (targetElement) {
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // 2. I think I should add highlight here
-        targetElement.style.transition = 'background-color 0.5s ease';
-        targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
-        
-        // 3. Remove highlight after 2 seconds
-        setTimeout(() => {
-          targetElement.style.backgroundColor = '';
-        }, 2000);
-      }
-    }
-  }, [projects, loading, searchParams]);
 
   // --- Data Fetching Effect ---
   useEffect(() => {
@@ -80,7 +60,7 @@ export default function ProjectsPage() {
         .from('subscriptions')
         .select('project_id')
         .eq('user_id', currentSession.user.id)
-        .not('project_id', 'is', null);
+        .not('project_id', 'is', null); // Corrected filter
 
       if (subsError) console.error("Error fetching project subscriptions:", subsError);
       else setSubscriptions(subsData || []);
@@ -93,11 +73,11 @@ export default function ProjectsPage() {
 
       if (error) console.error('Error fetching projects:', error);
       else setProjects(data || []);
-      setLoading(false); // Stop loading after projects are fetched
+      setLoading(false); 
     };
 
     // 3. Initial Fetch & Listener Setup
-    getProjects(); // Fetch projects immediately
+    getProjects(); 
 
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
@@ -110,52 +90,50 @@ export default function ProjectsPage() {
     });
 
     return () => subscription?.unsubscribe();
-  }, []); // Run only on mount
+  }, []); 
+
+  // --- Scrolling Effect ---
+  useEffect(() => {
+    const projectId = searchParams.get('project');
+    if (projectId && !loading) {
+      const targetSelector = `[data-project-id="${projectId}"]`;
+      const targetElement = document.querySelector(targetSelector);
+      
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        targetElement.style.transition = 'background-color 0.5s ease';
+        targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
+        setTimeout(() => { targetElement.style.backgroundColor = ''; }, 2000);
+      }
+    }
+  }, [projects, loading, searchParams]); 
 
   // --- Modal Handlers ---
   const openNewProjectModal = () => setNewProjectModalOpen(true);
   const closeNewProjectModal = () => {
-    setNewProjectModalOpen(false);
-    setNewProjectName('');
-    setNewProjectDescription('');
-    setNewProjectGenre('');
-    setNewProjectSetting('');
-    setNewProjectGenderChoice(false);
-    setNewProjectNbInclusive(false);
-    setNewProjectTags('');
-    setNewProjectStatus('Active');
+    setNewProjectModalOpen(false); setNewProjectName(''); setNewProjectDescription(''); setNewProjectGenre('');
+    setNewProjectSetting(''); setNewProjectGenderChoice(false); setNewProjectNbInclusive(false);
+    setNewProjectTags(''); setNewProjectStatus('Active');
   };
-
   const openEditProjectModal = (project) => {
-    setEditingProject(project);
-    setNewProjectName(project.title);
-    setNewProjectDescription(project.description || '');
-    setNewProjectGenre(project.genre || '');
-    setNewProjectSetting(project.setting || '');
-    setNewProjectGenderChoice(project.gender_choice);
-    setNewProjectNbInclusive(project.non_binary_inclusive);
-    setNewProjectTags((project.tags || []).join(', '));
-    setNewProjectStatus(project.status || 'Active');
+    setEditingProject(project); setNewProjectName(project.title); setNewProjectDescription(project.description || '');
+    setNewProjectGenre(project.genre || ''); setNewProjectSetting(project.setting || '');
+    setNewProjectGenderChoice(project.gender_choice); setNewProjectNbInclusive(project.non_binary_inclusive);
+    setNewProjectTags((project.tags || []).join(', ')); setNewProjectStatus(project.status || 'Active');
     setIsEditProjectModalOpen(true);
   };
-
   const closeEditProjectModal = () => {
-    setIsEditProjectModalOpen(false);
-    setEditingProject(null);
-    setNewProjectName('');
-    setNewProjectDescription('');
-    setNewProjectGenre('');
-    setNewProjectSetting('');
-    setNewProjectGenderChoice(false);
-    setNewProjectNbInclusive(false);
-    setNewProjectTags('');
-    setNewProjectStatus('Active');
+    setIsEditProjectModalOpen(false); setEditingProject(null); setNewProjectName('');
+    setNewProjectDescription(''); setNewProjectGenre(''); setNewProjectSetting('');
+    setNewProjectGenderChoice(false); setNewProjectNbInclusive(false);
+    setNewProjectTags(''); setNewProjectStatus('Active');
   };
 
   // --- CRUD Handlers ---
   const handleCreateProject = async (event) => {
     event.preventDefault();
     if (!newProjectName.trim()) return alert('Project name cannot be empty.');
+    if (!session) return alert('You must be logged in.'); 
     const tagsArray = newProjectTags.split(',').map(tag => tag.trim()).filter(tag => tag);
 
     const { data, error } = await supabase
@@ -163,7 +141,7 @@ export default function ProjectsPage() {
       .insert([{
         title: newProjectName, description: newProjectDescription, genre: newProjectGenre || null,
         setting: newProjectSetting || null, gender_choice: newProjectGenderChoice,
-        non_binary_inclusive: newProjectNbInclusive, tags: tagsArray, status: newProjectStatus
+        non_binary_inclusive: newProjectNbInclusive, tags: tagsArray, status: newProjectStatus,
       }])
       .select().single();
 
@@ -176,6 +154,8 @@ export default function ProjectsPage() {
     if (!editingProject) return;
     const projectId = editingProject.id;
     const tagsArray = newProjectTags.split(',').map(tag => tag.trim()).filter(tag => tag);
+
+    // Now inside the update object ***
     const { data, error } = await supabase
       .from('projects')
       .update({
@@ -191,9 +171,9 @@ export default function ProjectsPage() {
   };
 
   const handleDeleteProject = async (projectId) => {
-    if (!window.confirm("Are you sure you want to delete this project? This action cannot be undone.")) return;
+    if (!window.confirm("Are you sure?")) return;
     const { error } = await supabase.from('projects').delete().eq('id', projectId);
-    if (error) { console.error('Error deleting project:', error); alert('Could not delete the project.'); }
+    if (error) { console.error('Error deleting project:', error); alert('Could not delete project.'); }
     else { setProjects(projects.filter(p => p.id !== projectId)); }
   };
 
@@ -201,7 +181,7 @@ export default function ProjectsPage() {
     const { data: updatedProject, error } = await supabase
       .from('projects').update({ is_pinned: !currentStatus }).eq('id', projectId)
       .select().single();
-    if (error) { console.error('Error pinning project:', error); alert('Could not update the project.'); }
+    if (error) { console.error('Error pinning project:', error); alert('Could not update project.'); }
     else if (updatedProject) { setProjects(projects.map(p => (p.id === projectId ? updatedProject : p))); }
   };
 
@@ -224,7 +204,6 @@ export default function ProjectsPage() {
   };
 
   // --- Render Logic ---
-
   if (loading) {
     return (
       <div className="section">
@@ -235,7 +214,7 @@ export default function ProjectsPage() {
 
   return (
     <>
-      {/* Projects Section - Removed the redundant wrapper */}
+      {/* Projects Section */}
       <div id="projects-section" className="section">
         <div className="dashboard-header">
           <div className="dashboard-title">
@@ -284,7 +263,7 @@ export default function ProjectsPage() {
                 {project.is_pinned && <span className="pinned-badge">Pinned</span>}
                 <p style={{ whiteSpace: 'pre-wrap' }}>{project.description}</p>
 
-                {/* Buttons Div - I removed the empty duplicate div */}
+                {/* Buttons Div */}
                 <div style={{ marginTop: '1.5rem' }}>
                   {userRole === 'admin' && (
                     <>
@@ -319,7 +298,6 @@ export default function ProjectsPage() {
               <span className="modal-close" onClick={closeNewProjectModal}>&times;</span>
             </div>
             <form onSubmit={handleCreateProject}>
-              {/* Form fields: Name, Description */}
               <div className="form-group">
                 <label className="form-label">Project Name</label>
                 <input type="text" className="form-input" placeholder="Enter project name" value={newProjectName} onChange={(e) => setNewProjectName(e.target.value)} required />
@@ -328,7 +306,6 @@ export default function ProjectsPage() {
                 <label className="form-label">Description</label>
                 <textarea className="form-textarea" placeholder="Describe your project..." value={newProjectDescription} onChange={(e) => setNewProjectDescription(e.target.value)} style={{ whiteSpace: 'pre-wrap' }}></textarea>
               </div>
-              {/* Form fields: Genre, Setting, Status */}
               <div className="form-group">
                 <label className="form-label">Genre</label>
                 <select className="form-select" value={newProjectGenre} onChange={(e) => setNewProjectGenre(e.target.value)}>
@@ -349,7 +326,6 @@ export default function ProjectsPage() {
                   {statusOptions.map(option => (<option key={option} value={option}>{option}</option>))}
                 </select>
               </div>
-              {/* Form fields: Checkboxes */}
               <div className="form-group" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <label className="form-label" style={{ marginBottom: 0 }}>
                   <input type="checkbox" checked={newProjectGenderChoice} onChange={(e) => setNewProjectGenderChoice(e.target.checked)} /> Gender Choice?
@@ -358,12 +334,10 @@ export default function ProjectsPage() {
                   <input type="checkbox" checked={newProjectNbInclusive} onChange={(e) => setNewProjectNbInclusive(e.target.checked)} /> Non-Binary Inclusive?
                 </label>
               </div>
-              {/* Form fields: Tags */}
               <div className="form-group">
                 <label className="form-label">Tags (comma-separated)</label>
                 <input type="text" className="form-input" placeholder="e.g., Superpowers, Magic, Political" value={newProjectTags} onChange={(e) => setNewProjectTags(e.target.value)} />
               </div>
-              {/* Form buttons */}
               <div style={{ textAlign: 'right', marginTop: '2rem' }}>
                 <button type="button" className="btn" onClick={closeNewProjectModal} style={{ marginRight: '1rem' }}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Create Project</button>
@@ -382,7 +356,6 @@ export default function ProjectsPage() {
               <span className="modal-close" onClick={closeEditProjectModal}>&times;</span>
             </div>
             <form onSubmit={handleUpdateProject}>
-              {/* Form fields: Name, Description */}
               <div className="form-group">
                 <label className="form-label">Project Name</label>
                 <input type="text" className="form-input" value={newProjectName} onChange={(e) => setNewProjectName(e.target.value)} required />
@@ -391,7 +364,6 @@ export default function ProjectsPage() {
                 <label className="form-label">Description</label>
                 <textarea className="form-textarea" value={newProjectDescription} onChange={(e) => setNewProjectDescription(e.target.value)} style={{ whiteSpace: 'pre-wrap' }}></textarea>
               </div>
-              {/* Form fields: Genre, Setting, Status */}
               <div className="form-group">
                 <label className="form-label">Genre</label>
                 <select className="form-select" value={newProjectGenre} onChange={(e) => setNewProjectGenre(e.target.value)}>
@@ -412,7 +384,6 @@ export default function ProjectsPage() {
                   {statusOptions.map(option => (<option key={option} value={option}>{option}</option>))}
                 </select>
               </div>
-              {/* Form fields: Checkboxes */}
               <div className="form-group" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                 <label className="form-label" style={{ marginBottom: 0 }}>
                   <input type="checkbox" checked={newProjectGenderChoice} onChange={(e) => setNewProjectGenderChoice(e.target.checked)} /> Gender Choice?
@@ -421,12 +392,10 @@ export default function ProjectsPage() {
                   <input type="checkbox" checked={newProjectNbInclusive} onChange={(e) => setNewProjectNbInclusive(e.target.checked)} /> Non-Binary Inclusive?
                 </label>
               </div>
-              {/* Form fields: Tags */}
               <div className="form-group">
                 <label className="form-label">Tags (comma-separated)</label>
                 <input type="text" className="form-input" placeholder="e.g., Superpowers, Magic, Political" value={newProjectTags} onChange={(e) => setNewProjectTags(e.target.value)} />
               </div>
-              {/* Form buttons */}
               <div style={{ textAlign: 'right', marginTop: '2rem' }}>
                 <button type="button" className="btn" onClick={closeEditProjectModal} style={{ marginRight: '1rem' }}>Cancel</button>
                 <button type="submit" className="btn btn-primary">Save Changes</button>
@@ -436,6 +405,15 @@ export default function ProjectsPage() {
         </div>
       )}
     </>
+  );
+}
+
+// --- Main Page Export (Handles Suspense)
+export default function ProjectsPage() {
+  return (
+    <Suspense fallback={<div className="section"><div className="dashboard-header"><div className="dashboard-title"><h1>Loading Projects...</h1></div></div></div>}>
+      <ProjectsPageContent />
+    </Suspense>
   );
 }
 

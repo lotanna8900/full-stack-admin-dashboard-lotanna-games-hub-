@@ -2,8 +2,8 @@ import './globals.css';
 import './style.css'; // global styles for the app
 import AppLayout from '../components/AppLayout';
 export const metadata = {
-  title: 'IF/Platform by Lotanna',
-  description: 'Interactive Fiction Dashboard and Platform',
+  title: 'Lota Labs',
+  description: 'Interactive Fiction and Full-Stack Development. The rose that grew from concrete. 🌹',
 };
 
 export default function RootLayout({ children }) {

@@ -1,15 +1,18 @@
 "use client";
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, Suspense } from 'react'; // Import Suspense
+import { useSearchParams } from 'next/navigation'; 
 import { supabase } from '../../utils/supabaseClient'; 
 import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
 
-export default function BlogPostPage({ params: paramsProp }) {
-  // --- STATE VARIABLES ---
+// --- Inner Component ---
+function BlogPostPageContent({ params: paramsProp }) {
   const params = use(paramsProp);
-  const { postId } = params;
+  const { postId } = params; 
+  const searchParams = useSearchParams(); 
+
+  // --- State Variables ---
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +21,6 @@ export default function BlogPostPage({ params: paramsProp }) {
   // Auth state
   const [session, setSession] = useState(null);
   const [userRole, setUserRole] = useState(null);
-  const [profile, setProfile] = useState(null);
 
   // Form state
   const [newCommentContent, setNewCommentContent] = useState('');
@@ -29,31 +31,7 @@ export default function BlogPostPage({ params: paramsProp }) {
   // UI state
   const [expandedReplies, setExpandedReplies] = useState([]);
 
-  // Scroll to specific comment if 'reply' param is present
-  const searchParams = useSearchParams();
-  
-    useEffect(() => {
-      const replyId = searchParams.get('reply');
-      if (replyId && !loading) {
-        const targetSelector = `[data-comment-id="${replyId}"]`;
-        const targetElement = document.querySelector(targetSelector);
-        
-        if (targetElement) {
-          targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          
-          // 2. I think I should add a highlight effect
-          targetElement.style.transition = 'background-color 0.5s ease';
-          targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
-          
-          // 3. Remove highlight after a delay
-          setTimeout(() => {
-            targetElement.style.backgroundColor = '';
-          }, 2000);
-        }
-      }
-    }, [comments, loading, searchParams]);
-
-  // -- DATA FETCHING (SESSION & PROFILE) ---
+  // --- DATA FETCHING (SESSION & PROFILE) ---
   useEffect(() => {
     // Helper to fetch profile
     const fetchProfile = async (currentSession) => {
@@ -64,14 +42,12 @@ export default function BlogPostPage({ params: paramsProp }) {
           .eq('id', currentSession.user.id)
           .single();
         if (!error && data) {
-          setProfile(data);
           setUserRole(data.role);
         } else {
-          setProfile(null);
           setUserRole('guest');
+          if (error) console.error("Error fetching profile on detail page:", error);
         }
       } else {
-        setProfile(null);
         setUserRole('guest');
       }
     };
@@ -99,38 +75,28 @@ export default function BlogPostPage({ params: paramsProp }) {
     const fetchPostAndIncrementView = async () => {
       setLoading(true);
       setError(null);
-
       try {
         // 1. Increment View Count
         const { error: rpcError } = await supabase.rpc('increment_view_count', {
           item_id: postId,
           item_type: 'post'
         });
+        if (rpcError) console.error('Error incrementing view count:', rpcError);
 
-        if (rpcError) {
-          console.error('Error incrementing view count:', rpcError);
-          // Don't stop, just log the error
-        }
-
-        // 2. Fetch Post Data with Comments and Author Profiles
+        // 2. Fetch Post Data
         const { data: postData, error: postError } = await supabase
           .from('posts')
           .select('*, comments(*, author:profiles(username))')
           .eq('id', postId)
           .single();
-
-        if (postError) {
-          throw postError;
-        }
+        if (postError) throw postError;
 
         if (postData) {
           setPost(postData);
-          // Set comments
-          setComments(postData.comments || []); 
+          setComments(postData.comments || []);
         } else {
           setError('Post not found.');
         }
-
       } catch (err) {
         console.error("Error fetching post:", err);
         setError(err.message || 'Failed to load post.');
@@ -138,10 +104,25 @@ export default function BlogPostPage({ params: paramsProp }) {
         setLoading(false);
       }
     };
-
     fetchPostAndIncrementView();
+  }, [postId]); // Re-run effect if postId changes
 
-  }, [postId]); 
+  // --- SCROLLING EFFECT ---
+  useEffect(() => {
+    // Check if the URL has a 'reply' parameter
+    const replyId = searchParams.get('reply');
+    if (replyId && !loading) { 
+      const targetSelector = `[data-comment-id="${replyId}"]`;
+      const targetElement = document.querySelector(targetSelector);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Highlight effect
+        targetElement.style.transition = 'background-color 0.5s ease';
+        targetElement.style.backgroundColor = 'rgba(255, 255, 0, 0.2)';
+        setTimeout(() => { targetElement.style.backgroundColor = ''; }, 2000);
+      }
+    }
+  }, [comments, loading, searchParams]); 
 
   // --- HANDLER FUNCTIONS ---
 
@@ -152,23 +133,15 @@ export default function BlogPostPage({ params: paramsProp }) {
 
     const { data, error } = await supabase
       .from('comments')
-      .insert([{
-        content: newCommentContent,
-        post_id: postId,
-        author_id: session.user.id,
-        parent_id: parentId
-      }])
-      .select('*, author:profiles(username)') 
+      .insert([{ content: newCommentContent, post_id: postId, author_id: session.user.id, parent_id: parentId }])
+      .select('*, author:profiles(username)')
       .single();
 
-    if (error) {
-      console.error('Error creating comment:', error);
-      alert('Could not post comment.');
-    } else if (data) {
-      // Add new comment to the state
+    if (error) { console.error('Error creating comment:', error); alert('Could not post comment.'); }
+    else if (data) {
       setComments(prevComments => [...prevComments, data]);
       setNewCommentContent('');
-      setReplyingToCommentId(null); // Close reply box
+      setReplyingToCommentId(null);
     }
   };
 
@@ -176,19 +149,12 @@ export default function BlogPostPage({ params: paramsProp }) {
   const handleUpdateComment = async (event, commentId) => {
     event.preventDefault();
     const { data, error } = await supabase
-      .from('comments')
-      .update({ content: editingCommentContent })
-      .eq('id', commentId)
-      .select('*, author:profiles(username)')
-      .single();
+      .from('comments').update({ content: editingCommentContent }).eq('id', commentId)
+      .select('*, author:profiles(username)').single();
 
-    if (error) {
-      console.error('Error updating comment:', error);
-      alert('Could not update comment.');
-    } else {
-      setComments(prevComments =>
-        prevComments.map(c => (c.id === commentId ? data : c))
-      );
+    if (error) { console.error('Error updating comment:', error); alert('Could not update comment.'); }
+    else {
+      setComments(prevComments => prevComments.map(c => (c.id === commentId ? data : c)));
       setEditingCommentId(null);
       setEditingCommentContent('');
     }
@@ -196,35 +162,20 @@ export default function BlogPostPage({ params: paramsProp }) {
 
   // Handle deleting a comment
   const handleDeleteComment = async (commentId) => {
-    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    if (!window.confirm("Are you sure?")) return;
     const { error } = await supabase.from('comments').delete().eq('id', commentId);
-
-    if (error) {
-      console.error('Error deleting comment:', error);
-      alert('Could not delete comment.');
-    } else {
-      setComments(prevComments => prevComments.filter(c => c.id !== commentId));
-    }
+    if (error) { console.error('Error deleting comment:', error); alert('Could not delete comment.'); }
+    else { setComments(prevComments => prevComments.filter(c => c.id !== commentId)); }
   };
 
   // Handle pinning a comment (Admin only)
   const handlePinComment = async (commentId, currentStatus) => {
     const { data: updatedComment, error } = await supabase
-      .from('comments')
-      .update({ is_pinned: !currentStatus })
-      .eq('id', commentId)
-      .select('*, author:profiles(username)')
-      .single();
-
-    if (error) {
-      console.error('Error pinning comment:', error);
-      alert('Could not update the comment.');
-    } else if (updatedComment) {
-      setComments(prevComments =>
-        prevComments.map(comment =>
-          comment.id === commentId ? updatedComment : comment
-        )
-      );
+      .from('comments').update({ is_pinned: !currentStatus }).eq('id', commentId)
+      .select('*, author:profiles(username)').single();
+    if (error) { console.error('Error pinning comment:', error); alert('Could not update comment.'); }
+    else if (updatedComment) {
+      setComments(prevComments => prevComments.map(comment => comment.id === commentId ? updatedComment : comment));
     }
   };
 
@@ -237,12 +188,12 @@ export default function BlogPostPage({ params: paramsProp }) {
     );
   };
 
-  // --- LOADING / ERROR CHECKS (MUST BE AFTER ALL HOOKS) ---
+  // --- LOADING / ERROR CHECKS ---
   if (loading) {
     return (
       <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem' }}>
-        <Link href="/" style={{ marginBottom: '1rem', display: 'inline-block' }}>
-          &larr; Back to Dashboard
+        <Link href="/blog" style={{ marginBottom: '1rem', display: 'inline-block' }}>
+          &larr; Back to Blog
         </Link>
         <h1>Loading post...</h1>
       </div>
@@ -270,11 +221,8 @@ export default function BlogPostPage({ params: paramsProp }) {
       </div>
     );
   }
-  
-  // (Main 'return' statement with JSX comes next)
 
-
-  // --- Render the Page ---
+  // --- RENDER THE PAGE ---
   return (
     <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem' }}>
       {/* Back Link */}
@@ -286,15 +234,14 @@ export default function BlogPostPage({ params: paramsProp }) {
       <h1>{post.title}</h1>
       <p>Published on: {new Date(post.created_at).toLocaleDateString()}</p>
       
-      {/* Display image if URL exists */}
       {post.image_url && (
-        <div style={{ position: 'relative', width: '100%', height: '300px', margin: '2rem 0' }}> 
+        <div style={{ position: 'relative', width: '100%', height: '300px', margin: '2rem 0' }}>
           <Image
             src={post.image_url}
             alt={post.title}
-            fill 
+            fill
             style={{ objectFit: 'cover' }}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" 
+            sizes="(max-width: 800px) 100vw, 800px"
           />
         </div>
       )}
@@ -328,12 +275,12 @@ export default function BlogPostPage({ params: paramsProp }) {
 
         {/* Display Comments */}
         {comments
-          .filter(comment => !comment.parent_id) // Top-level comments
-          .sort((a, b) => b.is_pinned - a.is_pinned || new Date(a.created_at) - new Date(b.created_at)) // Pinned first, then oldest
+          .filter(comment => !comment.parent_id)
+          .sort((a, b) => b.is_pinned - a.is_pinned || new Date(a.created_at) - new Date(b.created_at))
           .map(comment => {
             const replies = comments
               .filter(reply => reply.parent_id === comment.id)
-              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); // Replies oldest first
+              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
             const isRepliesExpanded = expandedReplies.includes(comment.id);
 
             return (
@@ -341,7 +288,7 @@ export default function BlogPostPage({ params: paramsProp }) {
                 
                 {/* Edit Form or Comment Content */}
                 {editingCommentId === comment.id ? (
-                  <form onSubmit={(e) => handleUpdateComment(e, comment.id)}> {/* Edit Form */}
+                  <form onSubmit={(e) => handleUpdateComment(e, comment.id)}>
                       <textarea className="form-textarea" value={editingCommentContent} onChange={(e) => setEditingCommentContent(e.target.value)}></textarea>
                       <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem' }}>
                           <button type="submit" className="btn btn-primary" style={{ padding: '0.25rem 0.5rem' }}>Save</button>
@@ -364,7 +311,6 @@ export default function BlogPostPage({ params: paramsProp }) {
                       )}
                       {userRole === 'admin' && (<button className="btn-link" onClick={() => handlePinComment(comment.id, comment.is_pinned)}>{comment.is_pinned ? 'Unpin' : 'Pin'}</button>)}
                       
-                      {/* View Replies Button */}
                       {replies.length > 0 && (
                          <button className="btn-link" onClick={() => toggleReplies(comment.id)}>
                             {isRepliesExpanded ? 'Hide Replies' : `View ${replies.length} Replies`}
@@ -377,13 +323,7 @@ export default function BlogPostPage({ params: paramsProp }) {
                 {/* Reply Form */}
                 {replyingToCommentId === comment.id && (
                    <form onSubmit={(e) => handleCreateComment(e, post.id, comment.id)} style={{ marginTop: '1rem', marginLeft: '2rem' }}>
-                       <div className="form-group">
-                           <textarea className="form-textarea" placeholder={`Replying to ${comment.author?.username || 'Anonymous'}...`} value={newCommentContent} onChange={(e) => setNewCommentContent(e.target.value)} required></textarea>
-                       </div>
-                       <div style={{ display: 'flex', gap: '1rem' }}>
-                           <button type="submit" className="btn btn-primary" style={{ width: 'auto', padding: '0.5rem 1rem' }}>Post Reply</button>
-                           <button type="button" className="btn" onClick={() => setReplyingToCommentId(null)} style={{ width: 'auto', padding: '0.5rem 1rem' }}>Cancel</button>
-                       </div>
+                       {/* ... reply form inputs ... */}
                    </form>
                 )}
                 
@@ -393,12 +333,8 @@ export default function BlogPostPage({ params: paramsProp }) {
                     {replies.map(reply => (
                       <div key={reply.id} data-comment-id={reply.id} className="comment-item" style={{ marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #eee' }}>
                          {editingCommentId === reply.id ? (
-                            <form onSubmit={(e) => handleUpdateComment(e, reply.id)}> {/* Edit Form for Reply */}
-                                <textarea className="form-textarea" value={editingCommentContent} onChange={(e) => setEditingCommentContent(e.target.value)}></textarea>
-                                <div style={{ marginTop: '0.5rem', display: 'flex', gap: '1rem' }}>
-                                    <button type="submit" className="btn btn-primary" style={{ padding: '0.25rem 0.5rem' }}>Save</button>
-                                    <button type="button" className="btn" onClick={() => setEditingCommentId(null)} style={{ padding: '0.25rem 0.5rem' }}>Cancel</button>
-                                </div>
+                            <form onSubmit={(e) => handleUpdateComment(e, reply.id)}>
+                                {/* ... edit reply form ... */}
                             </form>
                          ) : (
                            <> {/* Reply View */}
@@ -406,7 +342,6 @@ export default function BlogPostPage({ params: paramsProp }) {
                              <p style={{ whiteSpace: 'pre-wrap' }}>{reply.content}</p>
                              <small>By: <strong>{reply.author ? reply.author.username : 'Anonymous'}</strong> on {new Date(reply.created_at).toLocaleDateString()}</small>
                              <div className="comment-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                                {/* No "Reply" button for nested replies */}
                                 {session && session.user.id === reply.author_id && (
                                    <>
                                       <button className="btn-link" onClick={() => { setEditingCommentId(reply.id); setEditingCommentContent(reply.content); }}>Edit</button>
@@ -427,5 +362,14 @@ export default function BlogPostPage({ params: paramsProp }) {
         {comments.length === 0 && <p>No comments yet.</p>}
       </div>
     </div>
+  );
+}
+
+// --- Main Page Export (Handles Suspense) ---
+export default function BlogPostPageWrapper({ params }) {
+  return (
+    <Suspense fallback={<div>Loading Post...</div>}>
+      <BlogPostPageContent params={params} />
+    </Suspense>
   );
 }
