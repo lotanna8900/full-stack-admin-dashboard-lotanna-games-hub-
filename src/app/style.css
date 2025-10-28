@@ -77,6 +77,7 @@ nav {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
+    flex-wrap: wrap;
 }
 
 .logo {
@@ -163,8 +164,8 @@ nav {
     display: flex;
     max-width: 1400px;
     margin: 0 auto;
-    margin-top: 60px;
-    min-height: calc(100vh - 60px);
+    margin-top: 80px;
+    min-height: calc(100vh - 80px);
 }
 
 /* ===========================
@@ -728,7 +729,7 @@ nav {
    =========================== */
 
 @media (max-width: 1024px) {
-    .sidebar {
+    .sidebar.desktop-sidebar {
         display: none;
     }
 
@@ -1402,3 +1403,252 @@ nav {
   display: block;
   object-fit: contain;
 }
+
+/* MEDIA QUERY FOR MOBILE --- */
+
+@media (max-width: 768px) {
+  
+  .main-container {
+    margin-top: 120px; 
+    
+    min-height: calc(100vh - 120px); 
+  }
+}
+
+/* --- Mobile Navigation Styles (ENHANCED) --- */
+
+/* Hamburger Menu Button */
+.hamburger-menu {
+  display: none;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  order: -1;
+  padding: 0.5rem;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  -webkit-tap-highlight-color: transparent; /* Remove blue flash on mobile tap */
+}
+
+.hamburger-menu:hover {
+  opacity: 0.7;
+}
+
+.hamburger-menu:active {
+  transform: scale(0.95);
+}
+
+/* Full-Screen Overlay */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1001;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Mobile Sidebar */
+.sidebar.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 280px; /* Slightly wider for better touch targets */
+  max-width: 85vw; /* Don't take up entire screen on small phones */
+  z-index: 1002;
+  background: var(--dark);
+  border-right: 1px solid var(--grey-dark);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
+  animation: slideInLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Enhanced touch targets for mobile menu items */
+.mobile-sidebar .sidebar-menu a {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  min-height: 48px; /* Minimum touch target size */
+  display: flex;
+  align-items: center;
+}
+
+/* Add a close button inside the mobile menu (optional but recommended) */
+.mobile-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--grey-dark);
+  position: sticky;
+  top: 0;
+  background: var(--dark);
+  z-index: 10;
+}
+
+.mobile-menu-close {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-menu-close:hover {
+  opacity: 0.7;
+}
+
+/* Prevent body scroll when mobile menu is open */
+body.mobile-menu-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
+
+/* --- Responsive Media Query --- */
+@media (max-width: 768px) {
+  .sidebar.desktop-sidebar {
+    display: none;
+  }
+  
+  .nav-links {
+    display: none;
+  }
+
+  .hamburger-menu {
+    display: block;
+  }
+
+  .main-container .content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .nav-container {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Make notifications dropdown full width on mobile */
+  .notification-dropdown {
+    width: calc(100vw - 40px) !important;
+    max-width: 350px;
+    right: 10px !important;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .mobile-sidebar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .user-menu div[title*="Log"] {
+    display: none; /* Hide "LOG OUT" text on very small screens */
+  }
+}
+
+  /* Adjust padding for the logo/user menu */
+  .nav-container {
+    padding: 0.5rem 1rem;
+  }
+
+
+/* --- Mobile Menu Body Scroll Lock --- */
+body.mobile-menu-open {
+  overflow: hidden;
+  position: fixed; /* Prevents bounce on iOS */
+  width: 100%;
+}
+
+/* --- Mobile Sidebar Header --- */
+.mobile-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--grey-dark);
+  position: sticky; /* Keeps header visible when scrolling menu */
+  top: 0;
+  background: var(--dark);
+  z-index: 10;
+}
+
+.mobile-sidebar-header h3 {
+  margin: 0;
+  font-weight: 300;
+  font-size: 1.2rem;
+  color: var(--white);
+  letter-spacing: 0.5px;
+}
+
+/* --- Close Button --- */
+.mobile-menu-close {
+  background: none;
+  border: none;
+  color: var(--white);
+  font-size: 1.75rem;
+  font-weight: 300;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  -webkit-tap-highlight-color: transparent; /* Remove blue flash on mobile */
+}
+
+.mobile-menu-close:hover {
+  background: var(--grey-dark);
+  transform: rotate(90deg); /* Adds a nice spin effect */
+}
+
+.mobile-menu-close:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+/* --- Mobile Sidebar Enhanced Touch Targets --- */
+.mobile-sidebar .sidebar-menu a {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  min-height: 48px; /* Minimum touch target for accessibility */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mobile-sidebar .sidebar-menu a:active {
+  background: var(--grey); /* Visual feedback on tap */
+}
+  
