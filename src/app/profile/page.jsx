@@ -8,6 +8,9 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
+  const [notifyComments, setNotifyComments] = useState(true);
+  const [notifyDigest, setNotifyDigest] = useState(false);
+  const [notifyMarketing, setNotifyMarketing] = useState(false);
 
   // State for session and loading
   const [session, setSession] = useState(null);
@@ -32,6 +35,10 @@ export default function ProfilePage() {
           setProfile(data);
           setUsername(data.username || '');
           setBio(data.bio || '');
+
+          setNotifyComments(data.notify_comments ?? true); // Default to true if null
+          setNotifyDigest(data.notify_digest ?? false);
+          setNotifyMarketing(data.notify_marketing ?? false);
         }
         setLoading(false);
       }
@@ -73,6 +80,10 @@ export default function ProfilePage() {
       username: username,
       bio: bio,
       updated_at: new Date(), 
+
+      notify_comments: notifyComments,
+      notify_digest: notifyDigest,
+      notify_marketing: notifyMarketing
     };
 
     // Perform the 'upsert' operation
@@ -146,24 +157,36 @@ export default function ProfilePage() {
         </div>
 
         <div className="content-card">
-          <h2 className="content-title">Notification Preferences</h2>
-          <div className="form-group">
-            <label className="form-label">
-              <input type="checkbox" defaultChecked/> Email notifications for comments
-            </label>
-          </div>
-          <div className="form-group">
-            <label className="form-label">
-              <input type="checkbox" defaultChecked/> Weekly digest emails
-            </label>
-          </div>
-          <div className="form-group">
-            <label className="form-label">
-              <input type="checkbox" defaultChecked/> Marketing emails
-            </label>
-          </div>
-          <button className="btn btn-primary" disabled>Update Preferences</button>
+        <h2 className="content-title">Notification Preferences</h2>
+        
+        <div className="form-group">
+          <label className="form-label">
+            <input 
+              type="checkbox" 
+              checked={notifyComments} 
+              onChange={(e) => setNotifyComments(e.target.checked)} 
+            /> Email notifications for comments
+          </label>
         </div>
+        <div className="form-group">
+          <label className="form-label">
+            <input 
+              type="checkbox" 
+              checked={notifyDigest} 
+              onChange={(e) => setNotifyDigest(e.target.checked)} 
+            /> Weekly digest emails
+          </label>
+        </div>
+        <div className="form-group">
+          <label className="form-label">
+            <input 
+              type="checkbox" 
+              checked={notifyMarketing} 
+              onChange={(e) => setNotifyMarketing(e.target.checked)} 
+            /> Marketing emails
+          </label>
+        </div>
+      </div>
       </div>
     </div>
   );

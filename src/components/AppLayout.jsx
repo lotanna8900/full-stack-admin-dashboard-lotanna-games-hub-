@@ -204,8 +204,39 @@ export default function AppLayout({ children }) {
 
             {/* Notification Dropdown */}
             {isNotificationDropdownOpen && (
-              <div className="notification-dropdown" style={{ position: 'absolute', top: '60px', right: '20px', width: '300px', maxHeight: '400px', overflowY: 'auto', background: 'var(--dark)', border: '1px solid var(--grey-dark)', borderRadius: '4px', zIndex: 1000, color: 'var(--white)' }}>
-                {/* ... (your notification dropdown content) ... */}
+              <div 
+                className="notification-dropdown" 
+                style={{
+                  position: 'absolute',
+                  top: '60px',
+                  right: '20px',
+                  width: '300px',
+                  maxHeight: '400px',
+                  overflowY: 'auto',
+                  zIndex: 1000
+                }}
+              >
+                <h4 style={{ padding: '1rem', borderBottom: '1px solid var(--grey-dark)', margin: 0 }}>Notifications</h4>
+                {notifications.length > 0 ? (
+                  notifications.map((notification) => (
+                    <div 
+                      key={notification.id} 
+                      onClick={() => handleNotificationClick(notification.id, notification.link_url)}
+                      style={{ 
+                        padding: '1rem', 
+                        borderBottom: '1px solid var(--grey-dark)', 
+                        cursor: 'pointer', 
+                        opacity: notification.is_read ? 0.6 : 1,
+                        background: notification.is_read ? 'transparent' : 'rgba(255, 255, 255, 0.05)' 
+                      }}
+                    >
+                      <p style={{ margin: 0, fontSize: '0.9rem' }}>{notification.content}</p>
+                      <small style={{ color: 'var(--grey-light)' }}>{new Date(notification.created_at).toLocaleDateString()}</small>
+                    </div>
+                  ))
+                ) : (
+                  <p style={{ padding: '1rem', textAlign: 'center' }}>No new notifications.</p>
+                )}
               </div>
             )}
           </div>
