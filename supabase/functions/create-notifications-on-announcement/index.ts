@@ -58,7 +58,8 @@ Deno.serve(async (req) => {
     const notificationsToInsert = profiles.map((profile) => ({
       user_id: profile.id,
       content: `New announcement posted: "${announcement.title}"`,
-      link_url: `/announcements?id=${announcement.id}` 
+      link_url: `/announcements?id=${announcement.id}`,
+      type: 'announcement'
     }));
     console.log('Prepared notifications:', notificationsToInsert);
 

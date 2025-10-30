@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient'; 
 import Link from 'next/link';
 import Image from 'next/image';
-import ReactMarkdown from 'react-markdown'; 
 
 export default function BlogListPage() {
   // --- State Variables ---
@@ -18,14 +17,16 @@ export default function BlogListPage() {
   // Form State (for Modals)
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
-  const [newPostImageUrl, setNewPostImageUrl] = useState(''); // For image URL
+  const [newPostImageUrl, setNewPostImageUrl] = useState('');
 
-  // Comment & Reply State
-  const [newCommentContent, setNewCommentContent] = useState('');
+  // Comment & Reply State - SEPARATED
+  const [commentFormOpen, setCommentFormOpen] = useState(null);
+  const [mainCommentContent, setMainCommentContent] = useState('');
+  const [replyContent, setReplyContent] = useState('');
   const [replyingToCommentId, setReplyingToCommentId] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentContent, setEditingCommentContent] = useState('');
-  const [expandedReplies, setExpandedReplies] = useState([]); // For toggling replies
+  const [expandedReplies, setExpandedReplies] = useState([]);
 
   // Auth, User & Subscription State
   const [session, setSession] = useState(null);
@@ -36,20 +37,17 @@ export default function BlogListPage() {
   useEffect(() => {
     setLoading(true);
 
-    // Helper to fetch user-specific data (role, subscriptions)
     const fetchUserData = async (currentSession) => {
       if (!currentSession) {
         setUserRole('guest');
         setSubscriptions([]);
         return;
       }
-      // Fetch Profile Role
       const { data: profile, error: profileError } = await supabase
         .from('profiles').select('role').eq('id', currentSession.user.id).single();
       if (profileError) setUserRole('guest');
       else setUserRole(profile?.role || 'guest');
 
-      // Fetch Post Subscriptions
       const { data: subsData, error: subsError } = await supabase
         .from('subscriptions').select('post_id')
         .eq('user_id', currentSession.user.id)
@@ -58,18 +56,16 @@ export default function BlogListPage() {
       else setSubscriptions(subsData || []);
     };
 
-    // Helper to fetch posts and comments
     const getPosts = async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('*, comments(*, author:profiles(username))') // Fetch posts with comments and authors
+        .select('*, comments(*, author:profiles(username, avatar_url))')
         .order('created_at', { ascending: false });
       if (error) console.error('Error fetching posts:', error);
       else setPosts(data || []);
       setLoading(false);
     };
 
-    // Initial Fetch & Listener
     getPosts();
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -119,7 +115,7 @@ export default function BlogListPage() {
         image_url: newPostImageUrl || null,
         author_id: session.user.id 
       }])
-      .select('*, comments(*, author:profiles(username))') // Fetch full object
+      .select('*, comments(*, author:profiles(username, avatar_url))')
       .single();
     if (error) { console.error('Error creating post:', error); alert('Could not create post.'); }
     else { setPosts([data, ...posts]); closeNewPostModal(); }
@@ -132,7 +128,7 @@ export default function BlogListPage() {
       .from('posts')
       .update({ title: newPostTitle, content: newPostContent, image_url: newPostImageUrl || null })
       .eq('id', editingPost.id)
-      .select('*, comments(*, author:profiles(username))')
+      .select('*, comments(*, author:profiles(username, avatar_url))')
       .single();
     if (error) { console.error('Error updating post:', error); alert('Could not update post.'); }
     else { setPosts(posts.map(p => (p.id === editingPost.id ? data : p))); closeEditPostModal(); }
@@ -148,32 +144,32 @@ export default function BlogListPage() {
   const handlePinPost = async (postId, currentStatus) => {
     const { data: updatedPost, error } = await supabase
       .from('posts').update({ is_pinned: !currentStatus }).eq('id', postId)
-      .select('*, comments(*, author:profiles(username))').single();
+      .select('*, comments(*, author:profiles(username, avatar_url))').single();
     if (error) { console.error('Error pinning post:', error); alert('Could not update post.'); }
     else if (updatedPost) { setPosts(posts.map(p => (p.id === postId ? updatedPost : p))); }
   };
 
-  // Comment Handlers
-  const handleCreateComment = async (event, postId, parentId = null) => {
+  // Comment Handlers - MAIN COMMENT
+  const handleCreateMainComment = async (event, postId) => {
     event.preventDefault();
 
     if (!session) {
       alert('You must be logged in to comment.');
       return;
     }
-    if (!newCommentContent.trim()) {
-      return; // Don't submit empty comments
+    if (!mainCommentContent.trim()) {
+      return;
     }
 
     const { data, error } = await supabase
       .from('comments')
       .insert([{
-        content: newCommentContent,
+        content: mainCommentContent,
         post_id: postId,
         author_id: session.user.id,
-        parent_id: parentId // This will be null for top-level comments, or an ID for replies
+        parent_id: null
       }])
-      .select('*, author:profiles(username)') // Fetch the profile with the new comment
+      .select('*, author:profiles(username, avatar_url)')
       .single();
 
     if (error) {
@@ -185,8 +181,42 @@ export default function BlogListPage() {
           ? { ...post, comments: [...post.comments, data].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) }
           : post
       ));
-      setNewCommentContent(''); // Reset the input field
-      setReplyingToCommentId(null); // Close the reply box
+      setMainCommentContent('');
+      setCommentFormOpen(null);
+    }
+  };
+
+  // Comment Handlers - REPLY
+  const handleCreateReply = async (event, postId, parentId) => {
+    event.preventDefault();
+
+    if (!session || !replyContent.trim()) return;
+
+    const { data, error } = await supabase
+      .from('comments')
+      .insert([{
+        content: replyContent,
+        post_id: postId,
+        author_id: session.user.id,
+        parent_id: parentId
+      }])
+      .select('*, author:profiles(username, avatar_url)')
+      .single();
+
+    if (error) {
+      console.error('Error creating reply:', error);
+      alert('Could not post reply.');
+    } else if (data) {
+      setPosts(posts.map(post =>
+        post.id === postId
+          ? { ...post, comments: [...post.comments, data].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) }
+          : post
+      ));
+      setReplyContent('');
+      setReplyingToCommentId(null);
+      if (!expandedReplies.includes(parentId)) {
+        setExpandedReplies(prev => [...prev, parentId]);
+      }
     }
   };
 
@@ -194,7 +224,7 @@ export default function BlogListPage() {
     event.preventDefault();
     const { data, error } = await supabase
       .from('comments').update({ content: editingCommentContent }).eq('id', commentId)
-      .select('*, author:profiles(username)').single();
+      .select('*, author:profiles(username, avatar_url)').single();
     if (error) { console.error('Error updating comment:', error); alert('Could not update comment.'); }
     else {
       setPosts(posts.map(post => ({ ...post, comments: post.comments.map(c => (c.id === commentId ? data : c)) })));
@@ -213,7 +243,7 @@ export default function BlogListPage() {
   const handlePinComment = async (commentId, currentStatus) => {
     const { data: updatedComment, error } = await supabase
       .from('comments').update({ is_pinned: !currentStatus }).eq('id', commentId)
-      .select('*, author:profiles(username)').single();
+      .select('*, author:profiles(username, avatar_url)').single();
     if (error) { console.error('Error pinning comment:', error); alert('Could not update comment.'); }
     else if (updatedComment) {
       setPosts(posts.map(post => ({ ...post, comments: post.comments.map(c => c.id === commentId ? updatedComment : c) })));
@@ -267,7 +297,7 @@ export default function BlogListPage() {
           .map((post) => (
             <div key={post.id} className="content-card" data-post-id={post.id}>
               {post.image_url && (
-                <div style={{ position: 'relative', width: '100%', height: '200px', marginBottom: '1rem' }}>
+                <div style={{ position: 'relative', width: '100%', height: '200px', marginBottom: '1rem', borderRadius: '8px', overflow: 'hidden' }}>
                   <Image
                     src={post.image_url} alt={post.title} fill
                     style={{ objectFit: 'cover' }}
@@ -286,11 +316,10 @@ export default function BlogListPage() {
               {post.is_pinned && <span className="pinned-badge">Pinned</span>}
               <p className="content-meta">Published on {new Date(post.created_at).toISOString().split('T')[0]}</p>
               
-              {/* Post Preview */}
               <p style={{ whiteSpace: 'pre-wrap' }}>{post.content.substring(0, 200)}...</p>
 
               {/* Action Buttons */}
-              <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                 <Link href={`/blog/${post.id}`} className="btn">Read More</Link>
                 {session && (
                   subscriptions.some(sub => sub.post_id === post.id) ? (
@@ -311,10 +340,52 @@ export default function BlogListPage() {
             <div className="comments-section" style={{ marginTop: '2rem', borderTop: '1px solid var(--grey-dark)', paddingTop: '1rem' }}>
               <h3 style={{ marginBottom: '1rem' }}>Comments ({post.comments.length})</h3>
 
+              {/* Add Comment Button */}
+              {session && commentFormOpen !== post.id && (
+                <button 
+                  onClick={() => setCommentFormOpen(post.id)} 
+                  className="btn btn-primary" 
+                  style={{ marginBottom: '1rem', padding: '0.5rem 1rem' }}
+                >
+                  Add a Comment
+                </button>
+              )}
+
+              {/* Main Comment Form (Hidden by default) */}
+              {session && commentFormOpen === post.id && (
+                <form onSubmit={(e) => handleCreateMainComment(e, post.id)} style={{ marginBottom: '1.5rem' }}>
+                  <div className="form-group">
+                    <textarea
+                      className="form-textarea"
+                      placeholder="Add a comment..."
+                      value={mainCommentContent}
+                      onChange={(e) => setMainCommentContent(e.target.value)}
+                      required
+                    ></textarea>
+                  </div>
+                  <div style={{ display: 'flex', gap: '1rem' }}>
+                    <button type="submit" className="btn btn-primary" style={{ width: 'auto', padding: '0.5rem 1rem' }}>
+                      Post Comment
+                    </button>
+                    <button 
+                      type="button" 
+                      className="btn" 
+                      onClick={() => {
+                        setCommentFormOpen(null);
+                        setMainCommentContent('');
+                      }} 
+                      style={{ width: 'auto', padding: '0.5rem 1rem' }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
               {/* Display existing comments */}
               <div className="comments-list">
                 {post.comments
-                  .sort((a, b) => b.is_pinned - a.is_pinned) // Pinned comments first
+                  .sort((a, b) => b.is_pinned - a.is_pinned)
                   .filter(comment => !comment.parent_id)
                   .map((comment) => (
                     <div key={comment.id} 
@@ -323,7 +394,6 @@ export default function BlogListPage() {
                       style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--grey-dark)' }}
                     >
 
-                      {/* Conditionally render Edit Form or Comment Content */}
                       {editingCommentId === comment.id ? (
                         <form onSubmit={(e) => handleUpdateComment(e, comment.id)}>
                           <textarea
@@ -337,20 +407,48 @@ export default function BlogListPage() {
                           </div>
                         </form>
                       ) : (
-                        <> {/* Comment View */}
-                          {/* Pinned Badge */}
+                        <>
                           {comment.is_pinned && <span className="pinned-badge" style={{ float: 'right', fontSize: '0.8rem', fontWeight: 'bold' }}>📌 Pinned</span>}
-                          {/* Comment Content */}
-                          <p style={{ whiteSpace: 'pre-wrap' }}>{comment.content}</p>
-                          <p className="content-meta" style={{ fontSize: '0.8rem' }}>
-                            Comment by <strong>{comment.author ? comment.author.username : 'Anonymous'}</strong> on {new Date(comment.created_at).toISOString().split('T')[0]}
-                          </p>
-
-                          {/* Action Buttons */}
-                          <div className="comment-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                            {session && (<button className="btn-link" onClick={() => setReplyingToCommentId(comment.id)}>Reply</button>)}
+                          <p style={{ whiteSpace: 'pre-wrap', marginBottom: '0.75rem' }}>{comment.content}</p>
+                          
+                          <div className="comment-author-info">
+                            <Link href={`/users/${comment.author_id}`}>
+                              {comment.author?.avatar_url ? (
+                                <Image
+                                  className="comment-avatar"
+                                  src={comment.author.avatar_url}
+                                  alt={comment.author.username || 'avatar'}
+                                  width={30}
+                                  height={30}
+                                />
+                              ) : (
+                                <div className="comment-avatar-placeholder">
+                                  <span>{comment.author ? comment.author.username.charAt(0).toUpperCase() : '?'}</span>
+                                </div>
+                              )}
+                            </Link>
                             
-                            {/* User's own Edit/Delete buttons */}
+                            <small className="comment-meta">
+                              <Link href={`/users/${comment.author_id}`} title="View profile" className="comment-author-link">
+                                {comment.author ? comment.author.username : 'Anonymous'}
+                              </Link>
+                              <span className="comment-date"> · {new Date(comment.created_at).toLocaleDateString()}</span>
+                            </small>
+                          </div>
+
+                          <div className="comment-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                            {session && (
+                              <button 
+                                className="btn-link" 
+                                onClick={() => {
+                                  setReplyingToCommentId(comment.id);
+                                  setReplyContent('');
+                                }}
+                              >
+                                Reply
+                              </button>
+                            )}
+                            
                             {session && session.user.id === comment.author_id && (
                               <>
                                 <button className="btn-link" onClick={() => { setEditingCommentId(comment.id); setEditingCommentContent(comment.content); }}>Edit</button>
@@ -358,17 +456,15 @@ export default function BlogListPage() {
                               </>
                             )}
 
-                            {/* Admin Pin button */}
                             {userRole === 'admin' && (<button className="btn-link" onClick={() => handlePinComment(comment.id, comment.is_pinned)}>{comment.is_pinned ? 'Unpin' : 'Pin'}</button>)}
 
-                            {/* View replies logic */}
                             {(() => {
                               const replies = post.comments.filter(reply => reply.parent_id === comment.id);
                               const isRepliesExpanded = expandedReplies.includes(comment.id);
                               
                               return replies.length > 0 && (
                                 <button className="btn-link" onClick={() => toggleReplies(comment.id)}>
-                                    {isRepliesExpanded ? 'Hide Replies' : `View ${replies.length} Replies`}
+                                    {isRepliesExpanded ? 'Hide Replies' : `View ${replies.length} ${replies.length === 1 ? 'Reply' : 'Replies'}`}
                                 </button>
                               );
                             })()}
@@ -376,11 +472,42 @@ export default function BlogListPage() {
                         </>
                       )}
 
+                      {/* Reply Form */}
+                      {replyingToCommentId === comment.id && (
+                        <form onSubmit={(e) => handleCreateReply(e, post.id, comment.id)} style={{ marginTop: '1rem', marginLeft: '2rem' }}>
+                          <div className="form-group">
+                            <textarea
+                              className="form-textarea"
+                              placeholder={`Replying to ${comment.author?.username || 'Anonymous'}...`}
+                              value={replyContent}
+                              onChange={(e) => setReplyContent(e.target.value)}
+                              required
+                            ></textarea>
+                          </div>
+                          <div style={{ display: 'flex', gap: '1rem' }}>
+                            <button type="submit" className="btn btn-primary" style={{ width: 'auto', padding: '0.5rem 1rem' }}>
+                              Post Reply
+                            </button>
+                            <button 
+                              type="button" 
+                              className="btn" 
+                              onClick={() => {
+                                setReplyingToCommentId(null);
+                                setReplyContent('');
+                              }} 
+                              style={{ width: 'auto', padding: '0.5rem 1rem' }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      )}
+
                       {/* Nested Replies */}
                       {expandedReplies.includes(comment.id) && (
-                        <div className="replies" style={{ marginLeft: '2rem', marginTop: '1rem' }}>
+                        <div className="replies" style={{ marginLeft: '2rem', marginTop: '1rem', borderLeft: '2px solid var(--grey-light)', paddingLeft: '1rem' }}>
                           {post.comments
-                            .sort((a, b) => b.is_pinned - a.is_pinned) // Pinned replies first
+                            .sort((a, b) => b.is_pinned - a.is_pinned)
                             .filter(reply => reply.parent_id === comment.id)
                             .map((reply) => (
                               <div key={reply.id} 
@@ -389,7 +516,6 @@ export default function BlogListPage() {
                                 style={{ marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--grey-dark)' }}
                               >
 
-                                {/* Conditionally render Edit Form or Reply Content */}
                                 {editingCommentId === reply.id ? (
                                   <form onSubmit={(e) => handleUpdateComment(e, reply.id)}>
                                     <textarea
@@ -405,13 +531,34 @@ export default function BlogListPage() {
                                 ) : (
                                   <>
                                     {reply.is_pinned && <span className="pinned-badge" style={{ float: 'right', fontSize: '0.8rem', fontWeight: 'bold' }}>📌 Pinned</span>}
-                                    <p style={{ whiteSpace: 'pre-wrap' }}>{reply.content}</p>
-                                    <p className="content-meta" style={{ fontSize: '0.8rem' }}>
-                                      Reply by <strong>{reply.author ? reply.author.username : 'Anonymous'}</strong> on {new Date(reply.created_at).toISOString().split('T')[0]}
-                                    </p>
+                                    <p style={{ whiteSpace: 'pre-wrap', marginBottom: '0.75rem' }}>{reply.content}</p>
                                     
-                                    <div className="comment-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                                      {/* User's own Edit/Delete buttons for the reply */}
+                                    <div className="comment-author-info">
+                                      <Link href={`/users/${reply.author_id}`}>
+                                        {reply.author?.avatar_url ? (
+                                          <Image
+                                            className="comment-avatar"
+                                            src={reply.author.avatar_url}
+                                            alt={reply.author.username || 'avatar'}
+                                            width={30}
+                                            height={30}
+                                          />
+                                        ) : (
+                                          <div className="comment-avatar-placeholder">
+                                            <span>{reply.author ? reply.author.username.charAt(0).toUpperCase() : '?'}</span>
+                                          </div>
+                                        )}
+                                      </Link>
+                                      
+                                      <small className="comment-meta">
+                                        <Link href={`/users/${reply.author_id}`} title="View profile" className="comment-author-link">
+                                          {reply.author ? reply.author.username : 'Anonymous'}
+                                        </Link>
+                                        <span className="comment-date"> · {new Date(reply.created_at).toLocaleDateString()}</span>
+                                      </small>
+                                    </div>
+                                    
+                                    <div className="comment-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
                                       {session && session.user.id === reply.author_id && (
                                         <>
                                           <button className="btn-link" onClick={() => { setEditingCommentId(reply.id); setEditingCommentContent(reply.content); }}>Edit</button>
@@ -419,7 +566,6 @@ export default function BlogListPage() {
                                         </>
                                       )}
 
-                                      {/* Admin Pin button for the reply */}
                                       {userRole === 'admin' && (<button className="btn-link" onClick={() => handlePinComment(reply.id, reply.is_pinned)}>{reply.is_pinned ? 'Unpin' : 'Pin'}</button>)}
                                     </div>
                                   </>
@@ -428,50 +574,9 @@ export default function BlogListPage() {
                             ))}
                       </div>
                       )}
-
-                      {/* Reply Form */}
-                      {replyingToCommentId === comment.id && (
-                        <form onSubmit={(e) => handleCreateComment(e, post.id, comment.id)} style={{ marginTop: '1rem', marginLeft: '2rem' }}>
-                          <div className="form-group">
-                            <textarea
-                              className="form-textarea"
-                              placeholder={`Replying to ${comment.author?.username || 'Anonymous'}...`}
-                              value={newCommentContent}
-                              onChange={(e) => setNewCommentContent(e.target.value)}
-                              required
-                            ></textarea>
-                          </div>
-                          <div style={{ display: 'flex', gap: '1rem' }}>
-                            <button type="submit" className="btn btn-primary" style={{ width: 'auto', padding: '0.5rem 1rem' }}>
-                              Post Reply
-                            </button>
-                            <button type="button" className="btn" onClick={() => setReplyingToCommentId(null)} style={{ width: 'auto', padding: '0.5rem 1rem' }}>
-                              Cancel
-                            </button>
-                          </div>
-                        </form>
-                      )}
                     </div>
                   ))}
               </div>
-
-              {/* Main Comment Form */}
-              {session && (
-                <form onSubmit={(e) => handleCreateComment(e, post.id, null)} style={{ marginTop: '1.5rem' }}>
-                  <div className="form-group">
-                    <textarea
-                      className="form-textarea"
-                      placeholder="Add a comment..."
-                      value={newCommentContent}
-                      onChange={(e) => setNewCommentContent(e.target.value)}
-                      required
-                    ></textarea>
-                  </div>
-                  <button type="submit" className="btn btn-primary" style={{ width: 'auto', padding: '0.5rem 1rem' }}>
-                    Post Comment
-                  </button>
-                </form>
-              )}
             </div>
           </div>
         ))}
@@ -489,7 +594,6 @@ export default function BlogListPage() {
             <form onSubmit={handleCreatePost}>
               <div className="form-group">
                 <label className="form-label">Post Title</label>
-                {/* UPDATED: Connect state to the input */}
                 <input 
                   type="text" 
                   className="form-input" 
@@ -501,7 +605,6 @@ export default function BlogListPage() {
               </div>
               <div className="form-group">
                 <label className="form-label">Content</label>
-                {/* Connect state to the textarea */}
                 <textarea 
                   className="form-textarea" 
                   style={{ minHeight: '300px' }} 
@@ -530,7 +633,6 @@ export default function BlogListPage() {
         </div>
     </div>
     )}
-
 
     {/* Edit Post Modal */}
     {isEditPostModalOpen && (

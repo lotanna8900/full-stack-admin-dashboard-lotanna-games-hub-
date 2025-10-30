@@ -260,13 +260,13 @@ export default function AppLayout({ children }) {
               </button>
             </div>
 
-            {/* We duplicate the sidebar structure here for the mobile menu */}
+            {/* Duplicate the sidebar structure here for the mobile menu */}
             <div className="sidebar-section">
               <div className="sidebar-title">Main</div>
               <ul className="sidebar-menu">
                 <li><Link href="/" onClick={() => setIsMobileMenuOpen(false)}>📊 Dashboard</Link></li>
                 <li><Link href="/projects" onClick={() => setIsMobileMenuOpen(false)}>📁 Projects</Link></li>
-                <li><Link href="/snippets" onClick={() => setIsMobileMenuOpen(false)}>📝 Game Snippets</Link></li>
+                <li><Link href="/snippets" onClick={() => setIsMobileMenuOpen(false)}>🎮 Game Snippets</Link></li>
                 <li><Link href="/blog" onClick={() => setIsMobileMenuOpen(false)}>✍️ Blog Posts</Link></li>
                 <li><Link href="/announcements" onClick={() => setIsMobileMenuOpen(false)}>📢 Announcements</Link></li>
               </ul>
@@ -298,7 +298,7 @@ export default function AppLayout({ children }) {
             <ul className="sidebar-menu">
               <li><Link href="/">📊 Dashboard</Link></li>
               <li><Link href="/projects">📁 Projects</Link></li>
-              <li><Link href="/snippets">📝 Game Snippets</Link></li>
+              <li><Link href="/snippets">🎮 Game Snippets</Link></li>
               <li><Link href="/blog">✍️ Blog Posts</Link></li>
               <li><Link href="/announcements">📢 Announcements</Link></li>
             </ul>

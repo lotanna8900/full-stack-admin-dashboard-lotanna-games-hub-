@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { record: updatedContent, table } = await req.json() // Trigger sends the updated row ('record') and table name
+    const { record: updatedContent, table } = await req.json() 
 
     if (!updatedContent || !updatedContent.id || !table) {
       throw new Error('Invalid update data received.');
@@ -52,7 +52,8 @@ Deno.serve(async (req) => {
       user_id: sub.user_id,
       content: `The ${contentType} "${updatedContent.title}" you subscribed to has been updated!`,
       // UPDATED: Add content ID to the link
-      link_url: `/${sectionPath}?${contentType}=${updatedContent.id}` // e.g., /blog?post=uuid or /projects?project=int
+      link_url: `/${sectionPath}?${contentType}=${updatedContent.id}`,
+      type: 'subscription'
     }));
     console.log('Prepared notifications:', notificationsToInsert);
 
