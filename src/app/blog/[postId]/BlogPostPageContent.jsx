@@ -8,7 +8,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 // --- This is my old 'BlogPostPageContent' component ---
-// Just 'export default' now
 export default function BlogPostPageContent({ params: paramsProp }) {
   const params = use(paramsProp);
   const { postId } = params; 
@@ -274,6 +273,7 @@ export default function BlogPostPageContent({ params: paramsProp }) {
             fill
             style={{ objectFit: 'cover' }}
             sizes="(max-width: 800px) 100vw, 800px"
+            priority={true}
           />
         </div>
       )}
@@ -288,13 +288,13 @@ export default function BlogPostPageContent({ params: paramsProp }) {
 
         {/* Add Comment Button (Shows Form) */}
         {session && !showMainCommentForm && (
-          <button 
+        <button 
             onClick={() => setShowMainCommentForm(true)} 
             className="btn btn-primary" 
-            style={{ marginBottom: '1.5rem', padding: '0.5rem 1rem' }}
-          >
-            Add a Comment
-          </button>
+            style={{ marginBottom: '1.5rem', padding: '0.5rem 1.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+        >
+            <span>✍️</span> Add a Comment
+        </button>
         )}
 
         {/* Main Comment Form (Hidden by default) */}
@@ -515,7 +515,20 @@ export default function BlogPostPageContent({ params: paramsProp }) {
               </div>
             );
           })}
-        {comments.length === 0 && <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>No comments yet. Be the first to comment!</p>}
+        {post.comments.filter(c => !c.parent_id).length === 0 && (
+        <div style={{ 
+            textAlign: 'center', 
+            padding: '3rem 1rem',
+            background: 'var(--grey-darker)',
+            borderRadius: '8px',
+            border: '2px dashed var(--grey-light)'
+        }}>
+            <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem', opacity: 0.5 }}>💭</span>
+            <p style={{ color: 'var(--text-secondary)', margin: 0 }}>
+            No comments yet. Be the first to share your thoughts!
+            </p>
+        </div>
+        )}
       </div>
     </div>
   );

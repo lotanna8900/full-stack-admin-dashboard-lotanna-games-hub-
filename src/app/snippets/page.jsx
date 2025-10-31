@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient'; 
 import Link from 'next/link';
-import Image from 'next/image'; // 
+import Image from 'next/image';
 
 export default function SnippetsPage() {
   // --- State Variables ---
@@ -52,7 +52,6 @@ export default function SnippetsPage() {
       setLoading(false);
     };
 
-    // Initial Fetch & Listener
     getSnippets();
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -66,9 +65,14 @@ export default function SnippetsPage() {
   }, []);
 
   // --- Handler Functions ---
+  const openNewSnippetModal = () => {
+    setIsNewSnippetModalOpen(true);
+    setNewSnippetTitle('');
+    setNewSnippetDescription('');
+    setNewSnippetGameUrl('');
+    setNewSnippetImageUrl('');
+  };
 
-  // Snippet Modal Handlers
-  const openNewSnippetModal = () => setIsNewSnippetModalOpen(true);
   const closeNewSnippetModal = () => {
     setIsNewSnippetModalOpen(false);
     setNewSnippetTitle('');
@@ -99,48 +103,73 @@ export default function SnippetsPage() {
   const handleCreateSnippet = async (event) => {
     event.preventDefault();
     if (!session) return;
+    
     const { data, error } = await supabase
       .from('snippets')
       .insert([{
         title: newSnippetTitle,
         description: newSnippetDescription,
         game_url: newSnippetGameUrl,
-        image_url: newSnippetImageUrl,
+        image_url: newSnippetImageUrl || null,
         author_id: session.user.id
       }])
       .select()
       .single();
-    if (error) { console.error('Error creating snippet:', error); alert('Could not create the snippet.'); }
-    else { setSnippets([data, ...snippets]); closeNewSnippetModal(); }
+      
+    if (error) { 
+      console.error('Error creating snippet:', error); 
+      alert('Could not create the snippet.'); 
+    } else { 
+      setSnippets([data, ...snippets]); 
+      closeNewSnippetModal(); 
+    }
   };
 
   const handleUpdateSnippet = async (event) => {
     event.preventDefault();
     if (!editingSnippet) return;
+    
     const { data, error } = await supabase
       .from('snippets')
       .update({
         title: newSnippetTitle,
         description: newSnippetDescription,
         game_url: newSnippetGameUrl,
-        image_url: newSnippetImageUrl
+        image_url: newSnippetImageUrl || null
       })
       .eq('id', editingSnippet.id)
       .select()
       .single();
-    if (error) { console.error('Error updating snippet:', error); alert('Could not update the snippet.'); }
-    else { setSnippets(snippets.map(s => (s.id === editingSnippet.id ? data : s))); closeEditSnippetModal(); }
+      
+    if (error) { 
+      console.error('Error updating snippet:', error); 
+      alert('Could not update the snippet.'); 
+    } else { 
+      setSnippets(snippets.map(s => (s.id === editingSnippet.id ? data : s))); 
+      closeEditSnippetModal(); 
+    }
   };
 
   const handleDeleteSnippet = async (snippetId) => {
-    if (!window.confirm("Are you sure?")) return;
+    if (!window.confirm("Are you sure you want to delete this snippet? This action cannot be undone.")) return;
+    
     const { error } = await supabase.from('snippets').delete().eq('id', snippetId);
-    if (error) { console.error('Error deleting snippet:', error); alert('Could not delete snippet.'); }
-    else { setSnippets(snippets.filter(snippet => snippet.id !== snippetId)); }
+    if (error) { 
+      console.error('Error deleting snippet:', error); 
+      alert('Could not delete snippet.'); 
+    } else { 
+      setSnippets(snippets.filter(snippet => snippet.id !== snippetId)); 
+    }
   };
 
   if (loading) {
-    return <div>Loading snippets...</div>;
+    return (
+      <div className="section">
+        <div className="dashboard-header">
+          <h1>Loading snippets...</h1>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -149,52 +178,91 @@ export default function SnippetsPage() {
       <div id="snippets-section" className="section">
         <div className="dashboard-header">
           <div className="dashboard-title">
-            <h1>Game Snippets</h1>
-            <p className="dashboard-subtitle">Explore demos and snippets from various projects</p>
+            <h1>🎮 Game Snippets</h1>
+            <p className="dashboard-subtitle">
+              Explore playable demos and interactive fiction samples
+            </p>
           </div>
           <div className="action-buttons">
             {userRole === 'admin' && (
               <button className="btn btn-primary" onClick={openNewSnippetModal}>
-                Add New Snippet
+                + Add Snippet
               </button>
             )}
           </div>
         </div>
 
-        <div className="content-grid">
-          {snippets.map((snippet) => (
-            <div key={snippet.id} className="content-card">
-              {snippet.image_url && (
-                <div style={{ position: 'relative', width: '100%', height: '180px' }}>
-                  <Image
-                    src={snippet.image_url}
-                    alt={snippet.title}
-                    fill
-                    style={{ objectFit: 'cover' }}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
-                </div>
-              )}
-              <div style={{ padding: '1rem' }}>
-                <h2 className="content-title">{snippet.title}</h2>
-                <p className="content-meta">Added on {new Date(snippet.created_at).toISOString().split('T')[0]}</p>
-                <p style={{ whiteSpace: 'pre-wrap' }}>{snippet.description}</p>
-                <div style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <a href={snippet.game_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                    View Full Demo
-                  </a>
-                  {/* Admin Edit/Delete Buttons */}
-                  {userRole === 'admin' && (
-                    <>
-                      <button className="btn" onClick={() => openEditSnippetModal(snippet)}>Edit</button>
-                      <button className="btn btn-danger" onClick={() => handleDeleteSnippet(snippet.id)}>Delete</button>
-                    </>
-                  )}
+        {snippets.length === 0 ? (
+          <div className="empty-state-card">
+            <div className="empty-state-icon">🎮</div>
+            <h3>No game snippets yet</h3>
+            <p>Check back soon for playable demos and samples!</p>
+          </div>
+        ) : (
+          <div className="content-grid">
+            {snippets.map((snippet) => (
+              <div key={snippet.id} className="content-card snippet-card">
+                {/* Cover Image */}
+                {snippet.image_url && (
+                  <div className="snippet-image-wrapper">
+                    <Image
+                      src={snippet.image_url}
+                      alt={snippet.title}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                    <div className="snippet-overlay">
+                      <span className="play-icon">▶</span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Content */}
+                <div className="snippet-content">
+                  <h2 className="content-title">{snippet.title}</h2>
+                  <p className="content-meta">
+                    Added {new Date(snippet.created_at).toLocaleDateString()}
+                  </p>
+                  <p className="snippet-description">
+                    {snippet.description || 'No description provided.'}
+                  </p>
+                  
+                  {/* Actions */}
+                  <div className="snippet-actions">
+                    <a 
+                      href={snippet.game_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="btn btn-primary btn-play"
+                    >
+                      ▶ Play Now
+                    </a>
+                    
+                    {userRole === 'admin' && (
+                      <div className="admin-actions">
+                        <button 
+                          className="btn-icon" 
+                          onClick={() => openEditSnippetModal(snippet)}
+                          title="Edit snippet"
+                        >
+                          ✏️
+                        </button>
+                        <button 
+                          className="btn-icon" 
+                          onClick={() => handleDeleteSnippet(snippet.id)}
+                          title="Delete snippet"
+                        >
+                          🗑️
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* New Snippet Modal */}
@@ -206,26 +274,67 @@ export default function SnippetsPage() {
               <span className="modal-close" onClick={closeNewSnippetModal}>&times;</span>
             </div>
             <form onSubmit={handleCreateSnippet}>
-              {/* ... (form fields: title, description, game_url, image_url) ... */}
               <div className="form-group">
-                <label className="form-label">Title</label>
-                <input type="text" className="form-input" value={newSnippetTitle} onChange={(e) => setNewSnippetTitle(e.target.value)} required />
+                <label className="form-label">Title *</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="e.g., Chapter 1 Demo"
+                  value={newSnippetTitle} 
+                  onChange={(e) => setNewSnippetTitle(e.target.value)} 
+                  required 
+                />
               </div>
+              
               <div className="form-group">
                 <label className="form-label">Description</label>
-                <textarea className="form-textarea" style={{ whiteSpace: 'pre-wrap' }} value={newSnippetDescription} onChange={(e) => setNewSnippetDescription(e.target.value)}></textarea>
+                <textarea 
+                  className="form-textarea" 
+                  style={{ whiteSpace: 'pre-wrap', minHeight: '100px' }} 
+                  placeholder="Brief description of what this demo includes..."
+                  value={newSnippetDescription} 
+                  onChange={(e) => setNewSnippetDescription(e.target.value)}
+                ></textarea>
               </div>
+              
               <div className="form-group">
-                <label className="form-label">Game Demo URL</label>
-                <input type="url" className="form-input" placeholder="https://dashingdon.com/play/..." value={newSnippetGameUrl} onChange={(e) => setNewSnippetGameUrl(e.target.value)} required />
+                <label className="form-label">Game Demo URL *</label>
+                <input 
+                  type="url" 
+                  className="form-input" 
+                  placeholder="https://dashingdon.com/play/..." 
+                  value={newSnippetGameUrl} 
+                  onChange={(e) => setNewSnippetGameUrl(e.target.value)} 
+                  required 
+                />
+                <small style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                  Link to your hosted game demo
+                </small>
               </div>
+              
               <div className="form-group">
                 <label className="form-label">Cover Image URL (Optional)</label>
-                <input type="url" className="form-input" placeholder="Copy URL from File Manager..." value={newSnippetImageUrl} onChange={(e) => setNewSnippetImageUrl(e.target.value)} />
+                <input 
+                  type="url" 
+                  className="form-input" 
+                  placeholder="Copy URL from File Manager..." 
+                  value={newSnippetImageUrl} 
+                  onChange={(e) => setNewSnippetImageUrl(e.target.value)} 
+                />
               </div>
+              
               <div style={{ textAlign: 'right', marginTop: '2rem' }}>
-                <button type="button" className="btn" onClick={closeNewSnippetModal} style={{ marginRight: '1rem' }}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Add Snippet</button>
+                <button 
+                  type="button" 
+                  className="btn" 
+                  onClick={closeNewSnippetModal} 
+                  style={{ marginRight: '1rem' }}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Add Snippet
+                </button>
               </div>
             </form>
           </div>
@@ -233,7 +342,7 @@ export default function SnippetsPage() {
       )}
 
       {/* Edit Snippet Modal */}
-      {isEditSnippetModalOpen && (
+      {isEditSnippetModalOpen && editingSnippet && (
         <div id="edit-snippet-modal" className="modal active">
           <div className="modal-content">
             <div className="modal-header">
@@ -241,26 +350,60 @@ export default function SnippetsPage() {
               <span className="modal-close" onClick={closeEditSnippetModal}>&times;</span>
             </div>
             <form onSubmit={handleUpdateSnippet}>
-              {/*  (form fields */}
               <div className="form-group">
-                <label className="form-label">Title</label>
-                <input type="text" className="form-input" value={newSnippetTitle} onChange={(e) => setNewSnippetTitle(e.target.value)} required />
+                <label className="form-label">Title *</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  value={newSnippetTitle} 
+                  onChange={(e) => setNewSnippetTitle(e.target.value)} 
+                  required 
+                />
               </div>
+              
               <div className="form-group">
                 <label className="form-label">Description</label>
-                <textarea className="form-textarea" style={{ whiteSpace: 'pre-wrap' }} value={newSnippetDescription} onChange={(e) => setNewSnippetDescription(e.target.value)}></textarea>
+                <textarea 
+                  className="form-textarea" 
+                  style={{ whiteSpace: 'pre-wrap', minHeight: '100px' }} 
+                  value={newSnippetDescription} 
+                  onChange={(e) => setNewSnippetDescription(e.target.value)}
+                ></textarea>
               </div>
+              
               <div className="form-group">
-                <label className="form-label">Game Demo URL</label>
-                <input type="url" className="form-input" value={newSnippetGameUrl} onChange={(e) => setNewSnippetGameUrl(e.target.value)} required />
+                <label className="form-label">Game Demo URL *</label>
+                <input 
+                  type="url" 
+                  className="form-input" 
+                  value={newSnippetGameUrl} 
+                  onChange={(e) => setNewSnippetGameUrl(e.target.value)} 
+                  required 
+                />
               </div>
+              
               <div className="form-group">
                 <label className="form-label">Cover Image URL (Optional)</label>
-                <input type="url" className="form-input" value={newSnippetImageUrl} onChange={(e) => setNewSnippetImageUrl(e.target.value)} />
+                <input 
+                  type="url" 
+                  className="form-input" 
+                  value={newSnippetImageUrl} 
+                  onChange={(e) => setNewSnippetImageUrl(e.target.value)} 
+                />
               </div>
+              
               <div style={{ textAlign: 'right', marginTop: '2rem' }}>
-                <button type="button" className="btn" onClick={closeEditSnippetModal} style={{ marginRight: '1rem' }}>Cancel</button>
-                <button type="submit" className="btn btn-primary">Save Changes</button>
+                <button 
+                  type="button" 
+                  className="btn" 
+                  onClick={closeEditSnippetModal} 
+                  style={{ marginRight: '1rem' }}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Save Changes
+                </button>
               </div>
             </form>
           </div>

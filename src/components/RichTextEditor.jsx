@@ -61,10 +61,12 @@ const Toolbar = ({ editor }) => {
 export default function RichTextEditor({ initialContent = '', onUpdate }) {
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Link.configure({
-        openOnClick: false, // Don't open links when clicking in the editor
-      }),
+        StarterKit.configure({
+            link: false,
+        }),
+        Link.configure({
+            openOnClick: false,
+        }),
     ],
     // --- FIX FROM THE ERROR MESSAGE ---
     immediatelyRender: false, 

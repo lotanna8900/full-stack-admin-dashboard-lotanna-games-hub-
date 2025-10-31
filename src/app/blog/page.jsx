@@ -338,16 +338,19 @@ export default function BlogListPage() {
 
             {/* --- Comments Section --- */}
             <div className="comments-section" style={{ marginTop: '2rem', borderTop: '1px solid var(--grey-dark)', paddingTop: '1rem' }}>
-              <h3 style={{ marginBottom: '1rem' }}>Comments ({post.comments.length})</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h3 style={{ margin: 0 }}>Comments</h3>
+                <span className="comment-count">{post.comments.length}</span>
+              </div>
 
               {/* Add Comment Button */}
               {session && commentFormOpen !== post.id && (
                 <button 
                   onClick={() => setCommentFormOpen(post.id)} 
                   className="btn btn-primary" 
-                  style={{ marginBottom: '1rem', padding: '0.5rem 1rem' }}
+                  style={{ marginBottom: '1.5rem', padding: '0.5rem 1.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
                 >
-                  Add a Comment
+                  <span>✍️</span> Add a Comment
                 </button>
               )}
 

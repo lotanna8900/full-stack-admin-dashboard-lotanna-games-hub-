@@ -5,12 +5,6 @@ import BlogPostPageContent from './BlogPostPageContent';
 // --- 1. THE METADATA FUNCTION (RUNS ON SERVER) ---
 export async function generateMetadata({ params }) {
   const { postId } = params; 
-
-  // Create a Supabase client for server-side operations
-  // Note: For server-side, you'd typically use a service role or a different client setup,
-  // but for a simple read-only operation like this, your existing client should work
-  // as long as RLS is set up for public reads on 'posts'.
-  
   const { data: post, error } = await supabase
     .from('posts')
     .select('title, content, image_url') 
@@ -55,14 +49,15 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// --- 2. THE PAGE COMPONENT (My OLD WRAPPER) ---
 export default function BlogPostPageWrapper({ params }) {
+  const paramsPromise = Promise.resolve(params);
+
   return (
     <Suspense fallback={<div>Loading Post...</div>}>
-      {/* Pass the server-side 'params' directly 
-        to the new client component.
+      {/* This now passes a Promise, which is what 
+        your client component (with the 'use()' hook) expects.
       */}
-      <BlogPostPageContent params={params} />
+      <BlogPostPageContent params={paramsPromise} />
     </Suspense>
   );
 }
