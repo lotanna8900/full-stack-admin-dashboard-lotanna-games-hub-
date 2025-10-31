@@ -25,6 +25,7 @@ export default function ProfilePage() {
   const [notifyComments, setNotifyComments] = useState(true);
   const [notifyAnnouncements, setNotifyAnnouncements] = useState(true);
   const [notifySubscriptions, setNotifySubscriptions] = useState(true);
+  const [notifyNewsletter, setNotifyNewsletter] = useState(false);
   const [newAvatarUrl, setNewAvatarUrl] = useState('');
 
   // State for session and loading
@@ -54,6 +55,7 @@ export default function ProfilePage() {
           setNotifyComments(data.notify_comments ?? true);
           setNotifyAnnouncements(data.notify_announcements ?? true);
           setNotifySubscriptions(data.notify_subscriptions ?? true);
+          setNotifyNewsletter(data.email_on_newsletter);
         }
         setLoading(false);
       }
@@ -92,7 +94,8 @@ export default function ProfilePage() {
       avatar_url: newAvatarUrl,
       notify_comments: notifyComments,
       notify_announcements: notifyAnnouncements,
-      notify_subscriptions: notifySubscriptions
+      notify_subscriptions: notifySubscriptions,
+      email_on_newsletter: notifyNewsletter
     };
 
     const { error } = await supabase.from('profiles').upsert(profileData);
@@ -272,6 +275,23 @@ export default function ProfilePage() {
                   <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>Subscription Updates</div>
                   <small style={{ color: 'var(--text-secondary)', fontWeight: 'normal' }}>
                     Get notified about activity on posts you follow
+                  </small>
+                </div>
+              </label>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={notifyNewsletter} 
+                  onChange={(e) => setNotifyNewsletter(e.target.checked)}
+                  style={{ marginRight: '0.75rem', width: '18px', height: '18px', cursor: 'pointer' }}
+                />
+                <div>
+                  <div style={{ fontWeight: '600', marginBottom: '0.25rem' }}>🧪 The Lab Report</div>
+                  <small style={{ color: 'var(--text-secondary)', fontWeight: 'normal' }}>
+                    Receive periodic newsletters with posts and updates
                   </small>
                 </div>
               </label>

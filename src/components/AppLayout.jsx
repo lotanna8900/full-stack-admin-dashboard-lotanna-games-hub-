@@ -1,19 +1,42 @@
 "use client";
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../app/utils/supabaseClient';
 import Link from 'next/link';
 import Image from 'next/image';
 
 export default function AppLayout({ children }) {
-  // STATE (Global: Auth & Notifications)
+  // STATE
   const router = useRouter();
+  const pathname = usePathname();
   const [session, setSession] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [username, setUsername] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  
+  // Refs for click-outside detection
+  const notificationRef = useRef(null);
+  const userMenuRef = useRef(null);
+
+  // --- CLICK OUTSIDE HANDLER ---
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setIsNotificationDropdownOpen(false);
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // --- SCROLL LOCK EFFECT ---
   useEffect(() => {
@@ -28,24 +51,30 @@ export default function AppLayout({ children }) {
     };
   }, [isMobileMenuOpen]); 
 
-  // --- HANDLERS (Global) ---
+  // --- CLOSE MOBILE MENU ON ROUTE CHANGE ---
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  // --- HANDLERS ---
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setSession(null);
     setUserRole('guest');
-    window.location.href = '/login'; // Redirect to login on logout
+    setUsername('');
+    setAvatarUrl('');
+    router.push('/login');
   };
 
   // Notification Fetching Handler
   const fetchNotifications = async (currentSession) => {
     if (!currentSession) return;
-    // 1. Get unread count
+    
     const { count: unread } = await supabase
       .from('notifications').select('*', { count: 'exact', head: true })
       .eq('user_id', currentSession.user.id).eq('is_read', false);
     setUnreadCount(unread || 0);
 
-    // 2. Get recent notifications list
     const { data: notificationsData } = await supabase
       .from('notifications').select('*')
       .eq('user_id', currentSession.user.id)
@@ -53,235 +82,342 @@ export default function AppLayout({ children }) {
     setNotifications(notificationsData || []);
   };
 
-  // Notification Click Handler
-  const handleNotificationClick = async (notificationId, linkUrl) => {
-  // --- Mark as read ---
-  const notification = notifications.find(n => n.id === notificationId);
-  const wasUnread = notification && !notification.is_read;
-  let updateError = false;
+  // Mark all as read
+  const handleMarkAllAsRead = async () => {
+    if (!session || unreadCount === 0) return;
 
-  if (notificationId && wasUnread) {
     const { error } = await supabase
       .from('notifications')
       .update({ is_read: true })
-      .eq('id', notificationId);
+      .eq('user_id', session.user.id)
+      .eq('is_read', false);
 
-    if (error) {
-      console.error('Error marking notification as read:', error);
-      updateError = true;
-      alert('Failed to mark notification as read.');
+    if (!error) {
+      setNotifications(notifications.map(n => ({ ...n, is_read: true })));
+      setUnreadCount(0);
     }
-  }
+  };
 
-  // --- Update local state ---
-  if (notificationId && !updateError) {
-    setNotifications(currentNotifications =>
-      currentNotifications.map(n =>
-        n.id === notificationId ? { ...n, is_read: true } : n
-      )
-    );
-    if (wasUnread) {
-      setUnreadCount(prevCount => Math.max(0, prevCount - 1));
+  // Notification Click Handler
+  const handleNotificationClick = async (notificationId, linkUrl) => {
+    const notification = notifications.find(n => n.id === notificationId);
+    const wasUnread = notification && !notification.is_read;
+
+    if (notificationId && wasUnread) {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', notificationId);
+
+      if (!error) {
+        setNotifications(currentNotifications =>
+          currentNotifications.map(n =>
+            n.id === notificationId ? { ...n, is_read: true } : n
+          )
+        );
+        setUnreadCount(prevCount => Math.max(0, prevCount - 1));
+      }
     }
-  }
 
-  // --- Close dropdown ---
-  setIsNotificationDropdownOpen(false);
+    setIsNotificationDropdownOpen(false);
 
-  // --- NEW Navigation Logic ---
-  if (linkUrl) {
-    if (linkUrl.startsWith('/')) {
-      router.push(linkUrl); // Use Next.js router for internal links
-    } else {
-      window.location.href = linkUrl; // Fallback for external links
+    if (linkUrl) {
+      if (linkUrl.startsWith('/')) {
+        router.push(linkUrl);
+      } else {
+        window.location.href = linkUrl;
+      }
     }
-  }
-};
+  };
 
-  // --- GLOBAL DATA FETCHING (Auth & Notifications)
-    useEffect(() => {
-    // Helper function to fetch user role and notifications
+  // --- GLOBAL DATA FETCHING ---
+  useEffect(() => {
     const fetchUserData = async (currentSession) => {
       if (currentSession) {
-        // Fetch Profile Role
         const { data: profile } = await supabase
-          .from('profiles').select('role').eq('id', currentSession.user.id).single();
+          .from('profiles')
+          .select('role, username, avatar_url')
+          .eq('id', currentSession.user.id)
+          .single();
+        
         setUserRole(profile?.role || 'guest');
-        // Fetch notifications
-        await fetchNotifications(currentSession); // 
+        setUsername(profile?.username || 'User');
+        setAvatarUrl(profile?.avatar_url || '');
+        
+        await fetchNotifications(currentSession);
       } else {
         setUserRole('guest');
+        setUsername('Guest');
+        setAvatarUrl('');
         setNotifications([]);
         setUnreadCount(0);
       }
     };
 
-    // 1. Fetch initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       fetchUserData(session);
     });
 
-    // 2. Set up listener for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       fetchUserData(session);
     });
 
-    // 3. Cleanup the subscription when the component unmounts
-    return () => {
-      subscription?.unsubscribe();
-    };
+    return () => subscription?.unsubscribe();
   }, []);
 
+  // Helper to check if route is active
+  const isActive = (path) => pathname === path;
+
+  // Get relative time for notifications
+  const getRelativeTime = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return 'just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return date.toLocaleDateString();
+  };
 
   // --- RENDER ---
   return (
     <>
       {/* --- TOP NAVIGATION BAR --- */}
-      <nav>
+      <nav className="top-nav">
         <div className="nav-container">
           
-          {/* 1. HAMBURGER BUTTON (Visible on mobile) */}
+          {/* Hamburger Menu */}
           <button
             className="hamburger-menu"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle mobile menu"
           >
-            ☰
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
           </button>
 
-          {/* 2. My Logo */}
-          <div className="logo" style={{ display: 'flex', alignItems: 'center' }}>
-            <Link href="/" title="Go to Dashboard" style={{ display: 'flex', alignItems: 'center' }}>
+          {/* Logo */}
+          <div className="logo">
+            <Link href="/" title="Go to Dashboard">
               <Image
                 src="/logo.png" 
                 alt="Lota Labs Logo"
                 width={100}   
                 height={35}  
                 priority
-                style={{ height: '100%', width: 'auto' }} 
+                style={{ height: 'auto', width: 'auto' }} 
               />
             </Link>
           </div>
 
-          {/* 3. MY EXISTING NAV LINKS (Will be hidden on mobile) */}
+          {/* Desktop Nav Links */}
           <ul className="nav-links">
-            <li><Link href="/">Dashboard</Link></li>
-            <li><Link href="/projects">Projects</Link></li>
-            <li><Link href="/snippets">Snippets</Link></li>
-            <li><Link href="/blog">Blog</Link></li>
+            <li className={isActive('/') ? 'active' : ''}>
+              <Link href="/">Dashboard</Link>
+            </li>
+            <li className={isActive('/projects') ? 'active' : ''}>
+              <Link href="/projects">Projects</Link>
+            </li>
+            <li className={isActive('/snippets') ? 'active' : ''}>
+              <Link href="/snippets">Snippets</Link>
+            </li>
+            <li className={isActive('/blog') ? 'active' : ''}>
+              <Link href="/blog">Blog</Link>
+            </li>
           </ul>
 
-          {/* 4. MY EXISTING USER MENU */}
+          {/* User Menu */}
           <div className="user-menu">
-            <div
-              className="notification-bell"
-              onClick={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}
-              style={{ position: 'relative', cursor: 'pointer' }}
-            >
-              🔔
-              {unreadCount > 0 && (
-                <span className="notification-dot" style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'red', color: 'white', borderRadius: '50%', padding: '2px 6px', fontSize: '0.7rem', fontWeight: 'bold' }}>
-                  {unreadCount}
-                </span>
+            {/* Notification Bell */}
+            <div className="notification-wrapper" ref={notificationRef}>
+              <button
+                className="notification-bell"
+                onClick={() => setIsNotificationDropdownOpen(!isNotificationDropdownOpen)}
+                aria-label="Notifications"
+              >
+                <span className="bell-icon">🔔</span>
+                {unreadCount > 0 && (
+                  <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+                )}
+              </button>
+
+              {/* Notification Dropdown */}
+              {isNotificationDropdownOpen && (
+                <div className="notification-dropdown">
+                  <div className="notification-header">
+                    <h4>Notifications</h4>
+                    {unreadCount > 0 && (
+                      <button 
+                        className="btn-link-small" 
+                        onClick={handleMarkAllAsRead}
+                      >
+                        Mark all as read
+                      </button>
+                    )}
+                  </div>
+                  
+                  <div className="notification-list">
+                    {notifications.length > 0 ? (
+                      notifications.map((notification) => (
+                        <div 
+                          key={notification.id} 
+                          className={`notification-item ${notification.is_read ? 'read' : 'unread'}`}
+                          onClick={() => handleNotificationClick(notification.id, notification.link_url)}
+                        >
+                          <div className="notification-content">
+                            <p>{notification.content}</p>
+                            <small>{getRelativeTime(notification.created_at)}</small>
+                          </div>
+                          {!notification.is_read && <span className="unread-dot"></span>}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="notification-empty">
+                        <span className="empty-icon">📭</span>
+                        <p>No notifications yet</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
-            <div 
-              className="user-avatar" 
-              onClick={() => session ? window.location.href = '/profile' : window.location.href = '/login'} 
-              style={{ cursor: 'pointer' }}
-              title={session ? 'Go to Profile' : 'Sign In'}
-            >
-              {session ? (userRole ? userRole.toUpperCase().charAt(0) : 'L') : 'S'}
-            </div>
-            <div 
-              onClick={session ? handleLogout : () => window.location.href = '/login'} 
-              style={{ cursor: 'pointer', paddingLeft: '1rem' }}
-              title={session ? 'Log Out' : 'Sign In'}
-            >
-              {session ? 'LOG OUT' : 'SIGN IN'}
-            </div>
 
-            {/* Notification Dropdown */}
-            {isNotificationDropdownOpen && (
-              <div 
-                className="notification-dropdown" 
-                style={{
-                  position: 'absolute',
-                  top: '60px',
-                  right: '20px',
-                  width: '300px',
-                  maxHeight: '400px',
-                  overflowY: 'auto',
-                  zIndex: 1000
-                }}
+            {/* User Avatar & Dropdown */}
+            <div className="user-dropdown-wrapper" ref={userMenuRef}>
+              <button
+                className="user-avatar-button"
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                aria-label="User menu"
               >
-                <h4 style={{ padding: '1rem', borderBottom: '1px solid var(--grey-dark)', margin: 0 }}>Notifications</h4>
-                {notifications.length > 0 ? (
-                  notifications.map((notification) => (
-                    <div 
-                      key={notification.id} 
-                      onClick={() => handleNotificationClick(notification.id, notification.link_url)}
-                      style={{ 
-                        padding: '1rem', 
-                        borderBottom: '1px solid var(--grey-dark)', 
-                        cursor: 'pointer', 
-                        opacity: notification.is_read ? 0.6 : 1,
-                        background: notification.is_read ? 'transparent' : 'rgba(255, 255, 255, 0.05)' 
-                      }}
-                    >
-                      <p style={{ margin: 0, fontSize: '0.9rem' }}>{notification.content}</p>
-                      <small style={{ color: 'var(--grey-light)' }}>{new Date(notification.created_at).toLocaleDateString()}</small>
-                    </div>
-                  ))
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={username}
+                    width={36}
+                    height={36}
+                    className="user-avatar-img"
+                  />
                 ) : (
-                  <p style={{ padding: '1rem', textAlign: 'center' }}>No new notifications.</p>
+                  <div className="user-avatar-placeholder">
+                    {session ? username.charAt(0).toUpperCase() : 'G'}
+                  </div>
                 )}
-              </div>
-            )}
+                <span className="user-name-desktop">{username}</span>
+              </button>
+
+              {/* User Dropdown Menu */}
+              {isUserMenuOpen && (
+                <div className="user-dropdown-menu">
+                  {session ? (
+                    <>
+                      <div className="user-dropdown-header">
+                        <p className="user-dropdown-name">{username}</p>
+                        <p className="user-dropdown-role">{userRole}</p>
+                      </div>
+                      <div className="user-dropdown-divider"></div>
+                      <Link href="/profile" className="user-dropdown-item" onClick={() => setIsUserMenuOpen(false)}>
+                        <span>👤</span> Profile Settings
+                      </Link>
+                      <div className="user-dropdown-divider"></div>
+                      <button className="user-dropdown-item logout" onClick={handleLogout}>
+                        <span>🚪</span> Log Out
+                      </button>
+                    </>
+                  ) : (
+                    <Link href="/login" className="user-dropdown-item" onClick={() => setIsUserMenuOpen(false)}>
+                      <span>🔐</span> Sign In
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* --- 5. MOBILE MENU DRAWER (Corrected Structure) --- */}
+      {/* --- MOBILE MENU --- */}
       {isMobileMenuOpen && (
         <>
-          {/* The overlay is now its own separate element */}
           <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}></div>
           
-          {/* The sidebar is now a SIBLING to the overlay, not a child */}
-          <aside className="sidebar mobile-sidebar" onClick={(e) => e.stopPropagation()}>
-
-            {/* close button */}
+          <aside className="sidebar mobile-sidebar">
             <div className="mobile-sidebar-header">
               <h3>Menu</h3>
-              <button className="mobile-menu-close" onClick={() => setIsMobileMenuOpen(false)}>
+              <button 
+                className="mobile-menu-close" 
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
                 ✕
               </button>
             </div>
 
-            {/* Duplicate the sidebar structure here for the mobile menu */}
+            {/* User Info in Mobile Menu */}
+            {session && (
+              <div className="mobile-user-info">
+                {avatarUrl ? (
+                  <Image
+                    src={avatarUrl}
+                    alt={username}
+                    width={50}
+                    height={50}
+                    className="mobile-user-avatar"
+                  />
+                ) : (
+                  <div className="mobile-user-avatar-placeholder">
+                    {username.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div>
+                  <p className="mobile-user-name">{username}</p>
+                  <p className="mobile-user-role">{userRole}</p>
+                </div>
+              </div>
+            )}
+
             <div className="sidebar-section">
               <div className="sidebar-title">Main</div>
               <ul className="sidebar-menu">
-                <li><Link href="/" onClick={() => setIsMobileMenuOpen(false)}>📊 Dashboard</Link></li>
-                <li><Link href="/projects" onClick={() => setIsMobileMenuOpen(false)}>📁 Projects</Link></li>
-                <li><Link href="/snippets" onClick={() => setIsMobileMenuOpen(false)}>🎮 Game Snippets</Link></li>
-                <li><Link href="/blog" onClick={() => setIsMobileMenuOpen(false)}>✍️ Blog Posts</Link></li>
-                <li><Link href="/announcements" onClick={() => setIsMobileMenuOpen(false)}>📢 Announcements</Link></li>
+                <li className={isActive('/') ? 'active' : ''}>
+                  <Link href="/">📊 Dashboard</Link>
+                </li>
+                <li className={isActive('/projects') ? 'active' : ''}>
+                  <Link href="/projects">📁 Projects</Link>
+                </li>
+                <li className={isActive('/snippets') ? 'active' : ''}>
+                  <Link href="/snippets">🎮 Game Snippets</Link>
+                </li>
+                <li className={isActive('/blog') ? 'active' : ''}>
+                  <Link href="/blog">✍️ Blog Posts</Link>
+                </li>
+                <li className={isActive('/announcements') ? 'active' : ''}>
+                  <Link href="/announcements">📢 Announcements</Link>
+                </li>
               </ul>
             </div>
+
             <div className="sidebar-section">
               <div className="sidebar-title">Tools</div>
               <ul className="sidebar-menu">
                 {userRole === 'admin' && (
                   <>
-                    <li><Link href="/analytics" onClick={() => setIsMobileMenuOpen(false)}>📈 Analytics</Link></li>
-                    <li><Link href="/file-manager" onClick={() => setIsMobileMenuOpen(false)}>📤 File Manager</Link></li>
+                    <li className={isActive('/analytics') ? 'active' : ''}>
+                      <Link href="/analytics">📈 Analytics</Link>
+                    </li>
+                    <li className={isActive('/file-manager') ? 'active' : ''}>
+                      <Link href="/file-manager">📤 File Manager</Link>
+                    </li>
                   </>
                 )}
                 {userRole !== 'guest' && (
-                  <li><Link href="/profile" onClick={() => setIsMobileMenuOpen(false)}>👤 Profile</Link></li>
+                  <li className={isActive('/profile') ? 'active' : ''}>
+                    <Link href="/profile">👤 Profile</Link>
+                  </li>
                 )}
               </ul>
             </div>
@@ -289,37 +425,53 @@ export default function AppLayout({ children }) {
         </>
       )}
 
-      {/* --- 6. MAIN CONTENT AREA --- */}
+      {/* --- MAIN CONTENT AREA --- */}
       <div className="main-container">
-        {/* The original sidebar, now with a class to hide it on mobile */}
+        {/* Desktop Sidebar */}
         <aside className="sidebar desktop-sidebar">
           <div className="sidebar-section">
             <div className="sidebar-title">Main</div>
             <ul className="sidebar-menu">
-              <li><Link href="/">📊 Dashboard</Link></li>
-              <li><Link href="/projects">📁 Projects</Link></li>
-              <li><Link href="/snippets">🎮 Game Snippets</Link></li>
-              <li><Link href="/blog">✍️ Blog Posts</Link></li>
-              <li><Link href="/announcements">📢 Announcements</Link></li>
+              <li className={isActive('/') ? 'active' : ''}>
+                <Link href="/">📊 Dashboard</Link>
+              </li>
+              <li className={isActive('/projects') ? 'active' : ''}>
+                <Link href="/projects">📁 Projects</Link>
+              </li>
+              <li className={isActive('/snippets') ? 'active' : ''}>
+                <Link href="/snippets">🎮 Game Snippets</Link>
+              </li>
+              <li className={isActive('/blog') ? 'active' : ''}>
+                <Link href="/blog">✍️ Blog Posts</Link>
+              </li>
+              <li className={isActive('/announcements') ? 'active' : ''}>
+                <Link href="/announcements">📢 Announcements</Link>
+              </li>
             </ul>
           </div>
+
           <div className="sidebar-section">
             <div className="sidebar-title">Tools</div>
             <ul className="sidebar-menu">
               {userRole === 'admin' && (
                 <>
-                  <li><Link href="/analytics">📈 Analytics</Link></li>
-                  <li><Link href="/file-manager">📤 File Manager</Link></li>
+                  <li className={isActive('/analytics') ? 'active' : ''}>
+                    <Link href="/analytics">📈 Analytics</Link>
+                  </li>
+                  <li className={isActive('/file-manager') ? 'active' : ''}>
+                    <Link href="/file-manager">📤 File Manager</Link>
+                  </li>
                 </>
               )}
               {userRole !== 'guest' && (
-                <li><Link href="/profile">👤 Profile</Link></li>
+                <li className={isActive('/profile') ? 'active' : ''}>
+                  <Link href="/profile">👤 Profile</Link>
+                </li>
               )}
             </ul>
           </div>
         </aside>
         
-        {/* {children} prop to render the active page */}
         <main className="content">
           {children}
         </main>

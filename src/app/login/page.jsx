@@ -1,6 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -8,20 +9,26 @@ export default function LoginPage() {
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleAuth = async (event) => {
     event.preventDefault();
     setLoading(true);
     setMessage('');
     
+    // Basic password validation for sign up
+    if (isSigningUp && password.length < 6) {
+      setMessage('Error: Password must be at least 6 characters long.');
+      setLoading(false);
+      return;
+    }
+
     let authError = null;
 
     if (isSigningUp) {
-      // 1. Call the signUp method
       const { error } = await supabase.auth.signUp({ email, password });
       authError = error;
     } else {
-      // 2. Call the signInWithPassword method
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       authError = error;
     }
@@ -30,66 +37,139 @@ export default function LoginPage() {
       setMessage(`Error: ${authError.message}`);
       console.error(authError);
     } else {
-      // The user is either logged in or needs to confirm their email
       const action = isSigningUp 
         ? "Sign-up successful! Check your email to confirm your account." 
         : "Login successful! Redirecting...";
       setMessage(action);
       
-      // OPTIONAL: Redirect the user to the dashboard after successful login (not sign up)
       if (!isSigningUp) {
+        setTimeout(() => {
           window.location.href = '/'; 
+        }, 1000);
       }
     }
     
     setLoading(false);
   };
 
+  // Toggle between sign in and sign up
+  const toggleMode = () => {
+    setIsSigningUp(!isSigningUp);
+    setMessage('');
+    setPassword('');
+  };
+
   return (
     <div className="auth-container">
-      <h1>{isSigningUp ? 'Create Account' : 'Sign In'}</h1>
-      <form onSubmit={handleAuth}>
-        <div className="form-group">
-          <label className="form-label">Email</label>
-          <input
-            type="email"
-            className="form-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={loading}
-          />
+      <div className="auth-card">
+        {/* Header */}
+        <div className="auth-header">
+          <h1>{isSigningUp ? 'Create Account' : 'Welcome Back'}</h1>
+          <p className="auth-subtitle">
+            {isSigningUp 
+              ? 'Sign up to get started with your account' 
+              : 'Sign in to continue to your dashboard'}
+          </p>
         </div>
-        <div className="form-group">
-          <label className="form-label">Password</label>
-          <input
-            type="password"
-            className="form-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={loading}
-          />
-        </div>
-        
-        {message && <p style={{ color: message.startsWith('Error') ? 'red' : 'green' }}>{message}</p>}
 
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Processing...' : (isSigningUp ? 'Sign Up' : 'Sign In')}
-        </button>
-      </form>
-      
-      <p style={{ marginTop: '1rem' }}>
-        {isSigningUp ? 'Already have an account?' : "Don't have an account?"}
-        <button 
-          type="button" 
-          className="btn btn-link" 
-          onClick={() => setIsSigningUp(!isSigningUp)}
-          style={{ marginLeft: '0.5rem' }}
-        >
-          {isSigningUp ? 'Sign In' : 'Sign Up'}
-        </button>
-      </p>
+        {/* Form */}
+        <form onSubmit={handleAuth} className="auth-form">
+          <div className="form-group">
+            <label className="form-label" htmlFor="email">Email Address</label>
+            <input
+              id="email"
+              type="email"
+              className="form-input"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+              autoComplete="email"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label" htmlFor="password">Password</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                className="form-input"
+                placeholder={isSigningUp ? 'At least 6 characters' : 'Enter your password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={loading}
+                autoComplete={isSigningUp ? 'new-password' : 'current-password'}
+                style={{ paddingRight: '3rem' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="password-toggle"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                disabled={loading}
+              >
+                {showPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
+            </div>
+            {isSigningUp && (
+              <small style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.25rem', display: 'block' }}>
+                Password must be at least 6 characters
+              </small>
+            )}
+          </div>
+          
+          {/* Message Display */}
+          {message && (
+            <div 
+              className={`auth-message ${message.startsWith('Error') ? 'error' : 'success'}`}
+              role="alert"
+            >
+              {message}
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button 
+            type="submit" 
+            className="btn btn-primary btn-full" 
+            disabled={loading}
+          >
+            {loading ? (
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                <span className="spinner"></span>
+                Processing...
+              </span>
+            ) : (
+              isSigningUp ? 'Create Account' : 'Sign In'
+            )}
+          </button>
+        </form>
+        
+        {/* Toggle Sign In/Up */}
+        <div className="auth-footer">
+          <p>
+            {isSigningUp ? 'Already have an account?' : "Don't have an account?"}
+            <button 
+              type="button" 
+              className="btn-link-primary" 
+              onClick={toggleMode}
+              disabled={loading}
+            >
+              {isSigningUp ? 'Sign In' : 'Sign Up'}
+            </button>
+          </p>
+        </div>
+
+        {/* Back to Home Link */}
+        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+          <Link href="/" className="btn-link-secondary">
+            ← Back to Home
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
