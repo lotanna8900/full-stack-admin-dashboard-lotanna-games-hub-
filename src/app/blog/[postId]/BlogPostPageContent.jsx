@@ -6,6 +6,7 @@ import { supabase } from '../../utils/supabaseClient';
 import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import Image from 'next/image';
+import ReportCommentButton from '../../../components/ReportCommentButton';
 
 // --- This is my old 'BlogPostPageContent' component ---
 export default function BlogPostPageContent({ params: paramsProp }) {
@@ -402,6 +403,9 @@ export default function BlogPostPageContent({ params: paramsProp }) {
                           Reply
                         </button>
                       )}
+
+                      <ReportCommentButton commentId={comment.id} session={session} />
+
                       {session && session.user.id === comment.author_id && (
                         <>
                           <button className="btn-link" onClick={() => { setEditingCommentId(comment.id); setEditingCommentContent(comment.content); }}>Edit</button>
@@ -498,6 +502,9 @@ export default function BlogPostPageContent({ params: paramsProp }) {
                               <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', marginBottom: '0.75rem' }}>{reply.content}</p>
                               
                               <div className="comment-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+
+                                <ReportCommentButton commentId={comment.id} session={session} />
+                                
                                 {session && session.user.id === reply.author_id && (
                                   <>
                                     <button className="btn-link" onClick={() => { setEditingCommentId(reply.id); setEditingCommentContent(reply.content); }}>Edit</button>

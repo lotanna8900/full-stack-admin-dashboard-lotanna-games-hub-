@@ -412,6 +412,9 @@ export default function AppLayout({ children }) {
                     <li className={isActive('/file-manager') ? 'active' : ''}>
                       <Link href="/file-manager">📤 File Manager</Link>
                     </li>
+                    <li className={isActive('/reports') ? 'active' : ''}>
+                      <Link href="/reports">🚩 Reports</Link>
+                    </li>
                   </>
                 )}
                 {userRole !== 'guest' && (
@@ -460,6 +463,9 @@ export default function AppLayout({ children }) {
                   </li>
                   <li className={isActive('/file-manager') ? 'active' : ''}>
                     <Link href="/file-manager">📤 File Manager</Link>
+                  </li>
+                  <li className={isActive('/reports') ? 'active' : ''}>
+                    <Link href="/reports">🚩 Reports</Link>
                   </li>
                 </>
               )}

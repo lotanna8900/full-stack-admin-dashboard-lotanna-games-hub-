@@ -3409,4 +3409,177 @@ button[onClick*="setCommentFormOpen"] {
   margin-bottom: 1rem;
 }
 
+/* ===== FILE MANAGER STYLES ===== */
+
+.file-upload-card {
+  border: 2px dashed var(--grey-light);
+  background: var(--grey-darker);
+}
+
+.file-upload-zone {
+  margin: 1rem 0;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+.file-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  border: 2px dashed var(--grey-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: var(--grey-dark);
+}
+
+.file-upload-label:hover {
+  border-color: var(--primary);
+  background: var(--grey-light);
+}
+
+.upload-icon {
+  font-size: 3rem;
+}
+
+.file-icon {
+  font-size: 2rem;
+}
+
+.file-name {
+  font-weight: 600;
+  color: var(--white);
+}
+
+.file-size {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* File Grid View */
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.file-grid-item {
+  background: var(--grey-dark);
+  border: 1px solid var(--grey-light);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.file-grid-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-color: var(--primary);
+}
+
+.file-preview {
+  position: relative;
+  width: 100%;
+  height: 150px;
+  background: var(--grey-darker);
+}
+
+.file-preview-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+}
+
+.file-info {
+  padding: 1rem;
+}
+
+.file-info .file-name {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  word-break: break-word;
+}
+
+.file-meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.file-actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 0.75rem;
+  border-top: 1px solid var(--grey-light);
+}
+
+/* File List View */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.file-list-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--grey-dark);
+  border: 1px solid var(--grey-light);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.file-list-item:hover {
+  border-color: var(--primary);
+  background: var(--grey-light);
+}
+
+.file-list-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.file-list-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-list-info .file-name {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  word-break: break-word;
+}
+
+.file-list-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .file-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .file-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .file-list-actions {
+    width: 100%;
+  }
+
+  .file-list-actions .btn {
+    flex: 1;
+  }
+}
+
 /* --- End of editor styles --- */

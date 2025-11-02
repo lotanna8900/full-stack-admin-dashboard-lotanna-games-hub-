@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient'; 
 import Link from 'next/link';
 import Image from 'next/image';
+import ReportCommentButton from '../../components/ReportCommentButton';
 
 export default function BlogListPage() {
   // --- State Variables ---
@@ -451,6 +452,8 @@ export default function BlogListPage() {
                                 Reply
                               </button>
                             )}
+
+                            <ReportCommentButton commentId={comment.id} session={session} />
                             
                             {session && session.user.id === comment.author_id && (
                               <>
@@ -562,6 +565,9 @@ export default function BlogListPage() {
                                     </div>
                                     
                                     <div className="comment-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '0.5rem' }}>
+                                      
+                                      <ReportCommentButton commentId={comment.id} session={session} />
+
                                       {session && session.user.id === reply.author_id && (
                                         <>
                                           <button className="btn-link" onClick={() => { setEditingCommentId(reply.id); setEditingCommentContent(reply.content); }}>Edit</button>

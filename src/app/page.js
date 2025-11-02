@@ -41,7 +41,8 @@ export default function HomePage() {
       const { count: snipCount } = await supabase.from('snippets').select('*', { count: 'exact', head: true });
       setSnippetCount(snipCount || 0);
 
-      const { count: memCount } = await supabase.from('profiles').select('*', { count: 'exact', head: true });
+      const { data: memCount, error: memError } = await supabase.rpc('get_public_member_count');
+      if (memError) console.error("Error fetching member count:", memError);
       setMemberCount(memCount || 0);
 
       // --- Calculate Total Post Views 
@@ -213,7 +214,7 @@ export default function HomePage() {
         {/* Social Stats Card - Spans 2 columns on larger screens */}
         {socialStats.length > 0 && (
           <a
-            href="https://google.com" // Replace with your Linktree URL
+            href="https://google.com" // Replace with my Linktree URL later
             target="_blank"
             rel="noopener noreferrer"
             className="stat-card stat-card-social"
