@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌹 Lota Labs Games
 
-## Getting Started
+**A modern full-stack platform for interactive fiction, storytelling, and creator engagement.**
+Built with **Next.js**, **Supabase**, and **TypeScript**, Lota Labs Games is a complete ecosystem that blends a community hub, content management system, analytics, and notification engine into one sleek platform.
 
-First, run the development server:
+🔗 **Live Demo:** [https://full-stack-admin-dashboard-lotanna-three.vercel.app/](https://full-stack-admin-dashboard-lotanna-three.vercel.app/)
+💻 **Tech Stack:** Next.js · React · TypeScript · Supabase · Tailwind CSS · Resend (Email Service)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Overview
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Lota Labs Games serves as a **central platform for my interactive fiction projects**, providing players and readers with a space to engage, subscribe, comment, and receive updates.
+It’s designed not just as a showcase, but as a **fully functional web app** that could scale to handle thousands of active users.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🧠 Core Features
 
-To learn more about Next.js, take a look at the following resources:
+### 🎮 User Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **Dynamic Blog & Projects:** Fully searchable and filterable sections for posts and projects.
+* **Profile System:** Users can upload avatars, edit bios, and manage notification preferences.
+* **Deep Commenting:** Nested comment and reply system with clean UI and markdown support.
+* **Subscriptions & Notifications:** In-app and email alerts for post updates, replies, and announcements.
+* **Newsletter System:** Users can opt in to receive “The Lab Report” — a platform-wide newsletter.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### ⚙️ Admin Dashboard
 
-## Deploy on Vercel
+* **Role-Based Access (RLS):** Only admins can access management features.
+* **Content Management:** Create, edit, and delete posts, projects, and announcements.
+* **File Manager:** Upload and organize media assets for posts and pages.
+* **Newsletter Composer:** Write and send rich HTML newsletters directly from the dashboard.
+* **Analytics Hub:** Track site metrics and social media growth (Instagram, TikTok, LinkedIn, etc.).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 🔔 Advanced Systems
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* **Automated Notification Engine:** PostgreSQL triggers and Edge Functions power instant in-app + email alerts.
+* **Moderation System:** Users can report comments; admins can review and take action.
+* **Dynamic SEO:** All content pages auto-generate `<meta>` tags for optimal search visibility.
+
+---
+
+## 🧰 Architecture & Stack
+
+| Layer          | Technology           | Purpose                            |
+| -------------- | -------------------- | ---------------------------------- |
+| Frontend       | Next.js (App Router) | UI, routing, and SEO               |
+| Styling        | Tailwind CSS         | Modern, responsive design          |
+| Backend & Auth | Supabase             | Database, RLS, authentication      |
+| Database       | PostgreSQL           | Core data and triggers             |
+| Edge Functions | Deno (Supabase)      | Real-time email + event automation |
+| Email          | Resend API           | Transactional + newsletter emails  |
+| Editor         | Tiptap               | Rich-text content creation         |
+
+---
+
+## 🌱 Future Enhancements
+
+* Password recovery and OAuth login
+* Like/upvote system for posts and comments
+* Extended analytics and data visualization
+* Tags system
+* User reputation/badges
+* Mobile app
+
+---
+
+## 📸 Screenshots
+
+<img width="2522" height="1416" alt="07 11 2025_00 57 37_REC" src="https://github.com/user-attachments/assets/44bbf148-4203-4193-be44-7ab55ab38f92" />
+
+<img width="2560" height="1422" alt="07 11 2025_00 58 56_REC" src="https://github.com/user-attachments/assets/86299aa7-e029-4088-b908-445b79fe81e1" />
+
+<img width="2560" height="1418" alt="07 11 2025_01 00 05_REC" src="https://github.com/user-attachments/assets/dbdd53b7-5f92-432c-a029-2cc6c3fefed5" />
+
+---
+
+## 👨🏽‍💻 About the Developer
+
+I’m **Lotanna**, a passionate **full-stack developer and interactive fiction creator**.
+I specialize in building clean, scalable web applications using modern technologies like **React, TypeScript, Next.js, and Supabase**.
+This project is part of my larger goal to merge **storytelling and technology.** I want to turn narrative experiences into living, interactive worlds.
+
+---
+
+## 🪪 License
+
+This project is open-source under the MIT License.
