@@ -214,7 +214,7 @@ export default function HomePage() {
         {/* Social Stats Card - Spans 2 columns on larger screens */}
         {socialStats.length > 0 && (
           <a
-            href="https://google.com" // Replace with my Linktree URL later
+            href="https://linktr.ee/lota_labs" // Replace with my Linktree URL later
             target="_blank"
             rel="noopener noreferrer"
             className="stat-card stat-card-social"

@@ -147,6 +147,17 @@ export default function LoginPage() {
             )}
           </button>
         </form>
+
+        {/* Forgot password link */}
+        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+          <Link 
+            href="/forgot-password" 
+            className="btn-link-secondary"
+          >
+            Forgot your password?
+          </Link>
+        </div>
+
         
         {/* Toggle Sign In/Up */}
         <div className="auth-footer">

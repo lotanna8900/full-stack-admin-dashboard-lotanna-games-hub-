@@ -1,9 +1,9 @@
 import './globals.css';
-import './style.css'; // global styles for the app
+import './style.css'; 
 import AppLayout from '../components/AppLayout';
 export const metadata = {
   title: 'Lota Labs',
-  description: 'Interactive Fiction and Full-Stack Development. The rose that grew from concrete. 🌹',
+  description: 'Interactive Fiction Hub. The rose that grew from concrete. 🌹',
 };
 
 export default function RootLayout({ children }) {

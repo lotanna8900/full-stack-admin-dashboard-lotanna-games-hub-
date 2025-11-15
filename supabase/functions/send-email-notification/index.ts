@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
         <div>
           <p>Hi there,</p>
           <p>${notification.content}</p>
-          ${notification.link_url ? `<p><a href="https://full-stack-admin-dashboard-lotanna-three.vercel.app${notification.link_url}">View it on the site</a></p>` : ''}
+          ${notification.link_url ? `<p><a href="https://lotalabs.vercel.app${notification.link_url}">View it on the site</a></p>` : ''}
           <br>
           <p><small>You received this because you are a member of Lota Labs.</small></p>
         </div>

@@ -323,6 +323,10 @@ export default function AppLayout({ children }) {
                       <Link href="/profile" className="user-dropdown-item" onClick={() => setIsUserMenuOpen(false)}>
                         <span>👤</span> Profile Settings
                       </Link>
+
+                      <Link href="/support" className="user-dropdown-item" onClick={() => setIsUserMenuOpen(false)}>
+                        <span>🎫</span> Contact Support
+                      </Link>
                       <div className="user-dropdown-divider"></div>
                       <button className="user-dropdown-item logout" onClick={handleLogout}>
                         <span>🚪</span> Log Out
@@ -415,6 +419,9 @@ export default function AppLayout({ children }) {
                     <li className={isActive('/reports') ? 'active' : ''}>
                       <Link href="/reports">🚩 Reports</Link>
                     </li>
+                    <li className={isActive('/admin-tickets') ? 'active' : ''}>
+                      <Link href="/admin-tickets">🎫 Support</Link>
+                    </li>
                   </>
                 )}
                 {userRole !== 'guest' && (
@@ -466,6 +473,9 @@ export default function AppLayout({ children }) {
                   </li>
                   <li className={isActive('/reports') ? 'active' : ''}>
                     <Link href="/reports">🚩 Reports</Link>
+                  </li>
+                  <li className={isActive('/admin-tickets') ? 'active' : ''}>
+                      <Link href="/admin-tickets">🎫 Support</Link>
                   </li>
                 </>
               )}

@@ -33,6 +33,12 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  // State for change password
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState({ type: '', text: '' });
+
   // --- DATA FETCHING ---
   useEffect(() => {
     const fetchProfile = async (currentSession) => {
@@ -108,6 +114,40 @@ export default function ProfilePage() {
       alert('Profile updated successfully!');
     }
     setSaving(false);
+  };
+
+  // --- Handle change password
+  const handleChangePassword = async (event) => {
+    event.preventDefault();
+    setPasswordLoading(true);
+    setPasswordMessage({ type: '', text: '' });
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: 'error', text: 'Passwords do not match.' });
+      setPasswordLoading(false);
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordMessage({ type: 'error', text: 'Password must be at least 6 characters long.' });
+      setPasswordLoading(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    setPasswordLoading(false);
+
+    if (error) {
+      console.error('Error updating password:', error);
+      setPasswordMessage({ type: 'error', text: `Error: ${error.message}` });
+    } else {
+      setPasswordMessage({ type: 'success', text: 'Password updated successfully!' });
+      setNewPassword('');
+      setConfirmPassword('');
+    }
   };
 
   // Loading state
@@ -302,6 +342,57 @@ export default function ProfilePage() {
             </button>
           </form>
         </div>
+
+        <div className="content-card">
+          <h2 className="content-title">Security</h2>
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+            Change your account password.
+          </p>
+
+          <form onSubmit={handleChangePassword}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="new-password">New Password</label>
+              <input
+                id="new-password"
+                type="password"
+                className="form-input"
+                placeholder="Enter your new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                disabled={passwordLoading}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="confirm-password">Confirm New Password</label>
+              <input
+                id="confirm-password"
+                type="password"
+                className="form-input"
+                placeholder="Confirm your new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                disabled={passwordLoading}
+                required
+              />
+            </div>
+
+            {passwordMessage.text && (
+              <div 
+                className={`auth-message ${passwordMessage.type}`}
+                style={{ marginBottom: '1rem' }}
+              >
+                {passwordMessage.text}
+              </div>
+            )}
+
+            <button type="submit" className="btn btn-primary" disabled={passwordLoading}>
+              {passwordLoading ? 'Saving...' : 'Change Password'}
+            </button>
+          </form>
+        </div>
+
       </div>
     </div>
   );
