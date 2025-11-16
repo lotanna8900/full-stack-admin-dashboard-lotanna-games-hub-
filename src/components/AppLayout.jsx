@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../app/utils/supabaseClient';
 import Link from 'next/link';
 import Image from 'next/image';
+import Footer from '../components/Footer';
 
 export default function AppLayout({ children }) {
   // STATE
@@ -229,6 +230,9 @@ export default function AppLayout({ children }) {
             <li className={isActive('/blog') ? 'active' : ''}>
               <Link href="/blog">Blog</Link>
             </li>
+            <li className={isActive('/about') ? 'active' : ''}>
+              <Link href="/about">About</Link>
+            </li>
           </ul>
 
           {/* User Menu */}
@@ -402,6 +406,9 @@ export default function AppLayout({ children }) {
                 <li className={isActive('/announcements') ? 'active' : ''}>
                   <Link href="/announcements">📢 Announcements</Link>
                 </li>
+                <li className={isActive('/about') ? 'active' : ''}>
+                  <Link href="/about">ℹ️ About Me</Link>
+                </li>
               </ul>
             </div>
 
@@ -490,7 +497,9 @@ export default function AppLayout({ children }) {
         
         <main className="content">
           {children}
+          <Footer />
         </main>
+
       </div>
     </>
   );
