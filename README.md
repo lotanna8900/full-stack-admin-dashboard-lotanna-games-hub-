@@ -4,7 +4,7 @@
 Built with **Next.js**, **Supabase**, and **TypeScript**, Lota Labs Games is a complete ecosystem that blends a community hub, content management system, analytics, and notification engine into one sleek platform.
 
 🔗 **Live Demo:** [LotaLabs](https://lotalabs.vercel.app/)
-💻 **Tech Stack:** Next.js · React · TypeScript · Supabase · Tailwind CSS · Resend (Email Service)
+💻 **Tech Stack:** Next.js · React · Supabase · CSS · Custom built Keyframes animation · Resend (Email Service)
 
 ---
 
@@ -47,7 +47,7 @@ It’s designed not just as a showcase, but as a **fully functional web app** th
 | Layer          | Technology           | Purpose                            |
 | -------------- | -------------------- | ---------------------------------- |
 | Frontend       | Next.js (App Router) | UI, routing, and SEO               |
-| Styling        | Tailwind CSS         | Modern, responsive design          |
+| Styling        | CSS                  | Modern, responsive design          |
 | Backend & Auth | Supabase             | Database, RLS, authentication      |
 | Database       | PostgreSQL           | Core data and triggers             |
 | Edge Functions | Deno (Supabase)      | Real-time email + event automation |
