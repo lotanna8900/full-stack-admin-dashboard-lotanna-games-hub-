@@ -38,6 +38,7 @@ It’s designed not just as a showcase, but as a **fully functional web app** th
 * **Automated Notification Engine:** PostgreSQL triggers and Edge Functions power instant in-app + email alerts.
 * **Moderation System:** Users can report comments; admins can review and take action.
 * **Dynamic SEO:** All content pages auto-generate `<meta>` tags for optimal search visibility.
+* **Dynamic Support Helpdesk:** Users create and interact with their support tickect, direct communication with an admin until their issue is resolved.
 
 ---
 
