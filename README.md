@@ -3,7 +3,7 @@
 **A modern full-stack platform for interactive fiction, storytelling, and creator engagement.**
 Built with **Next.js**, **Supabase**, and **TypeScript**, Lota Labs Games is a complete ecosystem that blends a community hub, content management system, analytics, and notification engine into one sleek platform.
 
-🔗 **Live Demo:** [https://full-stack-admin-dashboard-lotanna-three.vercel.app/](https://lotalabs.vercel.app/)
+🔗 **Live Demo:** [LotaLabs](https://lotalabs.vercel.app/)
 💻 **Tech Stack:** Next.js · React · TypeScript · Supabase · Tailwind CSS · Resend (Email Service)
 
 ---
