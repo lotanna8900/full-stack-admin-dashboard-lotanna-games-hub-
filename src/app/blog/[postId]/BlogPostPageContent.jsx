@@ -1,4 +1,3 @@
-// --- THIS IS THE NEW CLIENT COMPONENT ---
 "use client";
 import { useState, useEffect, use } from 'react'; 
 import { useSearchParams } from 'next/navigation'; 

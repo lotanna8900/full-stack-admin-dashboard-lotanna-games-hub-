@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient'; 
 import Link from 'next/link';
 import Image from 'next/image';
+import StoryEngine from '../../components/StoryEngine';
+import demoData from '../../app/data/demo.json';
+import WalletConnect from '../../components/WalletConnect';
 
 export default function SnippetsPage() {
   // --- State Variables ---
@@ -13,6 +16,13 @@ export default function SnippetsPage() {
   const [isNewSnippetModalOpen, setIsNewSnippetModalOpen] = useState(false);
   const [isEditSnippetModalOpen, setIsEditSnippetModalOpen] = useState(false);
   const [editingSnippet, setEditingSnippet] = useState(null);
+
+  // Game Player Modal State
+  const [isGamePlayerOpen, setIsGamePlayerOpen] = useState(false);
+  const [activeGameTitle, setActiveGameTitle] = useState('');
+
+  // Wallet State
+  const [walletAddress, setWalletAddress] = useState(null);
 
   // Form State
   const [newSnippetTitle, setNewSnippetTitle] = useState('');
@@ -97,6 +107,15 @@ export default function SnippetsPage() {
     setNewSnippetDescription('');
     setNewSnippetGameUrl('');
     setNewSnippetImageUrl('');
+  };
+
+  // Blockchain Mint Handler
+  const handleMintTrigger = (itemName) => {
+    if (!walletAddress) {
+      alert("⚠️ HOLD UP! \n\nYou need to connect your wallet (top right) to save this item to the BNB Chain.");
+      return;
+    }
+    alert(`✅ SIGNATURE REQUEST SENT\n\n👤 User: ${walletAddress}\n⚔️ Item: [${itemName}]\n🔗 Chain: BNB Testnet`);
   };
 
   // CRUD Handlers
@@ -232,9 +251,16 @@ export default function SnippetsPage() {
                   <div className="snippet-actions">
                     <a 
                       href={snippet.game_url} 
-                      target="_blank" 
+                      target={snippet.game_url === '#local-demo' ? undefined : "_blank"}
                       rel="noopener noreferrer" 
                       className="btn btn-primary btn-play"
+                      onClick={(e) => {
+                        if (snippet.game_url === '#local-demo') {
+                          e.preventDefault(); // Stop the browser from following the link
+                          setActiveGameTitle(snippet.title);
+                          setIsGamePlayerOpen(true);
+                        }
+                      }}
                     >
                       ▶ Play Now
                     </a>
@@ -300,7 +326,7 @@ export default function SnippetsPage() {
               <div className="form-group">
                 <label className="form-label">Game Demo URL *</label>
                 <input 
-                  type="url" 
+                  type="text" 
                   className="form-input" 
                   placeholder="https://dashingdon.com/play/..." 
                   value={newSnippetGameUrl} 
@@ -374,7 +400,7 @@ export default function SnippetsPage() {
               <div className="form-group">
                 <label className="form-label">Game Demo URL *</label>
                 <input 
-                  type="url" 
+                  type="text" 
                   className="form-input" 
                   value={newSnippetGameUrl} 
                   onChange={(e) => setNewSnippetGameUrl(e.target.value)} 
@@ -407,6 +433,35 @@ export default function SnippetsPage() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* --- NEW GAME PLAYER MODAL --- */}
+      {isGamePlayerOpen && (
+        <div className="game-modal-overlay">
+            <div className="game-modal-window">
+                
+                {/* Header */}
+                <div className="game-modal-header">
+                    <h2 style={{color: 'var(--white)', margin: 0}}>{activeGameTitle}</h2>
+                    
+                    <div className="flex items-center gap-4">
+                      <WalletConnect onConnect={(addr) => setWalletAddress(addr)} />
+                      <button 
+                          onClick={() => setIsGamePlayerOpen(false)}
+                          className="game-close-btn"
+                      >
+                          &times;
+                      </button>
+                    </div>
+                </div>
+
+                {/* Game Engine Injection */}
+                <StoryEngine 
+                    storyContent={demoData} 
+                    onMintTrigger={handleMintTrigger} 
+                />
+            </div>
         </div>
       )}
     </>
