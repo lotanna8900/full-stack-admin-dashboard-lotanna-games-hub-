@@ -1,10 +1,10 @@
 # 🌹 Lota Labs Games
 
 **A modern full-stack platform for interactive fiction, storytelling, and creator engagement.**
-Built with **Next.js**, **Supabase**, and **TypeScript**, Lota Labs Games is a complete ecosystem that blends a community hub, content management system, analytics, and notification engine into one sleek platform.
+Built with a **JavaScript/Next.js frontend** and a **TypeScript/Supabase backend**, Lota Labs Games is a complete ecosystem that blends a community hub, content management system, analytics, and notification engine into one sleek platform.
 
-🔗 **Live Demo:** [https://full-stack-admin-dashboard-lotanna-three.vercel.app/](https://full-stack-admin-dashboard-lotanna-three.vercel.app/)
-💻 **Tech Stack:** Next.js · React · TypeScript · Supabase · Tailwind CSS · Resend (Email Service)
+🔗 **Live Demo:** [LotaLabs](https://lotalabs.vercel.app/)
+💻 Tech Stack: **Next.js (React)** · **Supabase (PostgreSQL)** · **TypeScript** (Edge Functions) · **Custom CSS** · **Tiptap** · **Resend**
 
 ---
 
@@ -27,7 +27,7 @@ It’s designed not just as a showcase, but as a **fully functional web app** th
 
 ### ⚙️ Admin Dashboard
 
-* **Role-Based Access (RLS):** Only admins can access management features.
+* **Role-Based Access Control (RBAC):** Secured at the database level with **Supabase RLS**. Only admins can access management features.
 * **Content Management:** Create, edit, and delete posts, projects, and announcements.
 * **File Manager:** Upload and organize media assets for posts and pages.
 * **Newsletter Composer:** Write and send rich HTML newsletters directly from the dashboard.
@@ -38,20 +38,21 @@ It’s designed not just as a showcase, but as a **fully functional web app** th
 * **Automated Notification Engine:** PostgreSQL triggers and Edge Functions power instant in-app + email alerts.
 * **Moderation System:** Users can report comments; admins can review and take action.
 * **Dynamic SEO:** All content pages auto-generate `<meta>` tags for optimal search visibility.
+* **Threaded Support Helpdesk:** A full ticket-messaging system allowing users and admins to have back-and-forth conversations, with automatic email/in-app notifications on reply.
 
 ---
 
 ## 🧰 Architecture & Stack
 
-| Layer          | Technology           | Purpose                            |
-| -------------- | -------------------- | ---------------------------------- |
-| Frontend       | Next.js (App Router) | UI, routing, and SEO               |
-| Styling        | Tailwind CSS         | Modern, responsive design          |
-| Backend & Auth | Supabase             | Database, RLS, authentication      |
-| Database       | PostgreSQL           | Core data and triggers             |
-| Edge Functions | Deno (Supabase)      | Real-time email + event automation |
-| Email          | Resend API           | Transactional + newsletter emails  |
-| Editor         | Tiptap               | Rich-text content creation         |
+| Layer          | Technology             | Purpose                                                         |
+| -------------- | --------------------   | ----------------------------------------------------------------|
+| Frontend       | Next.js (App Router)   | UI (React), Server-Side SEO (generateMetadata), and Routing     |
+| Styling        | Custom CSS (style.css) | All component styling, layouts, and custom @keyframe animations.|
+| Backend & Auth | Supabase               | Database, RLS, Authentication, and Storage.                     |
+| Database       | PostgreSQL             | Core data, SQL Functions (SECURITY DEFINER), and Triggers.      |
+| Serverless     | Deno (TypeScript)      | Supabase Edge Functions for real-time email + event automation. |
+| Email          | Resend API             | Transactional + newsletter emails                               |
+| Editor         | Tiptap                 | Rich-text content creation                                      |
 
 ---
 
