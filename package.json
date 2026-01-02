@@ -14,7 +14,7 @@
     "@tiptap/react": "^3.9.1",
     "@tiptap/starter-kit": "^3.9.1",
     "inkjs": "^2.3.2",
-    "next": "15.5.4",
+    "next": "^16.1.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-markdown": "^10.1.0",
