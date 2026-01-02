@@ -74,6 +74,28 @@ export default function SnippetsPage() {
     return () => subscription?.unsubscribe();
   }, []);
 
+  // --- Effect to Lock Background Scroll When Game Player is Open ---
+  useEffect(() => {
+    if (isGamePlayerOpen) {
+      // Lock background scroll
+      document.body.style.overflow = 'hidden';
+      document.body.style.height = '100vh';
+      document.body.style.touchAction = 'none'; // Prevent touch scrolling on mobile
+    } else {
+      // Unlock background scroll
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.body.style.touchAction = '';
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.body.style.touchAction = '';
+    };
+  }, [isGamePlayerOpen]);
+
   // --- Handler Functions ---
   const openNewSnippetModal = () => {
     setIsNewSnippetModalOpen(true);
@@ -438,7 +460,15 @@ export default function SnippetsPage() {
 
       {/* --- NEW GAME PLAYER MODAL --- */}
       {isGamePlayerOpen && (
-        <div className="game-modal-overlay">
+        <div className="game-modal-overlay"
+              onClick={(e) => {
+            // Close modal only if clicking the overlay itself, not its children
+            if (e.target === e.currentTarget) {
+              setIsGamePlayerOpen(false);
+            }
+          }}
+          onTouchMove={(e) => e.stopPropagation()} // Prevent touch scroll from bubbling
+        >
             <div className="game-modal-window">
                 
                 {/* Header */}
@@ -457,7 +487,7 @@ export default function SnippetsPage() {
                 </div>
 
                 {/* Game Engine Injection */}
-                <StoryEngine 
+                  <StoryEngine 
                     storyContent={demoData} 
                     onMintTrigger={handleMintTrigger} 
                 />
