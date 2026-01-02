@@ -20,6 +20,7 @@ export default function StoryEngine({ storyContent, onMintTrigger }: StoryEngine
   
   const [choices, setChoices] = useState<any[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const storyColumnRef = useRef<HTMLDivElement>(null);
   
   // Specific Stats for Keeper's Vigil
   const [stats, setStats] = useState({
@@ -41,9 +42,9 @@ export default function StoryEngine({ storyContent, onMintTrigger }: StoryEngine
     }
   }, [storyContent]);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [currentBlocks]);
+  // useEffect(() => {
+  //  bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // }, [currentBlocks]);
 
   const continueStory = (story: Story) => {
     const blockBuffer: StoryBlock[] = [];
@@ -93,6 +94,9 @@ export default function StoryEngine({ storyContent, onMintTrigger }: StoryEngine
     if (!inkStory) return;
     inkStory.ChooseChoiceIndex(index);
     continueStory(inkStory);
+
+    // Scroll to top of story column on choice selection
+    storyColumnRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (!inkStory) return <div style={{padding: '2rem', color: 'var(--white)'}}>Summoning the Keeper...</div>;
@@ -101,7 +105,7 @@ export default function StoryEngine({ storyContent, onMintTrigger }: StoryEngine
     <div className="story-engine-container">
       
       {/* LEFT COLUMN: THE STORY */}
-      <div className="story-column">
+      <div className="story-column" ref={storyColumnRef}>
         <div className="story-text">
           {currentBlocks.map((block, idx) => (
             block.type === 'image' ? (
@@ -122,7 +126,9 @@ export default function StoryEngine({ storyContent, onMintTrigger }: StoryEngine
                <p key={idx}>{block.content}</p>
             )
           ))}
-          <div ref={bottomRef} />
+          <div 
+          // ref={bottomRef}
+          />
         </div>
 
         <div className="choices-list">
