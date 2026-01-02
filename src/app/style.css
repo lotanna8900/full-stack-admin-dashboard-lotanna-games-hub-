@@ -4964,9 +4964,6 @@ button[onClick*="setCommentFormOpen"] {
   padding-top: 1.5rem;
   margin-top: 1.5rem;
   border-top: 2px solid rgba(255, 255, 255, 0.1);
-  position: sticky;
-  bottom: 0;
-  background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.95) 20%);
   padding-bottom: 1rem;
 }
 
