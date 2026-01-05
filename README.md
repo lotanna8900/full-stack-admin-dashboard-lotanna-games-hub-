@@ -1,87 +1,108 @@
-# 🌹 Lota Labs Games
+# 🌹 Lota Labs
 
-**A modern full-stack platform for interactive fiction, storytelling, and creator engagement.**
-Built with a **JavaScript/Next.js frontend** and a **TypeScript/Supabase backend**, Lota Labs Games is a complete ecosystem that blends a community hub, content management system, analytics, and notification engine into one sleek platform.
+**Where Narrative Meets the Blockchain.**
+The first "Story-to-Chain" platform that turns interactive fiction readers into digital owners.
 
-🔗 **Live Demo:** [LotaLabs](https://lotalabs.vercel.app/)
-💻 Tech Stack: **Next.js (React)** · **Supabase (PostgreSQL)** · **TypeScript** (Edge Functions) · **Custom CSS** · **Tiptap** · **Resend**
-
+🔗 **Live Demo:** https:lotalabs.vercel.app
 ---
 
 ## 🚀 Overview
 
-Lota Labs Games serves as a **central platform for my interactive fiction projects**, providing players and readers with a space to engage, subscribe, comment, and receive updates.
-It’s designed not just as a showcase, but as a **fully functional web app** that could scale to handle thousands of active users.
+**Lota Labs** is a vertically integrated platform for On-Chain Interactive Fiction. Unlike standard web games, Lota Labs features a custom-built **Narrative Engine** that parses `ink` scripts (standard interactive fiction files) and translates narrative choices into blockchain events.
+
+It serves two purposes:
+1.  **For Readers:** A seamless reading experience where choices (weapons, alliances, endings) are permanently attested on-chain via wallet signatures.
+2.  **For Creators:** A full-stack hub with CMS, analytics, and newsletters to build a community around their stories.
 
 ---
 
-## 🧠 Core Features
+## 💎 The "Story-to-Chain" Engine
 
-### 🎮 User Features
+This is the core innovation of the project. I reverse-engineered the standard Ink runtime to create a React-based interpreter that supports **On-Chain Triggers**.
 
-* **Dynamic Blog & Projects:** Fully searchable and filterable sections for posts and projects.
-* **Profile System:** Users can upload avatars, edit bios, and manage notification preferences.
-* **Deep Commenting:** Nested comment and reply system with clean UI and markdown support.
-* **Subscriptions & Notifications:** In-app and email alerts for post updates, replies, and announcements.
-* **Newsletter System:** Users can opt in to receive “The Lab Report” — a platform-wide newsletter.
+### How it works:
+1.  **Scripting:** Authors write standard Ink stories with custom tags (e.g., `# mint: weapon_greatsword`).
+2.  **Parsing:** The React Engine parses the text and detects the tag in real-time.
+3.  **Execution:** The engine pauses the story, triggers **Wagmi/Viem** hooks, and prompts the user's wallet (MetaMask/Trust Wallet) to sign the transaction.
+4.  **Result:** The narrative continues only after the blockchain event is acknowledged.
+
+---
+
+## 🛠 Tech Stack
+
+### **Web3 & Game Logic** (New)
+* **Engine:** Custom React Interpreter (built on `inkjs`)
+* **Blockchain:** Wagmi, Viem
+* **Network:** BNB Smart Chain (Testnet), Ethereum Compatible
+* **Wallets:** Injected Connectors (MetaMask, Trust Wallet)
+
+### **Core Full-Stack**
+* **Frontend:** Next.js 15 (App Router, Server Actions)
+* **Backend:** Supabase (PostgreSQL, Row Level Security)
+* **Language:** TypeScript (Strict typing for game state & Web3 hooks)
+* **Styling:** Tailwind CSS (Mobile-first responsive grids) + Custom CSS Animations
+
+### **Infrastructure**
+* **Edge Functions:** Deno (TypeScript) for notifications & triggers
+* **Email:** Resend API (Newsletter & Transactional)
+* **Editor:** Tiptap (Rich text CMS)
+
+---
+
+## 🧠 Key Features
+
+### 🎮 The Game Player
+* **Wallet Integration:** Seamless connect/disconnect logic with network detection.
+* **Visual Novel Support:** Engine supports inline image rendering via `# image:` tags.
+* **Responsive UI:** Optimized explicitly for mobile readers (Stacked Stats view) vs Desktop (Side-by-Side view).
+* **State Tracking:** Tracks RPG stats (Health, Mana, Inventory) in React state, synchronized with the narrative flow.
+
+### 🏛 The Community Hub (CMS)
+* **Dynamic Blog:** Searchable content hub for lore and updates.
+* **Profile System:** User avatars, bios, and reputation tracking.
+* **Nested Comments:** Deep threading for community theory-crafting.
+* **Notification Engine:** Real-time alerts via Supabase Realtime & Edge Functions.
 
 ### ⚙️ Admin Dashboard
-
-* **Role-Based Access Control (RBAC):** Secured at the database level with **Supabase RLS**. Only admins can access management features.
-* **Content Management:** Create, edit, and delete posts, projects, and announcements.
-* **File Manager:** Upload and organize media assets for posts and pages.
-* **Newsletter Composer:** Write and send rich HTML newsletters directly from the dashboard.
-* **Analytics Hub:** Track site metrics and social media growth (Instagram, TikTok, LinkedIn, etc.).
-
-### 🔔 Advanced Systems
-
-* **Automated Notification Engine:** PostgreSQL triggers and Edge Functions power instant in-app + email alerts.
-* **Moderation System:** Users can report comments; admins can review and take action.
-* **Dynamic SEO:** All content pages auto-generate `<meta>` tags for optimal search visibility.
-* **Threaded Support Helpdesk:** A full ticket-messaging system allowing users and admins to have back-and-forth conversations, with automatic email/in-app notifications on reply.
+* **RBAC:** Strict Role-Based Access Control (Admins vs. Users).
+* **Content Manager:** Create/Edit posts and Game Snippets directly in the browser.
+* **Newsletter Composer:** HTML-rich email builder integrated with the user database.
+* **Analytics:** Tracking user engagement and story retention rates.
 
 ---
 
-## 🧰 Architecture & Stack
+## 🧰 Architecture Overview
 
-| Layer          | Technology             | Purpose                                                         |
-| -------------- | --------------------   | ----------------------------------------------------------------|
-| Frontend       | Next.js (App Router)   | UI (React), Server-Side SEO (generateMetadata), and Routing     |
-| Styling        | Custom CSS (style.css) | All component styling, layouts, and custom @keyframe animations.|
-| Backend & Auth | Supabase               | Database, RLS, Authentication, and Storage.                     |
-| Database       | PostgreSQL             | Core data, SQL Functions (SECURITY DEFINER), and Triggers.      |
-| Serverless     | Deno (TypeScript)      | Supabase Edge Functions for real-time email + event automation. |
-| Email          | Resend API             | Transactional + newsletter emails                               |
-| Editor         | Tiptap                 | Rich-text content creation                                      |
-
----
-
-## 🌱 Future Enhancements
-
-* Password recovery and OAuth login
-* Like/upvote system for posts and comments
-* Extended analytics and data visualization
-* Tags system
-* User reputation/badges
-* Mobile app
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Game Layer** | InkJS + React | Parses story files `.json` and manages narrative state. |
+| **Web3 Layer** | Wagmi / Viem | Handles wallet connection, signing, and chain switching. |
+| **Data Layer** | Supabase (Postgres) | Stores user profiles, comments, and non-chain game saves. |
+| **Edge Layer** | Supabase Functions | Handles secure email dispatch and complex triggers. |
+| **UI Layer** | Next.js / Tailwind | Server-side rendering for SEO; Client-side for Game interactivity. |
 
 ---
 
 ## 📸 Screenshots
 
-<img width="2522" height="1416" alt="07 11 2025_00 57 37_REC" src="https://github.com/user-attachments/assets/44bbf148-4203-4193-be44-7ab55ab38f92" />
+<img width="2490" height="1340" alt="05 01 2026_16 09 25_REC" src="https://github.com/user-attachments/assets/ca88b799-7339-4db7-880a-b9a167b1d1d2" />
 
-<img width="2560" height="1422" alt="07 11 2025_00 58 56_REC" src="https://github.com/user-attachments/assets/86299aa7-e029-4088-b908-445b79fe81e1" />
+<img width="2502" height="1352" alt="05 01 2026_16 12 16_REC" src="https://github.com/user-attachments/assets/669b5aa3-457e-49a8-b63a-f1e5c368af3c" />
 
-<img width="2560" height="1418" alt="07 11 2025_01 00 05_REC" src="https://github.com/user-attachments/assets/dbdd53b7-5f92-432c-a029-2cc6c3fefed5" />
+![IMG_6382](https://github.com/user-attachments/assets/b853410f-ba35-4d94-8c79-6d2271973bdd)
 
 ---
 
 ## 👨🏽‍💻 About the Developer
 
-I’m **Lotanna**, a passionate **full-stack developer and interactive fiction creator**.
-I specialize in building clean, scalable web applications using modern technologies like **React, TypeScript, Next.js, and Supabase**.
-This project is part of my larger goal to merge **storytelling and technology.** I want to turn narrative experiences into living, interactive worlds.
+**Lotanna**
+*Author. Analyst. Builder.*
+
+I am a Full-Stack Developer and Published Interactive Fiction Author ("Keeper's Vigil", Hosted Games).
+My background bridges the gap between **Narrative Design** and **Technical Engineering**.
+
+* **Skills:** TypeScript, Next.js, Solidity/Web3 Integration, Data Analysis.
+* **Mission:** To solve the "Ownership Gap" in interactive media by building tools that let readers own their journey.
 
 ---
 
