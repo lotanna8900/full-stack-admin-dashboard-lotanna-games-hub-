@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import StoryEngine from '../../components/StoryEngine';
 import demoData from '../../app/data/demo.json';
+import MidnightEngine from '../../components/MidnightEngine';
+import midnightData from '../../app/data/midnight.json';
 import WalletConnect from '../../components/WalletConnect';
 
 export default function SnippetsPage() {
@@ -462,12 +464,11 @@ export default function SnippetsPage() {
       {isGamePlayerOpen && (
         <div className="game-modal-overlay"
               onClick={(e) => {
-            // Close modal only if clicking the overlay itself, not its children
             if (e.target === e.currentTarget) {
               setIsGamePlayerOpen(false);
             }
           }}
-          onTouchMove={(e) => e.stopPropagation()} // Prevent touch scroll from bubbling
+          onTouchMove={(e) => e.stopPropagation()}
         >
             <div className="game-modal-window">
                 
@@ -476,7 +477,9 @@ export default function SnippetsPage() {
                     <h2 style={{color: 'var(--white)', margin: 0}}>{activeGameTitle}</h2>
                     
                     <div className="flex items-center gap-4">
-                      <WalletConnect onConnect={(addr) => setWalletAddress(addr)} />
+                      {activeGameTitle !== 'The Midnight Suspect' && (
+                          <WalletConnect onConnect={(addr) => setWalletAddress(addr)} />
+                      )}
                       <button 
                           onClick={() => setIsGamePlayerOpen(false)}
                           className="game-close-btn"
@@ -487,10 +490,18 @@ export default function SnippetsPage() {
                 </div>
 
                 {/* Game Engine Injection */}
-                  <StoryEngine 
-                    storyContent={demoData} 
-                    onMintTrigger={handleMintTrigger} 
-                />
+                  {activeGameTitle === 'The Midnight Suspect' ? (
+                      // LOAD THE NEW MIDNIGHT ENGINE
+                      <MidnightEngine 
+                          storyContent={midnightData} 
+                      />
+                  ) : (
+                      // LOAD THE OLD KEEPER ENGINE
+                      <StoryEngine 
+                          storyContent={demoData} 
+                          onMintTrigger={handleMintTrigger} 
+                      />
+                  )}
             </div>
         </div>
       )}
