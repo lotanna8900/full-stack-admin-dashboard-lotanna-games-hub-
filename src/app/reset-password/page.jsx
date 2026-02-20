@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../utils/supabaseClient'; 
 import Link from 'next/link';
@@ -10,19 +10,6 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
-  const [tokenVerified, setTokenVerified] = useState(false);
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        setTokenVerified(true);
-      }
-    });
-
-    return () => {
-      subscription?.unsubscribe();
-    };
-  }, []);
 
   const handlePasswordUpdate = async (event) => {
     event.preventDefault();
@@ -58,11 +45,7 @@ export default function ResetPasswordPage() {
       <div className="auth-card">
         <div className="auth-header">
           <h1>Set New Password</h1>
-          {!tokenVerified && (
-            <p className="auth-subtitle">
-              Verifying your reset token...
-            </p>
-          )}
+          <p className="auth-subtitle">Please enter your new password below.</p>
         </div>
 
         {message.text && (
@@ -71,56 +54,42 @@ export default function ResetPasswordPage() {
           </div>
         )}
 
-        {tokenVerified ? (
-          <form className="auth-form" onSubmit={handlePasswordUpdate}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="password">New Password</label>
-              <input
-                id="password"
-                type="password"
-                className="form-input"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="••••••••"
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label" htmlFor="confirm-password">Confirm New Password</label>
-              <input
-                id="confirm-password"
-                type="password"
-                className="form-input"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                placeholder="••••••••"
-              />
-            </div>
-            
-            <button 
-              type="submit" 
-              className="btn btn-primary btn-full" 
-              disabled={loading}
-            >
-              {loading ? <span className="spinner"></span> : 'Set New Password'}
-            </button>
-          </form>
-        ) : (
-          !message.text && (
-            <div style={{ textAlign: 'center' }}>
-              <span className="spinner"></span>
-            </div>
-          )
-        )}
-        
-        {message.type === 'error' && (
-          <div className="auth-footer" style={{ borderTop: 'none', paddingTop: 0 }}>
-            <Link href="/forgot-password" className="btn-link-secondary">
-              Request a new reset link
-            </Link>
+        <form className="auth-form" onSubmit={handlePasswordUpdate}>
+          <div className="form-group">
+            <label className="form-label" htmlFor="password">New Password</label>
+            <input
+              id="password"
+              type="password"
+              className="form-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              placeholder="••••••••"
+            />
           </div>
-        )}
+          <div className="form-group">
+            <label className="form-label" htmlFor="confirm-password">Confirm New Password</label>
+            <input
+              id="confirm-password"
+              type="password"
+              className="form-input"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={6}
+              placeholder="••••••••"
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            className="btn btn-primary btn-full" 
+            disabled={loading}
+          >
+            {loading ? <span className="spinner"></span> : 'Set New Password'}
+          </button>
+        </form>
       </div>
     </div>
   );

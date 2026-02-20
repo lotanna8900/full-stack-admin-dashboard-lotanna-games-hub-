@@ -15,7 +15,7 @@ export default function ForgotPasswordPage() {
 
     // Must change this before I go to production
     // ive domain, e.g., 'https://lotalabs.com/reset-password'
-    const redirectTo = 'lotalabs.vercel.app/reset-password';
+    const redirectTo = `${window.location.origin}/auth/callback?next=/reset-password`;
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectTo,
