@@ -9,7 +9,7 @@ if (!resendApiKey) {
   console.warn('RESEND_API_KEY is not set. Emails will not be sent.');
 }
 const resend = new Resend(resendApiKey);
-const fromEmail = 'onboarding@resend.dev';
+const fromEmail = 'Lota Labs <noreply@lotalabs.com>';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -17,13 +17,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // --- MODIFIED: Now expect 'html_content' ---
     const { subject, html_content } = await req.json()
     if (!subject || !html_content) {
       throw new Error('Missing required fields: subject and html_content are needed.')
     }
 
-    // 2. Create the Admin Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     if (!supabaseUrl || !serviceRoleKey) throw new Error('Missing Supabase env vars.');
@@ -31,7 +29,6 @@ Deno.serve(async (req) => {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
     console.log('Admin client created.');
 
-    // 3. Get all opted-in subscribers
     console.log('Fetching newsletter subscribers...');
     const { data: subscribers, error: subsError } = await supabaseAdmin
       .from('profiles')
@@ -45,7 +42,6 @@ Deno.serve(async (req) => {
 
     console.log(`Found ${subscribers.length} subscribers. Preparing emails...`);
 
-    // 4. Loop and SEND emails directly
     const emailSendPromises = []; 
 
     for (const sub of subscribers) {
@@ -58,7 +54,6 @@ Deno.serve(async (req) => {
 
       const userEmail = user.user.email;
 
-      // --- MODIFIED: The 'html' key now just gets the full 'html_content' ---
       const emailPayload = {
         from: fromEmail,
         to: userEmail,
@@ -71,7 +66,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // 5. Send all emails in parallel
     const emailResults = await Promise.allSettled(emailSendPromises);
     emailResults.forEach((result, index) => {
       if (result.status === 'rejected') {

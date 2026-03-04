@@ -46,18 +46,16 @@ Deno.serve(async (req) => {
 
     // 2. Prepare notifications
     const contentType = table === 'posts' ? 'post' : 'project';
-    const sectionPath = contentType === 'post' ? 'blog' : 'projects'; // Determine section name
+    const sectionPath = contentType === 'post' ? 'blog' : 'projects'; 
 
     const notificationsToInsert = subscriptions.map(sub => ({
       user_id: sub.user_id,
       content: `The ${contentType} "${updatedContent.title}" you subscribed to has been updated!`,
-      // UPDATED: Add content ID to the link
       link_url: `/${sectionPath}?${contentType}=${updatedContent.id}`,
       type: 'subscription'
     }));
     console.log('Prepared notifications:', notificationsToInsert);
 
-    // 3. Insert notifications
     const { error: insertError } = await supabaseAdmin
       .from('notifications')
       .insert(notificationsToInsert);

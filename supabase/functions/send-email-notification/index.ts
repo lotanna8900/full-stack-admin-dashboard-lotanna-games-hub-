@@ -40,7 +40,6 @@ Deno.serve(async (req) => {
       throw new Error(`Could not find profile for user: ${notification.user_id}. Error: ${profileError?.message}`);
     }
 
-    // --- 4. PREFERENCE CHECK ---
     let shouldSendEmail = false;
     switch (notification.type) {
       case 'comment_reply':
@@ -63,7 +62,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // --- 5. FETCH USER EMAIL (Query 2) ---
     const { data: user, error: userError } = await supabaseAdmin.auth.admin.getUserById(
       notification.user_id
     );
@@ -75,33 +73,32 @@ Deno.serve(async (req) => {
     const userEmail = user.user.email;
     console.log(`User email found: ${userEmail}. Sending email...`);
 
-    // --- 6. SEND THE EMAIL ---
     const { data, error } = await resend.emails.send({
-      from: 'Lota Labs <onboarding@resend.dev>',
+      from: 'Lota Labs <noreply@lotalabs.com>',
       to: [userEmail],
       subject: 'You have a new notification on Lota Labs!',
       html: `
         <div>
           <p>Hi there,</p>
           <p>${notification.content}</p>
-          ${notification.link_url ? `<p><a href="https://lotalabs.vercel.app${notification.link_url}">View it on the site</a></p>` : ''}
+          ${notification.link_url ? `<p><a href="https://www.lotalabs.com${notification.link_url}">View it on the site</a></p>` : ''}
           <br>
           <p><small>You received this because you are a member of Lota Labs.</small></p>
         </div>
       `,
     });
 
-    if (error) throw error; // Throw Resend error
+    if (error) throw error; 
 
-    console.log('Email sent successfully:', data.id);
+    console.log('Email sent successfully:', data?.id);
     return new Response(JSON.stringify({ message: `Email sent to ${userEmail}` }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200,
-    })
+    });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('*** Function execution failed ***:', error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400,
-    })
+    });
   }
-})
+});

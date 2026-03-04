@@ -45,23 +45,18 @@ export default function NewsletterSender() {
       }
     );
 
-    // Keep the 'isSending' state true here so the button stays disabled
-    // setIsSending(false); 
 
     if (error) {
       console.error('Error sending newsletter:', error);
       setMessage({ type: 'error', text: `Failed to send: ${error.message}` });
-      setIsSending(false); // Re-enable the button on error
+      setIsSending(false); 
     } else {
       console.log('Newsletter function response:', data);
       setMessage({ type: 'success', text: data.message || 'Newsletter sent successfully! Reloading...' });
       
-      // Clear the form state
       setSubject('');
       setHtmlContent(''); 
 
-      // After 2 seconds, reload the page to clear the editor
-      // The button will stay disabled during this time.
       setTimeout(() => {
         window.location.reload();
       }, 2000);

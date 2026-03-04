@@ -11,7 +11,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { record: user } = await req.json() // Auth hook sends user data in 'record'
+    const { record: user } = await req.json() 
 
     if (!user || !user.id) {
       throw new Error('Invalid user data received.');
@@ -28,15 +28,13 @@ Deno.serve(async (req) => {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
     console.log('Supabase admin client created.');
 
-    // Prepare the welcome notification
     const welcomeNotification = {
       user_id: user.id,
-      content: "Welcome to the IF/Platform! Check out the latest announcements.",
+      content: "Welcome to Lota Labs! Check out the latest announcements.",
       link_url: '/announcements' 
     };
     console.log('Prepared welcome notification:', welcomeNotification);
 
-    // Insert the notification
     const { error: insertError } = await supabaseAdmin
       .from('notifications')
       .insert(welcomeNotification);
