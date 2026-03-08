@@ -60,7 +60,7 @@ export default function BlogListPage() {
     const getPosts = async () => {
       const { data, error } = await supabase
         .from('posts')
-        .select('*, comments(*, author:profiles(username, avatar_url))')
+        .select('*, comments(*, author:profiles(username, avatar_url)), subscriptions(count)')
         .order('created_at', { ascending: false });
       if (error) console.error('Error fetching posts:', error);
       else setPosts(data || []);
@@ -322,13 +322,23 @@ export default function BlogListPage() {
               {/* Action Buttons */}
               <div style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                 <Link href={`/blog/${post.id}`} className="btn">Read More</Link>
-                {session && (
-                  subscriptions.some(sub => sub.post_id === post.id) ? (
-                    <button className="btn btn-secondary" onClick={() => handleUnsubscribe('post', post.id)}>Unsubscribe</button>
+                
+                {/* --- NEW SUBSCRIBE BUTTON WITH COUNT --- */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--grey-light)', padding: '0.25rem 0.5rem', borderRadius: '8px' }}>
+                  {session && subscriptions.some(sub => sub.post_id === post.id) ? (
+                    <button className="btn btn-secondary" onClick={() => handleUnsubscribe('post', post.id)}>✓ Subscribed</button>
                   ) : (
-                    <button className="btn" onClick={() => handleSubscribe('post', post.id)}>Subscribe</button>
-                  )
-                )}
+                    <button className="btn" onClick={() => {
+                      if (!session) window.location.href = `/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+                      else handleSubscribe('post', post.id);
+                    }}>Subscribe</button>
+                  )}
+                  <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 'bold', paddingRight: '0.5rem' }}>
+                    {post.subscriptions?.[0]?.count || 0} {(post.subscriptions?.[0]?.count === 1) ? 'subscriber' : 'subscribers'}
+                  </span>
+                </div>
+                {/* --------------------------------------- */}
+
                 {userRole === 'admin' && (
                   <>
                     <button className="btn" onClick={() => openEditPostModal(post)}>Edit</button>

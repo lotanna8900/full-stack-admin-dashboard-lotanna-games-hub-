@@ -8,6 +8,8 @@ import demoData from '../../app/data/demo.json';
 import MidnightEngine from '../../components/MidnightEngine';
 import midnightData from '../../app/data/midnight.json';
 import WalletConnect from '../../components/WalletConnect';
+import FugitiveEngine from '../../components/FugitiveEngine';
+import fugitiveData from '../../app/data/fugitive.json';
 
 export default function SnippetsPage() {
   // --- State Variables ---
@@ -205,6 +207,22 @@ export default function SnippetsPage() {
     }
   };
 
+  const handlePinSnippet = async (snippetId, currentStatus) => {
+    const { data: updatedSnippet, error } = await supabase
+      .from('snippets')
+      .update({ is_pinned: !currentStatus })
+      .eq('id', snippetId)
+      .select()
+      .single();
+
+    if (error) { 
+      console.error('Error pinning snippet:', error); 
+      alert('Could not update snippet.'); 
+    } else if (updatedSnippet) { 
+      setSnippets(snippets.map(s => (s.id === snippetId ? updatedSnippet : s))); 
+    }
+  };
+
   if (loading) {
     return (
       <div className="section">
@@ -243,7 +261,9 @@ export default function SnippetsPage() {
           </div>
         ) : (
           <div className="content-grid">
-            {snippets.map((snippet) => (
+            {snippets
+              .sort((a, b) => b.is_pinned - a.is_pinned)
+              .map((snippet) => (
               <div key={snippet.id} className="content-card snippet-card">
                 {/* Cover Image */}
                 {snippet.image_url && (
@@ -263,7 +283,10 @@ export default function SnippetsPage() {
                 
                 {/* Content */}
                 <div className="snippet-content">
-                  <h2 className="content-title">{snippet.title}</h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                    <h2 className="content-title" style={{ margin: 0 }}>{snippet.title}</h2>
+                    {snippet.is_pinned && <span className="pinned-badge">📌 Pinned</span>}
+                  </div>
                   <p className="content-meta">
                     Added {new Date(snippet.created_at).toLocaleDateString()}
                   </p>
@@ -290,7 +313,14 @@ export default function SnippetsPage() {
                     </a>
                     
                     {userRole === 'admin' && (
-                      <div className="admin-actions">
+                      <div className="admin-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+                        <button 
+                          className="btn-icon" 
+                          onClick={() => handlePinSnippet(snippet.id, snippet.is_pinned)}
+                          title={snippet.is_pinned ? "Unpin snippet" : "Pin snippet"}
+                        >
+                          {snippet.is_pinned ? '📌' : '📍'}
+                        </button>
                         <button 
                           className="btn-icon" 
                           onClick={() => openEditSnippetModal(snippet)}
@@ -490,18 +520,24 @@ export default function SnippetsPage() {
                 </div>
 
                 {/* Game Engine Injection */}
-                  {activeGameTitle === 'The Midnight Suspect' ? (
-                      // LOAD THE NEW MIDNIGHT ENGINE
-                      <MidnightEngine 
-                          storyContent={midnightData} 
-                      />
-                  ) : (
-                      // LOAD THE OLD KEEPER ENGINE
-                      <StoryEngine 
-                          storyContent={demoData} 
-                          onMintTrigger={handleMintTrigger} 
-                      />
-                  )}
+                {activeGameTitle === 'Supernatural Fugitive' ? (
+                    // LOAD THE NEW DUAL-STATE RPG ENGINE
+                    <FugitiveEngine 
+                        storyContent={fugitiveData} 
+                        session={session}
+                    />
+                ) : activeGameTitle === 'The Midnight Suspect' ? (
+                    // LOAD THE MIDNIGHT ENGINE
+                    <MidnightEngine 
+                        storyContent={midnightData} 
+                    />
+                ) : (
+                    // LOAD THE OLD KEEPER ENGINE
+                    <StoryEngine 
+                        storyContent={demoData} 
+                        onMintTrigger={handleMintTrigger} 
+                    />
+                )}
             </div>
         </div>
       )}

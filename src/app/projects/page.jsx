@@ -81,7 +81,9 @@ function ProjectsPageContent() {
 
     const getProjects = async () => {
       const { data, error } = await supabase
-        .from('projects').select('*').order('created_at', { ascending: false });
+        .from('projects')
+        .select('*, subscriptions(count)')
+        .order('created_at', { ascending: false });
 
       if (error) console.error('Error fetching projects:', error);
       else setProjects(data || []);
@@ -503,46 +505,33 @@ function ProjectsPageContent() {
                 )}
 
                 {/* Action Buttons */}
-                <div style={{ 
-                  display: 'flex', 
-                  gap: '0.75rem', 
-                  flexWrap: 'wrap', 
-                  marginTop: '1.5rem' 
-                }}>
-                  {/* Subscribe Button */}
-                  {session && (
-                    subscriptions.some(sub => sub.project_id === project.id) ? (
-                      <button 
-                        className="btn btn-secondary" 
-                        onClick={() => handleUnsubscribe('project', project.id)}
-                      >
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1.5rem', alignItems: 'center' }}>
+                  
+                  {/* --- NEW SUBSCRIBE BUTTON WITH COUNT --- */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--grey-light)', padding: '0.25rem 0.5rem', borderRadius: '8px' }}>
+                    {session && subscriptions.some(sub => sub.project_id === project.id) ? (
+                      <button className="btn btn-secondary" onClick={() => handleUnsubscribe('project', project.id)}>
                         ✓ Subscribed
                       </button>
                     ) : (
-                      <button 
-                        className="btn" 
-                        onClick={() => handleSubscribe('project', project.id)}
-                      >
+                      <button className="btn" onClick={() => {
+                        if (!session) window.location.href = `/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+                        else handleSubscribe('project', project.id);
+                      }}>
                         Subscribe
                       </button>
-                    )
-                  )}
+                    )}
+                    <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 'bold', paddingRight: '0.5rem' }}>
+                      {project.subscriptions?.[0]?.count || 0} {(project.subscriptions?.[0]?.count === 1) ? 'subscriber' : 'subscribers'}
+                    </span>
+                  </div>
+                  {/* --------------------------------------- */}
 
                   {/* Admin Buttons */}
                   {userRole === 'admin' && (
                     <>
-                      <button
-                        className="btn"
-                        onClick={() => openEditProjectModal(project)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => handleDeleteProject(project.id)}
-                      >
-                        Delete
-                      </button>
+                      <button className="btn" onClick={() => openEditProjectModal(project)}>Edit</button>
+                      <button className="btn btn-danger" onClick={() => handleDeleteProject(project.id)}>Delete</button>
                     </>
                   )}
                 </div>

@@ -1,15 +1,21 @@
 "use client";
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 
-export default function LoginPage() {
+function LoginContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  const nextParam = searchParams.get('next') || '/';
 
   const handleAuth = async (event) => {
     event.preventDefault();
@@ -44,7 +50,8 @@ export default function LoginPage() {
       
       if (!isSigningUp) {
         setTimeout(() => {
-          window.location.href = '/'; 
+          router.push(nextParam);
+          router.refresh();
         }, 1000);
       }
     }
@@ -60,127 +67,138 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        {/* Header */}
-        <div className="auth-header">
-          <h1>{isSigningUp ? 'Create Account' : 'Welcome Back'}</h1>
-          <p className="auth-subtitle">
-            {isSigningUp 
-              ? 'Sign up to get started with your account' 
-              : 'Sign in to continue to your dashboard'}
-          </p>
+    <div className="auth-card">
+      {/* Header */}
+      <div className="auth-header">
+        <h1>{isSigningUp ? 'Create Account' : 'Welcome Back'}</h1>
+        <p className="auth-subtitle">
+          {isSigningUp 
+            ? 'Sign up to get started with your account' 
+            : 'Sign in to continue to your dashboard'}
+        </p>
+      </div>
+
+      {/* Form */}
+      <form onSubmit={handleAuth} className="auth-form">
+        <div className="form-group">
+          <label className="form-label" htmlFor="email">Email Address</label>
+          <input
+            id="email"
+            type="email"
+            className="form-input"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={loading}
+            autoComplete="email"
+          />
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleAuth} className="auth-form">
-          <div className="form-group">
-            <label className="form-label" htmlFor="email">Email Address</label>
+        <div className="form-group">
+          <label className="form-label" htmlFor="password">Password</label>
+          <div style={{ position: 'relative' }}>
             <input
-              id="email"
-              type="email"
+              id="password"
+              type={showPassword ? 'text' : 'password'}
               className="form-input"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              placeholder={isSigningUp ? 'At least 6 characters' : 'Enter your password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               disabled={loading}
-              autoComplete="email"
+              autoComplete={isSigningUp ? 'new-password' : 'current-password'}
+              style={{ paddingRight: '3rem' }}
             />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="password">Password</label>
-            <div style={{ position: 'relative' }}>
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                className="form-input"
-                placeholder={isSigningUp ? 'At least 6 characters' : 'Enter your password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-                autoComplete={isSigningUp ? 'new-password' : 'current-password'}
-                style={{ paddingRight: '3rem' }}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="password-toggle"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                disabled={loading}
-              >
-                {showPassword ? '👁️' : '👁️‍🗨️'}
-              </button>
-            </div>
-            {isSigningUp && (
-              <small style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.25rem', display: 'block' }}>
-                Password must be at least 6 characters
-              </small>
-            )}
-          </div>
-          
-          {/* Message Display */}
-          {message && (
-            <div 
-              className={`auth-message ${message.startsWith('Error') ? 'error' : 'success'}`}
-              role="alert"
-            >
-              {message}
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <button 
-            type="submit" 
-            className="btn btn-primary btn-full" 
-            disabled={loading}
-          >
-            {loading ? (
-              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                <span className="spinner"></span>
-                Processing...
-              </span>
-            ) : (
-              isSigningUp ? 'Create Account' : 'Sign In'
-            )}
-          </button>
-        </form>
-
-        {/* Forgot password link */}
-        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-          <Link 
-            href="/forgot-password" 
-            className="btn-link-secondary"
-          >
-            Forgot your password?
-          </Link>
-        </div>
-
-        
-        {/* Toggle Sign In/Up */}
-        <div className="auth-footer">
-          <p>
-            {isSigningUp ? 'Already have an account?' : "Don't have an account?"}
-            <button 
-              type="button" 
-              className="btn-link-primary" 
-              onClick={toggleMode}
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="password-toggle"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
               disabled={loading}
             >
-              {isSigningUp ? 'Sign In' : 'Sign Up'}
+              {showPassword ? '👁️' : '👁️‍🗨️'}
             </button>
-          </p>
+          </div>
+          {isSigningUp && (
+            <small style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.25rem', display: 'block' }}>
+              Password must be at least 6 characters
+            </small>
+          )}
         </div>
+        
+        {/* Message Display */}
+        {message && (
+          <div 
+            className={`auth-message ${message.startsWith('Error') ? 'error' : 'success'}`}
+            role="alert"
+          >
+            {message}
+          </div>
+        )}
 
-        {/* Back to Home Link */}
-        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-          <Link href="/" className="btn-link-secondary">
-            ← Back to Home
-          </Link>
-        </div>
+        {/* Submit Button */}
+        <button 
+          type="submit" 
+          className="btn btn-primary btn-full" 
+          disabled={loading}
+        >
+          {loading ? (
+            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <span className="spinner"></span>
+              Processing...
+            </span>
+          ) : (
+            isSigningUp ? 'Create Account' : 'Sign In'
+          )}
+        </button>
+      </form>
+
+      {/* Forgot password link */}
+      <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+        <Link 
+          href="/forgot-password" 
+          className="btn-link-secondary"
+        >
+          Forgot your password?
+        </Link>
       </div>
+
+      {/* Toggle Sign In/Up */}
+      <div className="auth-footer">
+        <p>
+          {isSigningUp ? 'Already have an account?' : "Don't have an account?"}
+          <button 
+            type="button" 
+            className="btn-link-primary" 
+            onClick={toggleMode}
+            disabled={loading}
+          >
+            {isSigningUp ? 'Sign In' : 'Sign Up'}
+          </button>
+        </p>
+      </div>
+
+      {/* Back to Home Link */}
+      <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+        <Link href="/" className="btn-link-secondary">
+          ← Back to Home
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <div className="auth-container">
+      <Suspense fallback={
+        <div className="auth-card" style={{ textAlign: 'center', padding: '3rem' }}>
+          <h2>Loading...</h2>
+        </div>
+      }>
+        <LoginContent />
+      </Suspense>
     </div>
   );
 }
