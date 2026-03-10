@@ -473,7 +473,7 @@ The door flings wide open, and the scene before you makes your stomach turn.
 The room is painted in red. There is a woman huddled in the corner. Her clothes are torn, and she is staring at the center of the room with unblinking, glassy eyes. 
 
 { accidental_shot:
-    A fresh patch of crimson is quickly spreading across the sleeve of her shirt. Your bullet must have passed right through the flimsy wood of the door and clipped her arm. Yet, she doesn't scream. She barely even registers the gunshot wound. The only sound she is lets out is a low, wet whimper as she continues to stare blankly ahead.
+    A fresh patch of crimson is quickly spreading across the sleeve of her shirt. Your bullet must have passed right through the flimsy wood of the door and clipped her arm. Yet, she doesn't scream. She barely even registers the gunshot wound. The only sound she lets out is a low, wet whimper as she continues to stare blankly ahead.
 }
 
 But she isn't the source of the thumping.
@@ -824,5 +824,13 @@ MTC adjusts {morgan_his} tie, looking at the ash, then down at the dead Renshi. 
     -> chapter2
 
 === chapter2 ===
-[End of Chapter 1 Demo]
--> DONE
+# clear
+<b>THANK YOU FOR PLAYING</b>
+
+Thanks for playing Chapter 1 of Supernatural Fugitive! If you loved this, my massive 193,000-word flagship game, <b>Keeper's Vigil</b>, is launching on Steam in Q2 2026. 
+
+Join the Lota Labs waitlist to be the first to know when it drops.
+
+* [Join the Waitlist & Read Devlogs]
+    # url: /blog
+    -> DONE

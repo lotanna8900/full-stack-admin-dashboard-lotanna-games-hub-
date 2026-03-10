@@ -250,6 +250,14 @@ function AnnouncementsContent() {
                   key={announcement.id} 
                   className="announcement-card" 
                   data-announcement-id={announcement.id}
+                  style={{
+                    background: 'var(--abyss, #0a0d1a)',
+                    border: '1px solid var(--slate, #1e2640)',
+                    padding: '1.5rem',
+                    marginBottom: '1rem',
+                    borderRadius: '4px',
+                    color: 'var(--bone, #c8d4e8)'
+                  }}
                 >
                   {/* Header */}
                   <div className="announcement-header">

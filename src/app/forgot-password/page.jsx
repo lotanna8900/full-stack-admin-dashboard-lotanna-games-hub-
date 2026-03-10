@@ -2,8 +2,10 @@
 import { useState } from 'react';
 import { supabase } from '../utils/supabaseClient';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -13,21 +15,20 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     setMessage({ type: '', text: '' });
 
-    // Must change this before I go to production
-    // ive domain, e.g., 'https://lotalabs.com/reset-password'
-    const redirectTo = `${window.location.origin}/auth/callback?next=/reset-password`;
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectTo,
-    });
+    // We no longer need the redirectTo URL since they enter the OTP directly on the site
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
 
     setLoading(false);
 
     if (error) {
       console.error('Error sending password reset email:', error);
-      setMessage({ type: 'error', text: 'Error: Could not send reset email. Please try again.' });
+      setMessage({ type: 'error', text: 'Error: Could not send reset code. Please try again.' });
     } else {
-      setMessage({ type: 'success', text: 'Success! Please check your email for a password reset link.' });
+      setMessage({ type: 'success', text: 'Success! Check your email for the 6-digit reset code. Redirecting...' });
+      
+      setTimeout(() => {
+        router.push('/reset-password');
+      }, 2000);
     }
   };
 
@@ -37,7 +38,7 @@ export default function ForgotPasswordPage() {
         <div className="auth-header">
           <h1>Forgot Password?</h1>
           <p className="auth-subtitle">
-            No problem. Enter your email below and we'll send you a link to reset it.
+            No problem. Enter your email below and we'll send you a 6-digit code to reset it.
           </p>
         </div>
 
@@ -66,7 +67,7 @@ export default function ForgotPasswordPage() {
             className="btn btn-primary btn-full" 
             disabled={loading}
           >
-            {loading ? <span className="spinner"></span> : 'Send Reset Link'}
+            {loading ? <span className="spinner"></span> : 'Send Reset Code'}
           </button>
         </form>
 

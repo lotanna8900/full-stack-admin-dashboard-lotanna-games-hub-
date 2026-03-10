@@ -7,7 +7,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 function LoginContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState(''); // NEW: State for the 6-digit code
   const [isSigningUp, setIsSigningUp] = useState(false);
+  const [showOtp, setShowOtp] = useState(false); // NEW: Toggles the OTP input field
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -21,34 +23,49 @@ function LoginContent() {
     event.preventDefault();
     setLoading(true);
     setMessage('');
-    
-    // Basic password validation for sign up
+
+    // --- NEW: OTP Verification Step ---
+    if (showOtp) {
+      const { error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'signup' // Tells Supabase this is a new account confirmation
+      });
+
+      if (error) {
+        setMessage(`Error: ${error.message}`);
+        setLoading(false);
+      } else {
+        setMessage("Verification successful! Redirecting...");
+        setTimeout(() => {
+          router.push(nextParam);
+          router.refresh();
+        }, 1000);
+      }
+      return; // Stop the function here so it doesn't run the signup logic again
+    }
+
+    // --- Existing Auth Logic ---
     if (isSigningUp && password.length < 6) {
       setMessage('Error: Password must be at least 6 characters long.');
       setLoading(false);
       return;
     }
 
-    let authError = null;
-
     if (isSigningUp) {
       const { error } = await supabase.auth.signUp({ email, password });
-      authError = error;
+      if (error) {
+        setMessage(`Error: ${error.message}`);
+      } else {
+        setShowOtp(true); // Switch the UI to ask for the code!
+        setMessage("Code sent! Check your email for the 6-digit verification code.");
+      }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      authError = error;
-    }
-    
-    if (authError) {
-      setMessage(`Error: ${authError.message}`);
-      console.error(authError);
-    } else {
-      const action = isSigningUp 
-        ? "Sign-up successful! Check your email to confirm your account." 
-        : "Login successful! Redirecting...";
-      setMessage(action);
-      
-      if (!isSigningUp) {
+      if (error) {
+        setMessage(`Error: ${error.message}`);
+      } else {
+        setMessage("Login successful! Redirecting...");
         setTimeout(() => {
           router.push(nextParam);
           router.refresh();
@@ -59,131 +76,98 @@ function LoginContent() {
     setLoading(false);
   };
 
-  // Toggle between sign in and sign up
   const toggleMode = () => {
     setIsSigningUp(!isSigningUp);
+    setShowOtp(false); // Reset OTP state if they toggle
     setMessage('');
     setPassword('');
+    setOtp('');
   };
 
   return (
     <div className="auth-card">
-      {/* Header */}
       <div className="auth-header">
-        <h1>{isSigningUp ? 'Create Account' : 'Welcome Back'}</h1>
+        <h1>{showOtp ? 'Verify Email' : isSigningUp ? 'Create Account' : 'Welcome Back'}</h1>
         <p className="auth-subtitle">
-          {isSigningUp 
-            ? 'Sign up to get started with your account' 
-            : 'Sign in to continue to your dashboard'}
+          {showOtp 
+            ? 'Enter the 6-digit code sent to your email'
+            : isSigningUp 
+              ? 'Sign up to get started with your account' 
+              : 'Sign in to continue to your The Lab'}
         </p>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleAuth} className="auth-form">
         <div className="form-group">
           <label className="form-label" htmlFor="email">Email Address</label>
           <input
-            id="email"
-            type="email"
-            className="form-input"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={loading}
-            autoComplete="email"
+            id="email" type="email" className="form-input" placeholder="you@example.com"
+            value={email} onChange={(e) => setEmail(e.target.value)}
+            required disabled={loading || showOtp} autoComplete="email"
           />
         </div>
 
-        <div className="form-group">
-          <label className="form-label" htmlFor="password">Password</label>
-          <div style={{ position: 'relative' }}>
+        {/* --- DYNAMIC RENDER: Show OTP input OR Password input --- */}
+        {showOtp ? (
+          <div className="form-group">
+            <label className="form-label" htmlFor="otp">6-Digit Code</label>
             <input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              className="form-input"
-              placeholder={isSigningUp ? 'At least 6 characters' : 'Enter your password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-              autoComplete={isSigningUp ? 'new-password' : 'current-password'}
-              style={{ paddingRight: '3rem' }}
+              id="otp" type="text" className="form-input" placeholder="123456"
+              value={otp} onChange={(e) => setOtp(e.target.value)}
+              required disabled={loading} maxLength={6}
+              style={{ fontSize: '1.5rem', letterSpacing: '0.25rem', textAlign: 'center' }}
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="password-toggle"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-              disabled={loading}
-            >
-              {showPassword ? '👁️' : '👁️‍🗨️'}
-            </button>
           </div>
-          {isSigningUp && (
-            <small style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.25rem', display: 'block' }}>
-              Password must be at least 6 characters
-            </small>
-          )}
-        </div>
+        ) : (
+          <div className="form-group">
+            <label className="form-label" htmlFor="password">Password</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                id="password" type={showPassword ? 'text' : 'password'} className="form-input"
+                placeholder={isSigningUp ? 'At least 6 characters' : 'Enter your password'}
+                value={password} onChange={(e) => setPassword(e.target.value)}
+                required disabled={loading} autoComplete={isSigningUp ? 'new-password' : 'current-password'}
+                style={{ paddingRight: '3rem' }}
+              />
+              <button
+                type="button" onClick={() => setShowPassword(!showPassword)}
+                className="password-toggle" disabled={loading}
+              >
+                {showPassword ? '👁️' : '👁️‍🗨️'}
+              </button>
+            </div>
+          </div>
+        )}
         
-        {/* Message Display */}
         {message && (
-          <div 
-            className={`auth-message ${message.startsWith('Error') ? 'error' : 'success'}`}
-            role="alert"
-          >
+          <div className={`auth-message ${message.startsWith('Error') ? 'error' : 'success'}`}>
             {message}
           </div>
         )}
 
-        {/* Submit Button */}
-        <button 
-          type="submit" 
-          className="btn btn-primary btn-full" 
-          disabled={loading}
-        >
-          {loading ? (
-            <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <span className="spinner"></span>
-              Processing...
-            </span>
-          ) : (
-            isSigningUp ? 'Create Account' : 'Sign In'
-          )}
+        <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+          {loading ? 'Processing...' : showOtp ? 'Verify Code' : isSigningUp ? 'Create Account' : 'Sign In'}
         </button>
       </form>
 
-      {/* Forgot password link */}
-      <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-        <Link 
-          href="/forgot-password" 
-          className="btn-link-secondary"
-        >
-          Forgot your password?
-        </Link>
-      </div>
+      {!showOtp && (
+        <>
+          <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+            <Link href="/forgot-password" className="btn-link-secondary">Forgot your password?</Link>
+          </div>
+          <div className="auth-footer">
+            <p>
+              {isSigningUp ? 'Already have an account?' : "Don't have an account?"}
+              <button type="button" className="btn-link-primary" onClick={toggleMode} disabled={loading}>
+                {isSigningUp ? 'Sign In' : 'Sign Up'}
+              </button>
+            </p>
+          </div>
+        </>
+      )}
 
-      {/* Toggle Sign In/Up */}
-      <div className="auth-footer">
-        <p>
-          {isSigningUp ? 'Already have an account?' : "Don't have an account?"}
-          <button 
-            type="button" 
-            className="btn-link-primary" 
-            onClick={toggleMode}
-            disabled={loading}
-          >
-            {isSigningUp ? 'Sign In' : 'Sign Up'}
-          </button>
-        </p>
-      </div>
-
-      {/* Back to Home Link */}
       <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-        <Link href="/" className="btn-link-secondary">
-          ← Back to Home
-        </Link>
+        <Link href="/" className="btn-link-secondary">← Back to Home</Link>
       </div>
     </div>
   );
@@ -192,11 +176,7 @@ function LoginContent() {
 export default function LoginPage() {
   return (
     <div className="auth-container">
-      <Suspense fallback={
-        <div className="auth-card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <h2>Loading...</h2>
-        </div>
-      }>
+      <Suspense fallback={<div className="auth-card" style={{ textAlign: 'center', padding: '3rem' }}><h2>Loading...</h2></div>}>
         <LoginContent />
       </Suspense>
     </div>

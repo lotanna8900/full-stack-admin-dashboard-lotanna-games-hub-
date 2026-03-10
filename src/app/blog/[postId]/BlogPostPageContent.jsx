@@ -233,7 +233,7 @@ export default function BlogPostPageContent({ params: paramsProp }) {
     return (
       <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem' }}>
         <Link href="/" style={{ marginBottom: '1rem', display: 'inline-block' }}>
-          &larr; Back to Dashboard
+          &larr; Back to The Lab
         </Link>
         <h1>Error: {error}</h1>
       </div>
@@ -244,7 +244,7 @@ export default function BlogPostPageContent({ params: paramsProp }) {
     return (
       <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem' }}>
         <Link href="/" style={{ marginBottom: '1rem', display: 'inline-block' }}>
-          &larr; Back to Dashboard
+          &larr; Back to The Lab
         </Link>
         <h1>Post not found.</h1>
       </div>
@@ -256,7 +256,7 @@ export default function BlogPostPageContent({ params: paramsProp }) {
     <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem' }}>
       {/* Back Link */}
       <Link href="/" style={{ marginBottom: '1rem', display: 'inline-block', color: 'var(--primary)', textDecoration: 'none' }}>
-        &larr; Back to Dashboard
+        &larr; Back to The Lab
       </Link>
 
       {/* Post Content */}
@@ -281,6 +281,31 @@ export default function BlogPostPageContent({ params: paramsProp }) {
       <div style={{ marginTop: '2rem', whiteSpace: 'pre-wrap', lineHeight: '1.8' }}>
         <ReactMarkdown>{post.content}</ReactMarkdown>
       </div>
+
+      {/* --- CTA BUTTON --- */}
+      {post.cta_text && post.cta_link && (
+        <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+          <Link 
+            href={post.cta_link} 
+            style={{ 
+              display: 'inline-block', 
+              padding: '1rem 2.5rem', 
+              fontSize: '1rem', 
+              letterSpacing: '3px', 
+              textTransform: 'uppercase', 
+              fontWeight: 'bold',
+              color: '#ffffff', /* Forces the text to be bright white */
+              background: 'linear-gradient(135deg, #b85c1a 0%, #f08030 100%)', /* Ember gradient */
+              border: '1px solid rgba(240, 128, 48, 0.5)',
+              borderRadius: '2px',
+              textDecoration: 'none',
+              boxShadow: '0 8px 20px rgba(184, 92, 26, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)' 
+            }}
+          >
+            {post.cta_text}
+          </Link>
+        </div>
+      )}
 
       {/* --- Comments Section --- */}
       <div style={{ marginTop: '3rem', borderTop: '2px solid var(--grey-dark)', paddingTop: '2rem' }}>

@@ -28,11 +28,13 @@ Deno.serve(async (req) => {
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
     console.log('Supabase admin client created.');
 
+    // The updated Lota Labs manifesto
     const welcomeNotification = {
       user_id: user.id,
-      content: "Welcome to Lota Labs! Check out the latest announcements.",
-      link_url: '/announcements' 
+      content: "Welcome to Lota Labs. The next generation of interactive fiction starts here. You are officially on the roster. Dive into our latest playable builds and prepare for what's coming next.",
+      link_url: '/games' 
     };
+    
     console.log('Prepared welcome notification:', welcomeNotification);
 
     const { error: insertError } = await supabaseAdmin

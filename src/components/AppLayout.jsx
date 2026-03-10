@@ -204,7 +204,7 @@ export default function AppLayout({ children }) {
 
           {/* Logo */}
           <div className="logo">
-            <Link href="/" title="Go to Dashboard">
+            <Link href="/" title="Go to The Lab">
               <Image
                 src="/logo.png" 
                 alt="Lota Labs Logo"
@@ -219,13 +219,13 @@ export default function AppLayout({ children }) {
           {/* Desktop Nav Links */}
           <ul className="nav-links">
             <li className={isActive('/') ? 'active' : ''}>
-              <Link href="/">Dashboard</Link>
+              <Link href="/">The Lab</Link>
             </li>
             <li className={isActive('/projects') ? 'active' : ''}>
               <Link href="/projects">Projects</Link>
             </li>
-            <li className={isActive('/snippets') ? 'active' : ''}>
-              <Link href="/snippets">Snippets</Link>
+            <li className={isActive('/games') ? 'active' : ''}>
+              <Link href="/games">Games</Link>
             </li>
             <li className={isActive('/blog') ? 'active' : ''}>
               <Link href="/blog">Blog</Link>
@@ -392,13 +392,13 @@ export default function AppLayout({ children }) {
               <div className="sidebar-title">Main</div>
               <ul className="sidebar-menu">
                 <li className={isActive('/') ? 'active' : ''}>
-                  <Link href="/">📊 Dashboard</Link>
+                  <Link href="/">🧪 The Lab</Link>
                 </li>
                 <li className={isActive('/projects') ? 'active' : ''}>
                   <Link href="/projects">📁 Projects</Link>
                 </li>
-                <li className={isActive('/snippets') ? 'active' : ''}>
-                  <Link href="/snippets">🎮 Game Snippets</Link>
+                <li className={isActive('/games') ? 'active' : ''}>
+                  <Link href="/games">🎮 Games</Link>
                 </li>
                 <li className={isActive('/blog') ? 'active' : ''}>
                   <Link href="/blog">✍️ Blog Posts</Link>
@@ -436,6 +436,27 @@ export default function AppLayout({ children }) {
                     <Link href="/profile">👤 Profile</Link>
                   </li>
                 )}
+                
+                {/* --- MOBILE AUTH BUTTONS --- */}
+                <li style={{ marginTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+                  {session ? (
+                    <button 
+                      onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} 
+                      style={{ background: 'transparent', border: 'none', color: '#ef4444', width: '100%', textAlign: 'left', padding: '0.75rem 1rem', fontSize: '1rem', cursor: 'pointer', fontWeight: 'bold' }}
+                    >
+                      🚪 Log Out
+                    </button>
+                  ) : (
+                    <Link 
+                      href="/login" 
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      style={{ color: '#fbbf24', fontWeight: 'bold' }}
+                    >
+                      🔐 Sign In
+                    </Link>
+                  )}
+                </li>
+
               </ul>
             </div>
           </aside>
@@ -450,13 +471,13 @@ export default function AppLayout({ children }) {
             <div className="sidebar-title">Main</div>
             <ul className="sidebar-menu">
               <li className={isActive('/') ? 'active' : ''}>
-                <Link href="/">📊 Dashboard</Link>
+                <Link href="/">🧪 The Lab</Link>
               </li>
               <li className={isActive('/projects') ? 'active' : ''}>
                 <Link href="/projects">📁 Projects</Link>
               </li>
-              <li className={isActive('/snippets') ? 'active' : ''}>
-                <Link href="/snippets">🎮 Game Snippets</Link>
+              <li className={isActive('/games') ? 'active' : ''}>
+                <Link href="/games">🎮 Games</Link>
               </li>
               <li className={isActive('/blog') ? 'active' : ''}>
                 <Link href="/blog">✍️ Blog Posts</Link>

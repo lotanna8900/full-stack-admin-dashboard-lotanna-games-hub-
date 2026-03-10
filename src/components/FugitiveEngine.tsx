@@ -1107,7 +1107,12 @@ export default function FugitiveEngine({ storyContent, session }: FugitiveEngine
         tags.forEach(tag => {
           const cleanTag = tag.trim().toLowerCase();
           if (cleanTag.startsWith('image:')) {
-            blockBuffer.push({ type: 'image', content: tag.substring(6).trim(), id: `block-${blockCounter++}` });
+              const imgSrc = tag.substring(tag.indexOf(':') + 1).trim();
+              blockBuffer.push({ type: 'image', content: imgSrc, id: `block-${blockCounter++}` });
+          }
+          if (cleanTag.startsWith('url:')) {
+              const linkUrl = tag.substring(tag.indexOf(':') + 1).trim();
+              window.location.href = linkUrl; 
           }
           if (cleanTag.startsWith('input:')) {
             setCurrentInputVar(tag.substring(6).trim());

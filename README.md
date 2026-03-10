@@ -65,7 +65,7 @@ This is the core innovation of the project. I reverse-engineered the standard In
 
 ### ⚙️ Admin Dashboard
 * **RBAC:** Strict Role-Based Access Control (Admins vs. Users).
-* **Content Manager:** Create/Edit posts and Game Snippets directly in the browser.
+* **Content Manager:** Create/Edit posts and Games directly in the browser.
 * **Newsletter Composer:** HTML-rich email builder integrated with the user database.
 * **Analytics:** Tracking user engagement and story retention rates.
 
