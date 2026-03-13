@@ -866,6 +866,10 @@ export default function SnippetsPage() {
                 >
                   {/* ── Cover Art ── */}
                   <div className="gl-card-cover">
+                    
+                    {/* INVISIBLE LINK OVERLAY: Routes to the Game Detail Page */}
+                    <Link href={`/games/${snippet.id}`} style={{ position: 'absolute', inset: 0, zIndex: 5 }} />
+
                     {snippet.image_url ? (
                       <Image
                         src={snippet.image_url}
@@ -883,14 +887,14 @@ export default function SnippetsPage() {
 
                     {/* Pinned badge */}
                     {snippet.is_pinned && (
-                      <div className="gl-pinned-tag">
+                      <div className="gl-pinned-tag" style={{ zIndex: 10 }}>
                         <span className="gl-pinned-dot" />
                         Featured
                       </div>
                     )}
 
                     {/* Hover CTA Buttons (over image) */}
-                    <div className="gl-card-hover-actions">
+                    <div className="gl-card-hover-actions" style={{ zIndex: 10 }}>
                       <a
                         href={snippet.game_url}
                         target={snippet.game_url === '#local-demo' ? undefined : '_blank'}

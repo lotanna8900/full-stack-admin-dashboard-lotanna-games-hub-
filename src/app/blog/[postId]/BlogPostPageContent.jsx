@@ -250,7 +250,7 @@ export default function BlogPostPageContent({ params: paramsProp }) {
   if (error || !post) {
     return (
       <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem' }}>
-        <Link href="/" style={{ marginBottom: '1rem', display: 'inline-block' }}>&larr; Back to The Lab</Link>
+        <Link href="/blog" style={{ marginBottom: '1rem', display: 'inline-block' }}>&larr; Back to The Lab</Link>
         <h1>{error || 'Post not found.'}</h1>
       </div>
     );
@@ -259,7 +259,7 @@ export default function BlogPostPageContent({ params: paramsProp }) {
   // --- RENDER THE PAGE ---
   return (
     <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '1rem' }}>
-      <Link href="/" style={{ marginBottom: '1rem', display: 'inline-block', color: 'var(--primary)', textDecoration: 'none' }}>
+      <Link href="/blog" style={{ marginBottom: '1rem', display: 'inline-block', color: 'var(--primary)', textDecoration: 'none' }}>
         &larr; Back to The Lab
       </Link>
 
@@ -362,7 +362,18 @@ export default function BlogPostPageContent({ params: paramsProp }) {
               </div>
 
               {/* Update Content (Markdown parsed) */}
-              <div style={{ background: 'rgba(20, 25, 41, 0.4)', border: '1px solid rgba(255, 255, 255, 0.05)', padding: '1.5rem', borderRadius: '4px', lineHeight: '1.7', color: '#c5d4e8' }}>
+              <div className="timeline-markdown" style={{ background: 'rgba(20, 25, 41, 0.4)', border: '1px solid rgba(255, 255, 255, 0.05)', padding: '1.5rem', borderRadius: '4px', lineHeight: '1.7', color: '#c5d4e8' }}>
+                <style>{`
+                  .timeline-markdown a {
+                    color: #c8a84a;
+                    text-decoration: underline;
+                    text-underline-offset: 3px;
+                    transition: color 0.2s;
+                  }
+                  .timeline-markdown a:hover {
+                    color: #f08030;
+                  }
+                `}</style>
                 <ReactMarkdown>{update.content}</ReactMarkdown>
               </div>
             </div>
