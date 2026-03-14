@@ -272,10 +272,13 @@ export default function GameDetailPage({ params: paramsProp }) {
       if (!gameId) return;
       try {
         // Fetch the game data
+        const isUUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(gameId);
+        const searchColumn = isUUID ? 'id' : 'slug';
+
         const { data, error: fetchError } = await supabase
           .from('snippets')
           .select('*')
-          .eq('id', gameId)
+          .eq(searchColumn, gameId)
           .single();
 
         if (fetchError) throw fetchError;

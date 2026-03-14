@@ -868,7 +868,7 @@ export default function SnippetsPage() {
                   <div className="gl-card-cover">
                     
                     {/* INVISIBLE LINK OVERLAY: Routes to the Game Detail Page */}
-                    <Link href={`/games/${snippet.id}`} style={{ position: 'absolute', inset: 0, zIndex: 5 }} />
+                    <Link href={`/games/${snippet.slug || snippet.id}`} style={{ position: 'absolute', inset: 0, zIndex: 5 }} />
 
                     {snippet.image_url ? (
                       <Image
