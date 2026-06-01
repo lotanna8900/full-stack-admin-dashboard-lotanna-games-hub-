@@ -18,17 +18,21 @@ const pageStyles = `
     --slate:      #1e2d45;
     --mist:       #2b3f5c;
     --steel:      #3d5278;
-    --fog:        #5c7099;
-    --ash:        #8ca0c0;
-    --bone:       #c5d4e8;
-    --white:      #eef3f9;
+    
+    /* Brighter greys/blues for much sharper contrast */
+    --fog:        #7c93b8; 
+    --ash:        #a5b6cf; 
+    --bone:       #e2e8f0; 
+    --white:      #ffffff;
 
     --ember:      #b85c1a;
     --ember-mid:  #d4711f;
     --ember-hot:  #f08030;
-    --gold:       #c4922a;
-    --gold-mid:   #dba93a;
-    --gold-bright:#f0c050;
+    
+    /* Brighter golds for better pop */
+    --gold:       #d4a83b; 
+    --gold-mid:   #eebb4d;
+    --gold-bright:#f4cd67;
 
     --soul-deep:  #2d1a5c;
     --soul:       #5535a0;
@@ -42,7 +46,7 @@ const pageStyles = `
     --font-title:   'Cinzel', serif;
     --font-body:    'Crimson Pro', serif;
 
-    --glow-gold:  0 0 30px rgba(192,144,40,0.35), 0 0 60px rgba(192,144,40,0.15);
+    --glow-gold:  0 0 30px rgba(212,168,59,0.35), 0 0 60px rgba(212,168,59,0.15);
     --glow-soul:  0 0 30px rgba(115,80,200,0.4),  0 0 70px rgba(115,80,200,0.15);
   }
 
@@ -79,8 +83,8 @@ const pageStyles = `
   @keyframes pulse { 0%,100%{opacity:.2} 50%{opacity:1} }
   .ll-loading-text {
     font-family: var(--font-title);
-    font-size: .65rem;
-    letter-spacing: .5em;
+    font-size: 0.85rem;
+    letter-spacing: .3em;
     color: var(--fog);
     text-transform: uppercase;
     animation: pulse 2.2s ease infinite;
@@ -98,7 +102,6 @@ const pageStyles = `
     overflow: hidden;
   }
 
-  /* Atmospheric background */
   .ll-hero-bg {
     position: absolute;
     inset: 0;
@@ -110,7 +113,6 @@ const pageStyles = `
     z-index: 0;
   }
 
-  /* Scan-line grid */
   .ll-hero-bg::after {
     content: '';
     position: absolute;
@@ -142,7 +144,7 @@ const pageStyles = `
     border-radius: 2px;
   }
   .ll-studio-badge-dot {
-    width: 5px; height: 5px;
+    width: 6px; height: 6px;
     border-radius: 50%;
     background: var(--gold-bright);
     box-shadow: 0 0 6px var(--gold-bright);
@@ -150,8 +152,8 @@ const pageStyles = `
   }
   .ll-studio-badge-text {
     font-family: var(--font-title);
-    font-size: .52rem;
-    letter-spacing: .4em;
+    font-size: 0.75rem;
+    letter-spacing: .2em;
     color: var(--gold);
     text-transform: uppercase;
   }
@@ -175,21 +177,21 @@ const pageStyles = `
   }
 
   .ll-hero-sub {
-    font-size: 1.15rem;
+    font-size: 1.25rem;
     color: var(--ash);
     line-height: 1.7;
     max-width: 480px;
   }
 
   .ll-hero-sub strong {
-    color: var(--bone);
+    color: var(--white);
     font-weight: 500;
     font-style: italic;
   }
 
   .ll-hero-actions {
     display: flex;
-    gap: .9rem;
+    gap: 1rem;
     flex-wrap: wrap;
     padding-top: .5rem;
   }
@@ -198,13 +200,13 @@ const pageStyles = `
     display: inline-flex;
     align-items: center;
     gap: .6rem;
-    padding: .85rem 2rem;
+    padding: 1rem 2rem;
     background: linear-gradient(135deg, var(--ember) 0%, var(--ember-hot) 100%);
     color: var(--white);
     font-family: var(--font-title);
-    font-size: .65rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: .25em;
+    letter-spacing: .15em;
     text-transform: uppercase;
     text-decoration: none;
     border: none;
@@ -231,27 +233,26 @@ const pageStyles = `
     display: inline-flex;
     align-items: center;
     gap: .6rem;
-    padding: .85rem 1.75rem;
+    padding: 1rem 1.75rem;
     background: transparent;
-    color: var(--ash);
+    color: var(--bone);
     font-family: var(--font-title);
-    font-size: .65rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: .25em;
+    letter-spacing: .15em;
     text-transform: uppercase;
     text-decoration: none;
-    border: 1px solid var(--mist);
+    border: 1px solid var(--fog);
     border-radius: 2px;
     cursor: pointer;
     transition: all .25s ease;
   }
   .ll-btn-ghost:hover {
-    border-color: var(--steel);
-    color: var(--bone);
-    background: rgba(255,255,255,.04);
+    border-color: var(--white);
+    color: var(--white);
+    background: rgba(255,255,255,.08);
   }
 
-  /* Cover image side */
   .ll-hero-right {
     position: relative;
     z-index: 2;
@@ -291,7 +292,6 @@ const pageStyles = `
     height: 100%;
   }
 
-  /* Placeholder cover when no image */
   .ll-hero-cover-placeholder {
     width: 100%;
     height: 100%;
@@ -304,13 +304,12 @@ const pageStyles = `
     align-items: center;
     justify-content: center;
     font-family: var(--font-title);
-    font-size: .55rem;
-    letter-spacing: .5em;
-    color: var(--steel);
+    font-size: 0.85rem;
+    letter-spacing: .2em;
+    color: var(--fog);
     text-transform: uppercase;
   }
 
-  /* Featured game label */
   .ll-hero-game-tag {
     position: absolute;
     bottom: 3rem;
@@ -319,24 +318,23 @@ const pageStyles = `
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: .3rem;
+    gap: .4rem;
   }
   .ll-hero-game-label {
     font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .4em;
-    color: var(--fog);
+    font-size: 0.75rem;
+    letter-spacing: .2em;
+    color: var(--bone);
     text-transform: uppercase;
   }
   .ll-hero-game-title {
     font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     color: var(--gold-bright);
     text-shadow: var(--glow-gold);
     text-align: right;
   }
 
-  /* Scroll hint */
   @keyframes scrollBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
   .ll-scroll-hint {
     position: absolute;
@@ -347,18 +345,18 @@ const pageStyles = `
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: .4rem;
-    opacity: .4;
+    gap: .5rem;
+    opacity: .6;
   }
   .ll-scroll-hint span {
     font-family: var(--font-title);
-    font-size: .45rem;
-    letter-spacing: .4em;
+    font-size: 0.75rem;
+    letter-spacing: .2em;
     color: var(--fog);
     text-transform: uppercase;
   }
   .ll-scroll-arrow {
-    width: 1px;
+    width: 2px;
     height: 28px;
     background: linear-gradient(to bottom, var(--fog), transparent);
     animation: scrollBounce 2s ease infinite;
@@ -399,8 +397,8 @@ const pageStyles = `
 
   .ll-section-eyebrow {
     font-family: var(--font-title);
-    font-size: .52rem;
-    letter-spacing: .45em;
+    font-size: 0.85rem;
+    letter-spacing: .2em;
     color: var(--ember-mid);
     text-transform: uppercase;
     margin-bottom: 1rem;
@@ -412,15 +410,15 @@ const pageStyles = `
     content: '';
     display: inline-block;
     width: 24px;
-    height: 1px;
+    height: 2px;
     background: var(--ember-mid);
   }
 
   .ll-manifesto-heading {
     font-family: var(--font-display);
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.25;
     color: var(--white);
     margin-bottom: 1rem;
   }
@@ -435,8 +433,8 @@ const pageStyles = `
   }
 
   .ll-manifesto-rule {
-    width: 40px;
-    height: 2px;
+    width: 60px;
+    height: 3px;
     background: linear-gradient(to right, var(--soul-mid), transparent);
     margin-top: 1.5rem;
   }
@@ -448,13 +446,13 @@ const pageStyles = `
   }
 
   .ll-manifesto-body {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     line-height: 1.85;
     color: var(--ash);
   }
 
   .ll-manifesto-body strong {
-    color: var(--bone);
+    color: var(--white);
     font-weight: 500;
   }
 
@@ -464,53 +462,45 @@ const pageStyles = `
   }
 
   .ll-manifesto-placeholder {
-    padding: 1.5rem;
-    border: 1px dashed var(--mist);
-    border-radius: 2px;
-    background: rgba(255,255,255,.02);
-  }
-  .ll-manifesto-placeholder p {
-    font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .25em;
-    color: var(--steel);
-    text-transform: uppercase;
-    text-align: center;
+    padding: 2rem;
+    border: 1px solid var(--slate);
+    border-radius: 4px;
+    background: rgba(255,255,255,.03);
   }
 
   .ll-pillars {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: var(--mist);
-    border: 1px solid var(--mist);
-    margin-top: .5rem;
+    gap: 1rem;
+    margin-top: 1rem;
   }
 
   .ll-pillar {
-    padding: 1.25rem;
+    padding: 1.5rem;
     background: var(--deep);
-    transition: background .2s;
+    border: 1px solid var(--slate);
+    border-radius: 4px;
+    transition: background .2s, border-color .2s;
   }
-  .ll-pillar:hover { background: var(--navy); }
+  .ll-pillar:hover { background: var(--navy); border-color: var(--steel); }
 
   .ll-pillar-icon {
-    font-size: 1.2rem;
-    margin-bottom: .5rem;
+    font-size: 1.5rem;
+    margin-bottom: .75rem;
     display: block;
   }
   .ll-pillar-title {
     font-family: var(--font-title);
-    font-size: .6rem;
-    letter-spacing: .2em;
+    font-size: 0.85rem;
+    letter-spacing: .15em;
     color: var(--gold);
     text-transform: uppercase;
-    margin-bottom: .3rem;
+    margin-bottom: .5rem;
   }
   .ll-pillar-text {
-    font-size: .95rem;
+    font-size: 1rem;
     color: var(--fog);
-    line-height: 1.5;
+    line-height: 1.6;
   }
 
   /* ══════════════════════════════════════════════════
@@ -554,15 +544,15 @@ const pageStyles = `
   }
 
   .ll-game-crest {
-    width: 72px;
-    height: 72px;
-    border: 1px solid rgba(115,80,200,.4);
+    width: 80px;
+    height: 80px;
+    border: 1px solid rgba(115,80,200,.6);
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(85,53,160,.3), transparent);
+    background: radial-gradient(circle, rgba(85,53,160,.4), transparent);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.6rem;
+    font-size: 2rem;
     box-shadow: var(--glow-soul);
     animation: pulse 3s ease infinite;
     margin-bottom: .5rem;
@@ -570,9 +560,9 @@ const pageStyles = `
 
   .ll-cs-eyebrow {
     font-family: var(--font-title);
-    font-size: .52rem;
-    letter-spacing: .45em;
-    color: var(--soul-mid);
+    font-size: 0.85rem;
+    letter-spacing: .2em;
+    color: var(--soul-bright);
     text-transform: uppercase;
     display: flex;
     align-items: center;
@@ -581,13 +571,13 @@ const pageStyles = `
   .ll-cs-eyebrow::before, .ll-cs-eyebrow::after {
     content: '';
     display: inline-block;
-    width: 24px; height: 1px;
+    width: 30px; height: 2px;
     background: var(--soul-mid);
   }
 
   .ll-cs-title {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(2.5rem, 5vw, 4rem);
     font-weight: 900;
     color: var(--white);
     text-shadow: var(--glow-soul);
@@ -595,31 +585,31 @@ const pageStyles = `
   }
 
   .ll-cs-subtitle {
-    font-size: 1.15rem;
-    color: var(--ash);
+    font-size: 1.25rem;
+    color: var(--bone);
     line-height: 1.75;
-    max-width: 580px;
+    max-width: 600px;
   }
 
   .ll-status-badge {
     display: inline-flex;
     align-items: center;
     gap: .6rem;
-    padding: .4rem 1rem;
-    border: 1px solid rgba(115,80,200,.4);
-    background: rgba(85,53,160,.12);
-    border-radius: 2px;
+    padding: .5rem 1.25rem;
+    border: 1px solid rgba(115,80,200,.6);
+    background: rgba(85,53,160,.2);
+    border-radius: 4px;
   }
   .ll-status-dot {
-    width: 5px; height: 5px; border-radius: 50%;
+    width: 6px; height: 6px; border-radius: 50%;
     background: var(--soul-bright);
-    box-shadow: 0 0 6px var(--soul-bright);
+    box-shadow: 0 0 8px var(--soul-bright);
     animation: pulse 2s ease infinite;
   }
   .ll-status-text {
     font-family: var(--font-title);
-    font-size: .52rem;
-    letter-spacing: .3em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--soul-bright);
     text-transform: uppercase;
   }
@@ -629,21 +619,21 @@ const pageStyles = `
     gap: 1.5rem;
     justify-content: center;
     align-items: center;
-    padding: .75rem 0;
+    padding: 1rem 0;
   }
   .ll-platform {
     font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .3em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--fog);
     text-transform: uppercase;
     display: flex;
     align-items: center;
-    gap: .4rem;
+    gap: .5rem;
   }
   .ll-platform::before {
     content: '◆';
-    font-size: .3rem;
+    font-size: .4rem;
     color: var(--mist);
   }
   .ll-platform:first-child::before { display: none; }
@@ -652,17 +642,17 @@ const pageStyles = `
     display: inline-flex;
     align-items: center;
     gap: .6rem;
-    padding: .85rem 2.25rem;
+    padding: 1rem 2.25rem;
     background: linear-gradient(135deg, var(--soul-deep), var(--soul));
     color: var(--bone);
     font-family: var(--font-title);
-    font-size: .65rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: .25em;
+    letter-spacing: .15em;
     text-transform: uppercase;
     text-decoration: none;
-    border: 1px solid rgba(115,80,200,.4);
-    border-radius: 2px;
+    border: 1px solid rgba(115,80,200,.6);
+    border-radius: 4px;
     cursor: pointer;
     box-shadow: var(--glow-soul);
     transition: all .25s ease;
@@ -704,8 +694,8 @@ const pageStyles = `
 
   .ll-greeting-sub {
     font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .4em;
+    font-size: 0.85rem;
+    letter-spacing: .2em;
     color: var(--ember-mid);
     text-transform: uppercase;
     display: flex;
@@ -713,43 +703,43 @@ const pageStyles = `
     gap: .6rem;
     margin-bottom: .6rem;
   }
-  .ll-greeting-sub::before { content: ''; display: inline-block; width: 20px; height: 1px; background: var(--ember-mid); }
+  .ll-greeting-sub::before { content: ''; display: inline-block; width: 24px; height: 2px; background: var(--ember-mid); }
 
   .ll-greeting-title {
     font-family: var(--font-display);
-    font-size: 1.6rem;
+    font-size: 2rem;
     color: var(--white);
     line-height: 1.1;
   }
 
   .ll-greeting-body {
-    font-size: 1rem;
-    color: var(--fog);
+    font-size: 1.1rem;
+    color: var(--ash);
     margin-top: .4rem;
   }
 
   .ll-admin-actions {
     display: flex;
-    gap: .5rem;
+    gap: 1rem;
   }
 
-  /* Stat cards */
+  /* Decluttered Stat cards */
   .ll-stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1px;
-    background: var(--slate);
-    border: 1px solid var(--slate);
-    margin-bottom: 1px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
   }
 
   .ll-stat-card {
     background: var(--deep);
-    padding: 1.5rem;
+    border: 1px solid var(--slate);
+    border-radius: 6px;
+    padding: 2rem;
     display: flex;
     flex-direction: column;
-    gap: .5rem;
-    transition: background .2s;
+    gap: .75rem;
+    transition: background .2s, border-color .2s;
     text-decoration: none;
     color: inherit;
     position: relative;
@@ -759,11 +749,11 @@ const pageStyles = `
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(135deg, rgba(192,144,40,.06), transparent);
+    background: linear-gradient(135deg, rgba(192,144,40,.08), transparent);
     opacity: 0;
     transition: opacity .25s;
   }
-  .ll-stat-card:hover { background: var(--navy); }
+  .ll-stat-card:hover { background: var(--navy); border-color: var(--steel); }
   .ll-stat-card:hover::before { opacity: 1; }
 
   .ll-stat-card-wide {
@@ -771,27 +761,27 @@ const pageStyles = `
   }
 
   .ll-stat-icon-wrap {
-    width: 36px; height: 36px;
-    border-radius: 2px;
+    width: 44px; height: 44px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 1.25rem;
     flex-shrink: 0;
-    margin-bottom: .25rem;
+    margin-bottom: .5rem;
   }
 
   .ll-stat-label {
     font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .3em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--fog);
     text-transform: uppercase;
   }
 
   .ll-stat-value {
     font-family: var(--font-display);
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 700;
     color: var(--white);
     line-height: 1;
@@ -799,35 +789,35 @@ const pageStyles = `
 
   .ll-stat-arrow {
     position: absolute;
-    top: 1.5rem; right: 1.5rem;
-    font-size: .7rem;
+    top: 2rem; right: 2rem;
+    font-size: 1rem;
     color: var(--steel);
     transition: color .2s, transform .2s;
   }
-  .ll-stat-card:hover .ll-stat-arrow { color: var(--gold); transform: translate(2px, -2px); }
+  .ll-stat-card:hover .ll-stat-arrow { color: var(--gold-bright); transform: translate(3px, -3px); }
 
   /* Social stats */
   .ll-social-grid {
     display: flex;
-    gap: 1.5rem;
+    gap: 2rem;
     flex-wrap: wrap;
-    margin-top: .5rem;
+    margin-top: .75rem;
   }
   .ll-social-item {
     display: flex;
     flex-direction: column;
-    gap: .2rem;
+    gap: .4rem;
   }
   .ll-social-platform {
     font-family: var(--font-title);
-    font-size: .45rem;
-    letter-spacing: .25em;
+    font-size: 0.75rem;
+    letter-spacing: .1em;
     color: var(--fog);
     text-transform: uppercase;
   }
   .ll-social-count {
     font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     color: var(--gold-bright);
   }
 
@@ -835,50 +825,50 @@ const pageStyles = `
   .ll-content-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 1px;
-    background: var(--slate);
-    border: 1px solid var(--slate);
-    margin-top: 1px;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
   }
 
   .ll-panel {
     background: var(--deep);
-    padding: 2rem;
+    border: 1px solid var(--slate);
+    border-radius: 6px;
+    padding: 2.5rem;
   }
 
   .ll-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--slate);
   }
 
   .ll-panel-title {
     font-family: var(--font-title);
-    font-size: .65rem;
-    letter-spacing: .3em;
+    font-size: 0.85rem;
+    letter-spacing: .15em;
     color: var(--bone);
     text-transform: uppercase;
   }
 
   .ll-panel-meta {
-    font-size: .9rem;
+    font-size: 1rem;
     color: var(--fog);
-    margin-top: .2rem;
+    margin-top: .4rem;
   }
 
   .ll-panel-link {
     font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .2em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--gold);
     text-transform: uppercase;
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: .3rem;
+    gap: .4rem;
     transition: color .2s;
     white-space: nowrap;
   }
@@ -890,94 +880,93 @@ const pageStyles = `
   .ll-activity-item {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    padding: .85rem 0;
+    gap: 1.25rem;
+    padding: 1.25rem 0;
     border-bottom: 1px solid var(--slate);
     text-decoration: none;
     color: inherit;
     transition: background .15s;
-    margin: 0 -1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    margin: 0 -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
   .ll-activity-item:last-child { border-bottom: none; }
-  .ll-activity-item:hover { background: rgba(255,255,255,.02); }
+  .ll-activity-item:hover { background: rgba(255,255,255,.03); }
 
   .ll-activity-icon {
-    width: 28px; height: 28px; border-radius: 2px;
+    width: 36px; height: 36px; border-radius: 4px;
     display: flex; align-items: center; justify-content: center;
-    font-size: .8rem; flex-shrink: 0;
+    font-size: 1rem; flex-shrink: 0;
     border: 1px solid var(--slate);
   }
-  .ll-activity-icon-comment { background: rgba(59,130,246,.12); }
-  .ll-activity-icon-post    { background: rgba(16,185,129,.12); }
-  .ll-activity-icon-project { background: rgba(139,92,246,.12); }
+  .ll-activity-icon-comment { background: rgba(59,130,246,.15); border-color: rgba(59,130,246,.3); }
+  .ll-activity-icon-post    { background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.3); }
+  .ll-activity-icon-project { background: rgba(139,92,246,.15); border-color: rgba(139,92,246,.3); }
 
-  .ll-activity-text { font-size: 1rem; color: var(--ash); line-height: 1.4; }
+  .ll-activity-text { font-size: 1.1rem; color: var(--ash); line-height: 1.5; }
   .ll-activity-text strong { color: var(--bone); font-weight: 500; }
-  .ll-activity-time { font-size: .85rem; color: var(--fog); margin-top: .1rem; }
+  .ll-activity-time { font-size: 0.9rem; color: var(--fog); margin-top: .4rem; }
 
   .ll-empty-state {
     display: flex; flex-direction: column; align-items: center;
-    justify-content: center; padding: 3rem; gap: .75rem;
+    justify-content: center; padding: 4rem 2rem; gap: 1rem;
     color: var(--fog);
   }
-  .ll-empty-state-icon { font-size: 2rem; opacity: .4; }
-  .ll-empty-state-text { font-family: var(--font-title); font-size: .55rem; letter-spacing: .25em; text-transform: uppercase; }
+  .ll-empty-state-icon { font-size: 2.5rem; opacity: .5; }
+  .ll-empty-state-text { font-family: var(--font-title); font-size: 0.85rem; letter-spacing: .2em; text-transform: uppercase; }
 
   /* Quick links */
   .ll-quick-links {
-    margin-top: 1px;
     background: var(--deep);
     border: 1px solid var(--slate);
-    border-top: none;
-    padding: 1.75rem 2rem;
+    border-radius: 6px;
+    padding: 2.5rem;
   }
 
   .ll-quick-links-label {
     font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .35em;
+    font-size: 0.85rem;
+    letter-spacing: .2em;
     color: var(--fog);
     text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   .ll-quick-links-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: .75rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.25rem;
   }
 
   .ll-quick-link {
     display: flex;
     align-items: center;
-    gap: .75rem;
-    padding: .75rem 1rem;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
     background: var(--abyss);
     border: 1px solid var(--slate);
-    border-radius: 2px;
+    border-radius: 4px;
     text-decoration: none;
-    color: var(--ash);
+    color: var(--bone);
     font-family: var(--font-title);
-    font-size: .55rem;
-    letter-spacing: .15em;
+    font-size: 0.85rem;
+    letter-spacing: .1em;
     text-transform: uppercase;
     transition: all .2s;
   }
   .ll-quick-link:hover {
     background: var(--navy);
     border-color: var(--steel);
-    color: var(--bone);
+    color: var(--white);
   }
-  .ll-quick-link-icon { font-size: 1rem; }
+  .ll-quick-link-icon { font-size: 1.25rem; }
 
   /* ── RESPONSIVE ──────────────────────────────────── */
   @media (max-width: 900px) {
     .ll-hero { grid-template-columns: 1fr; }
     .ll-hero-right { display: none; }
     .ll-hero-left { padding: 7rem 2rem 5rem; }
-    .ll-manifesto-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .ll-manifesto-inner { grid-template-columns: 1fr; gap: 3rem; }
     .ll-manifesto-left { position: static; }
     .ll-content-grid { grid-template-columns: 1fr; }
     .ll-stat-card-wide { grid-column: span 1; }
@@ -999,7 +988,7 @@ const pageStyles = `
 export default function HomePage() {
   const router = useRouter();
 
-  // --- EXISTING STATE (untouched) ---
+  // --- EXISTING STATE ---
   const [projectCount, setProjectCount] = useState(0);
   const [snippetCount, setSnippetCount] = useState(0);
   const [memberCount, setMemberCount] = useState(0);
@@ -1010,11 +999,11 @@ export default function HomePage() {
   const [username, setUsername] = useState('');
   const [socialStats, setSocialStats] = useState([]);
 
-  // --- NEW STATE FOR DYNAMIC CONTENT (untouched) ---
+  // --- NEW STATE FOR DYNAMIC CONTENT ---
   const [heroConfig, setHeroConfig] = useState(null);
   const [demoConfig, setDemoConfig] = useState(null);
 
-  // --- EXISTING useEffect (untouched) ---
+  // --- EXISTING useEffect ---
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
@@ -1082,7 +1071,7 @@ export default function HomePage() {
     fetchDashboardData();
   }, []);
 
-  // --- HELPERS (untouched) ---
+  // --- HELPERS ---
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';
@@ -1207,10 +1196,9 @@ export default function HomePage() {
               </p>
 
               <div className="ll-manifesto-placeholder">
-
-                <div style={{ marginTop: '1.5rem', marginBottom: '2rem' }}>
-                <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '1.2rem', color: 'var(--white)', marginBottom: '0.75rem' }}>
-                  ✦True Ownership of Your Story✦
+                <div style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>
+                <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '1.2rem', color: 'var(--white)', marginBottom: '1rem' }}>
+                  ✦ True Ownership of Your Story ✦
                 </h3>
                 <p className="ll-manifesto-body" style={{ marginBottom: '1rem' }}>
                   We are pioneering the bridge between interactive narrative and true digital ownership. In a Lota Labs experience, the artifacts you earn, whether it is a cursed blade or a celestial relic, actually belong to you. 
@@ -1300,10 +1288,10 @@ export default function HomePage() {
               </div>
               {userRole === 'admin' && (
                 <div className="ll-admin-actions">
-                  <Link href="/games" className="ll-btn-ghost" style={{ fontSize: '.55rem', padding: '.6rem 1.25rem' }}>
+                  <Link href="/games" className="ll-btn-ghost" style={{ fontSize: '0.75rem', padding: '.75rem 1.25rem' }}>
                     Upload Snippet
                   </Link>
-                  <Link href="/blog" className="ll-btn-primary" style={{ fontSize: '.55rem', padding: '.6rem 1.25rem' }}>
+                  <Link href="/blog" className="ll-btn-primary" style={{ fontSize: '0.75rem', padding: '.75rem 1.25rem' }}>
                     New Post
                   </Link>
                 </div>
@@ -1346,12 +1334,14 @@ export default function HomePage() {
                   <div>
                     <div className="ll-stat-label">Social Reach</div>
                     <div className="ll-social-grid">
-                      {socialStats.map(stat => (
+                      {/* FILTER ADDED HERE: Ensuring LinkedIn NEVER renders */}
+                      {socialStats
+                        .filter(stat => stat.platform.toLowerCase() !== 'linkedin')
+                        .map(stat => (
                         <div key={stat.platform} className="ll-social-item">
                           <span className="ll-social-platform">
                             {stat.platform === 'Instagram' && '📸 '}
                             {stat.platform === 'Tiktok' && '🎵 '}
-                            {stat.platform === 'LinkedIn' && '💼 '}
                             {stat.platform === 'Twitter' && '🐦 '}
                             {stat.platform === 'YouTube' && '📺 '}
                             {stat.platform}
@@ -1422,47 +1412,47 @@ export default function HomePage() {
                     <div className="ll-panel-meta">Featured experience</div>
                   </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                   <div style={{
-                    padding: '1.25rem',
-                    border: '1px solid rgba(192,144,40,.25)',
-                    background: 'rgba(192,144,40,.05)',
-                    borderRadius: '2px',
+                    padding: '1.5rem',
+                    border: '1px solid rgba(192,144,40,.3)',
+                    background: 'rgba(192,144,40,.08)',
+                    borderRadius: '4px',
                   }}>
                     <div style={{
-                      fontFamily: 'var(--font-title)', fontSize: '.45rem', letterSpacing: '.3em',
-                      color: 'var(--gold)', textTransform: 'uppercase', marginBottom: '.5rem'
+                      fontFamily: 'var(--font-title)', fontSize: '0.75rem', letterSpacing: '.15em',
+                      color: 'var(--gold)', textTransform: 'uppercase', marginBottom: '.75rem'
                     }}>
                       Chapter 1 Demo
                     </div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: 'var(--white)', marginBottom: '.6rem' }}>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: 'var(--white)', marginBottom: '.75rem' }}>
                       Supernatural Fugitive
                     </div>
-                    <div style={{ fontSize: '.95rem', color: 'var(--fog)', lineHeight: '1.5', marginBottom: '1rem' }}>
+                    <div style={{ fontSize: '1rem', color: 'var(--bone)', lineHeight: '1.6', marginBottom: '1.25rem' }}>
                       You are a first responder. Something inhabits a man on Jonathan Street.
                       And an angel has been waiting for you.
                     </div>
-                    <Link href="/games" className="ll-btn-primary" style={{ fontSize: '.55rem', padding: '.6rem 1.25rem', width: '100%', justifyContent: 'center' }}>
+                    <Link href="/games" className="ll-btn-primary" style={{ fontSize: '0.75rem', padding: '1rem 1.25rem', width: '100%', justifyContent: 'center' }}>
                       <span>▶ Play Now</span>
                     </Link>
                   </div>
 
                   <div style={{
-                    padding: '1.25rem',
-                    border: '1px solid rgba(85,53,160,.3)',
-                    background: 'rgba(45,26,92,.15)',
-                    borderRadius: '2px',
+                    padding: '1.5rem',
+                    border: '1px solid rgba(85,53,160,.4)',
+                    background: 'rgba(45,26,92,.2)',
+                    borderRadius: '4px',
                   }}>
                     <div style={{
-                      fontFamily: 'var(--font-title)', fontSize: '.45rem', letterSpacing: '.3em',
-                      color: 'var(--soul-mid)', textTransform: 'uppercase', marginBottom: '.5rem'
+                      fontFamily: 'var(--font-title)', fontSize: '0.75rem', letterSpacing: '.15em',
+                      color: 'var(--soul-bright)', textTransform: 'uppercase', marginBottom: '.75rem'
                     }}>
                       Coming Q2 2026
                     </div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', color: 'var(--white)', marginBottom: '.6rem' }}>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: 'var(--white)', marginBottom: '.75rem' }}>
                       Keeper's Vigil
                     </div>
-                    <Link href="/blog" className="ll-btn-soul" style={{ fontSize: '.55rem', padding: '.6rem 1.25rem', width: '100%', justifyContent: 'center' }}>
+                    <Link href="/blog" className="ll-btn-soul" style={{ fontSize: '0.75rem', padding: '1rem 1.25rem', width: '100%', justifyContent: 'center' }}>
                       Join Waitlist →
                     </Link>
                   </div>

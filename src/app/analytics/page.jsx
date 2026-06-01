@@ -160,7 +160,6 @@ export default function AnalyticsPage() {
     const icons = {
       'Instagram': '📸',
       'Tiktok': '🎵',
-      'LinkedIn': '💼',
       'Twitter': '🐦',
       'YouTube': '📺'
     };

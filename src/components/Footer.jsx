@@ -85,7 +85,7 @@ export default function Footer() {
                 <span>GitHub</span>
               </a>
               <a 
-                href="https://x.com/lotannagrey" 
+                href="https://x.com/LotaLabs" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 title="Twitter/X"
