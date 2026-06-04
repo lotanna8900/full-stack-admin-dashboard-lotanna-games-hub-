@@ -27,11 +27,11 @@ export default function AboutPage() {
               </div>
               <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--ash)', marginBottom: '1rem' }}>
                 I'm <strong>Lotanna</strong>, a Senior Product Engineer and the Founder of Lota Labs. I specialize in building 
-                complex, stateful systems—from <strong>self-evolving AI agents</strong> to <strong>blockchain-integrated narrative engines</strong>.
+                complex, stateful systems and <strong>highly immersive interactive experiences</strong>.
               </p>
               <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--ash)' }}>
-                I don’t just write code; I engineer reliability. Currently, I am a Core Contributor to Hive (YC S24), 
-                where I built an offline analysis tool called <code>hive diff</code> to streamline autonomous agent evaluations. I merge this rigorous backend engineering with high-performance frontend product design.
+                I'm not the sort of dev that just writes code; Nope, I engineer reliability. Currently, I am a Core Contributor to Hive (YC S24), 
+                where I built an offline analysis tool called <code>hive diff</code> to streamline complex system evaluations. I merge this rigorous backend engineering with high-performance frontend product design to build worlds where your choices actually matter.
               </p>
             </div>
 
@@ -51,7 +51,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            {/* --- THE MANIFESTO BLOCK MERGED HERE --- */}
+            {/* --- MANIFESTO BLOCK --- */}
             <div className="about-section" style={{ padding: '2.5rem', border: '1px solid var(--slate)', borderRadius: '8px', background: 'var(--deep)' }}>
               <div className="about-section-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                 <span className="about-section-icon" style={{ fontSize: '1.5rem' }}>📖</span>
@@ -90,7 +90,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* --- RESUME THE REST OF THE PAGE --- */}
+            {/* --- RESUME --- */}
             <div className="about-section">
               <div className="about-section-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                 <span className="about-section-icon" style={{ fontSize: '1.5rem' }}>🛠️</span>
