@@ -261,11 +261,13 @@ const pageStyles = `
   .ll-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
   .ll-stat-card { background: var(--deep); border: 1px solid var(--slate); border-radius: 6px; padding: 2rem; display: flex; flex-direction: column; gap: .75rem; text-decoration: none; color: inherit; transition: all .2s; }
   .ll-stat-card:hover { background: var(--navy); border-color: var(--steel); }
+  .ll-stat-card-wide { grid-column: span 2; }
+  
   .ll-stat-icon-wrap { width: 44px; height: 44px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: .5rem; }
   .ll-stat-label { font-family: var(--font-title); font-size: 0.75rem; letter-spacing: .15em; color: var(--fog); text-transform: uppercase; }
   .ll-stat-value { font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; color: var(--white); line-height: 1; }
 
-  .ll-social-links-container { display: flex; gap: 1rem; margin-top: 1rem; }
+  .ll-social-links-container { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
   .ll-social-badge { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--void); border: 1px solid var(--slate); border-radius: 4px; color: var(--bone); text-decoration: none; font-family: var(--font-title); font-size: 0.75rem; text-transform: uppercase; transition: all .2s; }
   .ll-social-badge:hover { background: var(--navy); border-color: var(--gold-mid); color: var(--gold-bright); }
 
@@ -276,11 +278,23 @@ const pageStyles = `
   .ll-activity-item:hover { background: rgba(255,255,255,.03); }
   .ll-activity-icon { width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; border: 1px solid var(--slate); }
 
+  /* ADDED: Missing text styles to prevent long titles from breaking the layout */
+  .ll-activity-text { 
+    font-size: 1.05rem; 
+    color: var(--ash); 
+    line-height: 1.5; 
+    word-wrap: break-word; 
+    min-width: 0; /* Critical: forces flex children to wrap text instead of pushing wide */
+    flex: 1;
+  }
+  .ll-activity-text strong { color: var(--bone); font-weight: 500; }
+  .ll-activity-time { font-size: 0.85rem; color: var(--fog); margin-top: 0.35rem; }
+
   /* ── RESPONSIVE OVERRIDES ── */
   @media (max-width: 900px) {
     .ll-hero { grid-template-columns: 1fr; }
     
-    /* CHANGED: Fixed the missing image on mobile by ensuring it fills the absolute container */
+    /* MOBILE IMAGE FIX */
     .ll-hero-right { 
         position: absolute; 
         inset: 0; 
@@ -291,9 +305,39 @@ const pageStyles = `
     .ll-hero-image-wrap { height: 100%; width: 100%; position: absolute; inset: 0; }
     .ll-hero-cover-img { height: 100% !important; object-fit: cover; }
     .ll-hero-image-wrap::before, .ll-hero-image-wrap::after { display: none; }
-    .ll-hero-game-tag { display: none; } /* Hide the floating tag on mobile to keep it clean */
+    .ll-hero-game-tag { display: none; }
     
     .ll-hero-left { z-index: 2; padding: 7rem 2rem 5rem; }
+
+    /* Forces the Follow Us grid card to stack cleanly */
+    .ll-stat-card-wide { grid-column: span 1; }
+  }
+
+  /* ADDED: Deep mobile cleanup for the Community Hub */
+  @media (max-width: 600px) {
+    /* Reduce massive paddings so mobile screens can actually fit the content */
+    .ll-dashboard { padding: 4rem 1.25rem; }
+    .ll-stat-card { padding: 1.5rem; }
+    .ll-panel { padding: 1.5rem; }
+    
+    /* Adjust the negative margins on the activity feed so they don't clip */
+    .ll-activity-item { 
+      margin: 0 -1rem; 
+      padding-left: 1rem; 
+      padding-right: 1rem; 
+      gap: 1rem; 
+    }
+    
+    /* Stack the social buttons neatly on top of each other */
+    .ll-social-links-container { 
+      flex-direction: column; 
+      align-items: stretch; 
+    }
+    .ll-social-badge { 
+      justify-content: center; 
+    }
+    
+    .ll-greeting-title { font-size: 1.75rem; }
   }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
@@ -548,7 +592,7 @@ export default function HomePage() {
                 <div className="ll-stat-value">{memberCount}</div>
               </div>
 
-              <div className="ll-stat-card" style={{gridColumn: 'span 2'}}>
+              <div className="ll-stat-card ll-stat-card-wide">
                 <div className="ll-stat-icon-wrap" style={{ background: 'rgba(245,158,11,.15)', border: '1px solid rgba(245,158,11,.3)' }}>🌐</div>
                 <div className="ll-stat-label">Follow The Studio</div>
                 <div className="ll-social-links-container">

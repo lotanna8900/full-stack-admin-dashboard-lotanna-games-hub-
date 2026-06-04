@@ -47,7 +47,7 @@ export default function AboutPage() {
               <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--ash)', marginBottom: '2rem' }}>
                 It features a custom-built Node-Based Runtime that compiles standard fiction scripts into 
                 interactive React components, triggering real-time Web3 events based on user choices. 
-                This isn't a template; it's a proprietary engine built on <strong>Next.js 15, PostgreSQL,</strong> and <strong>Graph Theory</strong>.
+                This isn't a template. This is a proprietary engine built on <strong>Next.js 15, PostgreSQL,</strong> and <strong>Graph Theory</strong>.
               </p>
             </div>
 
@@ -98,18 +98,13 @@ export default function AboutPage() {
               </div>
               <ul style={{ listStyleType: 'none', padding: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', color: 'var(--ash)', fontSize: '1.05rem' }}>
                 <li style={{ background: 'var(--deep)', padding: '1rem', borderRadius: '4px', border: '1px solid var(--slate)' }}><strong>Core:</strong> Next.js (App Router), TypeScript, Python</li>
-                <li style={{ background: 'var(--deep)', padding: '1rem', borderRadius: '4px', border: '1px solid var(--slate)' }}><strong>AI & Data:</strong> Agent Frameworks, Supabase/PostgreSQL</li>
+                <li style={{ background: 'var(--deep)', padding: '1rem', borderRadius: '4px', border: '1px solid var(--slate)' }}>Supabase/PostgreSQL</li>
                 <li style={{ background: 'var(--deep)', padding: '1rem', borderRadius: '4px', border: '1px solid var(--slate)' }}><strong>Web3:</strong> Wagmi, Viem, Solidity Integration</li>
                 <li style={{ background: 'var(--deep)', padding: '1rem', borderRadius: '4px', border: '1px solid var(--slate)' }}><strong>Infra:</strong> Docker, Git, CI/CD Pipelines</li>
               </ul>
             </div>
 
             <div className="about-features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-              <div className="about-feature-card" style={{ background: 'var(--deep)', padding: '1.5rem', border: '1px solid var(--slate)', borderRadius: '4px' }}>
-                <div className="feature-icon" style={{ fontSize: '2rem', marginBottom: '1rem' }}>🧠</div>
-                <h3 style={{ color: 'var(--white)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>AI Engineering</h3>
-                <p style={{ color: 'var(--fog)', fontSize: '0.9rem', lineHeight: '1.5' }}>Architecting safety layers and state management for autonomous systems.</p>
-              </div>
               <div className="about-feature-card" style={{ background: 'var(--deep)', padding: '1.5rem', border: '1px solid var(--slate)', borderRadius: '4px' }}>
                 <div className="feature-icon" style={{ fontSize: '2rem', marginBottom: '1rem' }}>📈</div>
                 <h3 style={{ color: 'var(--white)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Digital Strategy</h3>
@@ -128,7 +123,7 @@ export default function AboutPage() {
                 <h2 className="about-section-title" style={{ fontSize: '1.5rem', color: 'var(--gold-bright)', margin: 0 }}>Partner With Us</h2>
               </div>
               <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--bone)' }}>
-               While scaling Lota Labs, we remain open to strategic collaborations. Whether you need a technical architect for production-grade AI/Web3 features, or a digital strategist to elevate your brand's content, let's talk.
+               While scaling Lota Labs, we remain open to strategic collaborations. Whether you need a technical architect for production-grade Web3 features, or a digital strategist to elevate your brand's content, let's talk.
               </p>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
                 <a href="mailto:lotanna8900@gmail.com" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--ember) 0%, var(--ember-hot) 100%)', padding: '0.75rem 1.5rem', fontWeight: 'bold', textDecoration: 'none', color: 'var(--white)', borderRadius: '4px' }}>
