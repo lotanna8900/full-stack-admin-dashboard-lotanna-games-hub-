@@ -23,17 +23,18 @@ const styles = `
     --slate:       #1e2d45;
     --mist:        #2b3f5c;
     --steel:       #3d5278;
-    --fog:         #5c7099;
-    --ash:         #8ca0c0;
-    --bone:        #c5d4e8;
-    --white:       #eef3f9;
+    
+    --fog:        #7c93b8; 
+    --ash:        #a5b6cf; 
+    --bone:       #e2e8f0; 
+    --white:      #ffffff;
 
     --ember:       #b85c1a;
     --ember-mid:   #d4711f;
     --ember-hot:   #f08030;
-    --gold:        #c4922a;
-    --gold-mid:    #dba93a;
-    --gold-bright: #f0c050;
+    --gold:        #d4a83b; 
+    --gold-mid:    #eebb4d;
+    --gold-bright: #f4cd67;
 
     --soul-deep:   #2d1a5c;
     --soul:        #5535a0;
@@ -45,7 +46,7 @@ const styles = `
     --font-title:   'Cinzel', serif;
     --font-body:    'Cormorant Garamond', serif;
 
-    --glow-gold:   0 0 20px rgba(192,144,40,0.5), 0 0 50px rgba(192,144,40,0.2);
+    --glow-gold:   0 0 20px rgba(212,168,59,0.5), 0 0 50px rgba(212,168,59,0.2);
     --glow-soul:   0 0 20px rgba(115,80,200,0.5), 0 0 50px rgba(115,80,200,0.2);
     --glow-ember:  0 0 20px rgba(184,92,26,0.5),  0 0 50px rgba(184,92,26,0.2);
   }
@@ -78,8 +79,8 @@ const styles = `
   @keyframes gl-pulse { 0%,100%{opacity:.2} 50%{opacity:1} }
   .gl-loading-text {
     font-family: var(--font-title);
-    font-size: .6rem;
-    letter-spacing: .5em;
+    font-size: 0.85rem;
+    letter-spacing: .2em;
     color: var(--fog);
     text-transform: uppercase;
     animation: gl-pulse 2s ease infinite;
@@ -124,8 +125,8 @@ const styles = `
 
   .gl-eyebrow {
     font-family: var(--font-title);
-    font-size: .52rem;
-    letter-spacing: .45em;
+    font-size: 0.85rem;
+    letter-spacing: .2em;
     color: var(--ember-mid);
     text-transform: uppercase;
     display: flex;
@@ -136,13 +137,13 @@ const styles = `
   .gl-eyebrow::before {
     content: '';
     display: inline-block;
-    width: 24px; height: 1px;
+    width: 24px; height: 2px;
     background: var(--ember-mid);
   }
 
   .gl-title {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
     font-weight: 700;
     color: var(--white);
     line-height: 1.1;
@@ -151,20 +152,21 @@ const styles = `
 
   .gl-subtitle {
     font-family: var(--font-body);
-    font-size: 1.15rem;
-    color: var(--fog);
+    font-size: 1.25rem;
+    color: var(--ash);
     font-style: italic;
   }
 
   .gl-count-badge {
     font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .3em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--ash);
     text-transform: uppercase;
     border: 1px solid var(--slate);
     padding: .5rem 1rem;
     background: rgba(255,255,255,.03);
+    border-radius: 4px;
   }
 
   /* ── DIVIDER ──────────────────────────────────────── */
@@ -228,8 +230,8 @@ const styles = `
     transition: border-color .35s ease, box-shadow .35s ease;
   }
   .gl-card:hover::before {
-    border-color: rgba(192,144,40,0.5);
-    box-shadow: inset 0 0 30px rgba(192,144,40,0.08), var(--glow-gold);
+    border-color: rgba(212,168,59,0.5);
+    box-shadow: inset 0 0 30px rgba(212,168,59,0.08), var(--glow-gold);
   }
   .gl-card.gl-pinned:hover::before {
     border-color: rgba(115,80,200,0.5);
@@ -248,7 +250,7 @@ const styles = `
     filter: brightness(.7) saturate(1.1);
   }
 
-  /* Cover gradient overlay (always present, intensifies on hover) */
+  /* Cover gradient overlay */
   .gl-card-cover-overlay {
     position: absolute;
     inset: 0;
@@ -293,26 +295,27 @@ const styles = `
     left: 1rem;
     z-index: 15;
     font-family: var(--font-title);
-    font-size: .45rem;
-    letter-spacing: .3em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--gold-bright);
     text-transform: uppercase;
     background: rgba(7,11,20,0.75);
-    border: 1px solid rgba(192,144,40,.4);
-    padding: .3rem .6rem;
+    border: 1px solid rgba(212,168,59,.4);
+    padding: .4rem .75rem;
+    border-radius: 4px;
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     gap: .35rem;
   }
   .gl-pinned-dot {
-    width: 4px; height: 4px; border-radius: 50%;
+    width: 6px; height: 6px; border-radius: 50%;
     background: var(--gold-bright);
-    box-shadow: 0 0 4px var(--gold-bright);
+    box-shadow: 0 0 6px var(--gold-bright);
     animation: gl-pulse 2s infinite;
   }
 
-  /* Over-image CTA buttons — appear on hover */
+  /* Over-image CTA buttons */
   .gl-card-hover-actions {
     position: absolute;
     bottom: 1.25rem;
@@ -336,15 +339,16 @@ const styles = `
     align-items: center;
     justify-content: center;
     gap: .6rem;
-    padding: .8rem 1.25rem;
+    padding: 1rem 1.25rem;
     background: linear-gradient(135deg, var(--ember), var(--ember-hot));
     color: var(--white);
     font-family: var(--font-title);
-    font-size: .6rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: .25em;
+    letter-spacing: .15em;
     text-transform: uppercase;
     border: none;
+    border-radius: 4px;
     cursor: pointer;
     text-decoration: none;
     transition: all .2s ease;
@@ -360,15 +364,16 @@ const styles = `
     align-items: center;
     justify-content: center;
     gap: .5rem;
-    padding: .65rem 1.25rem;
+    padding: 0.85rem 1.25rem;
     background: rgba(7,11,20,0.7);
-    color: var(--ash);
+    color: var(--bone);
     font-family: var(--font-title);
-    font-size: .55rem;
+    font-size: 0.75rem;
     font-weight: 500;
-    letter-spacing: .2em;
+    letter-spacing: .15em;
     text-transform: uppercase;
     border: 1px solid var(--steel);
+    border-radius: 4px;
     cursor: pointer;
     text-decoration: none;
     backdrop-filter: blur(4px);
@@ -376,25 +381,25 @@ const styles = `
   }
   .gl-btn-devlog:hover {
     background: rgba(255,255,255,.06);
-    color: var(--bone);
+    color: var(--white);
     border-color: var(--ash);
   }
 
   /* ── CARD FOOT: TEXT INFO ─────────────────────────── */
   .gl-card-foot {
-    padding: 1.25rem 1.5rem 1.5rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: .4rem;
+    gap: .5rem;
     flex: 1;
     border-top: 1px solid var(--slate);
   }
 
   .gl-card-title {
-    font-family: var(--font-title);
-    font-size: .9rem;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
     font-weight: 600;
-    letter-spacing: .08em;
+    letter-spacing: .05em;
     color: var(--white);
     line-height: 1.2;
     transition: color .2s;
@@ -403,17 +408,17 @@ const styles = `
 
   .gl-card-date {
     font-family: var(--font-title);
-    font-size: .45rem;
-    letter-spacing: .3em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--fog);
     text-transform: uppercase;
   }
 
   .gl-card-desc {
     font-family: var(--font-body);
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--ash);
-    line-height: 1.55;
+    line-height: 1.6;
     font-style: italic;
     margin-top: .2rem;
     display: -webkit-box;
@@ -426,8 +431,8 @@ const styles = `
   .gl-card-admin {
     display: flex;
     align-items: center;
-    gap: .4rem;
-    padding-top: .75rem;
+    gap: .5rem;
+    padding-top: 1rem;
     margin-top: auto;
     border-top: 1px solid var(--slate);
   }
@@ -436,14 +441,14 @@ const styles = `
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px; height: 32px;
+    width: 36px; height: 36px;
     background: transparent;
     border: 1px solid var(--slate);
     color: var(--fog);
-    font-size: .85rem;
+    font-size: 1rem;
     cursor: pointer;
     transition: all .2s;
-    border-radius: 2px;
+    border-radius: 4px;
   }
   .gl-admin-btn:hover {
     background: rgba(255,255,255,.06);
@@ -458,21 +463,21 @@ const styles = `
     display: inline-flex;
     align-items: center;
     gap: .5rem;
-    padding: .65rem 1.5rem;
-    background: linear-gradient(135deg, rgba(184,92,26,.2), rgba(192,144,40,.15));
-    border: 1px solid rgba(192,144,40,.35);
+    padding: .85rem 1.5rem;
+    background: linear-gradient(135deg, rgba(184,92,26,.2), rgba(212,168,59,.15));
+    border: 1px solid rgba(212,168,59,.35);
     color: var(--gold);
     font-family: var(--font-title);
-    font-size: .58rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: .25em;
+    letter-spacing: .15em;
     text-transform: uppercase;
     cursor: pointer;
     transition: all .25s;
-    border-radius: 2px;
+    border-radius: 4px;
   }
   .gl-add-btn:hover {
-    background: linear-gradient(135deg, rgba(184,92,26,.35), rgba(192,144,40,.3));
+    background: linear-gradient(135deg, rgba(184,92,26,.35), rgba(212,168,59,.3));
     border-color: var(--gold);
     box-shadow: var(--glow-gold);
   }
@@ -481,22 +486,22 @@ const styles = `
   .gl-empty {
     grid-column: 1 / -1;
     background: var(--deep);
-    padding: 6rem 2rem;
+    padding: 8rem 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
     text-align: center;
   }
-  .gl-empty-icon { font-size: 3rem; opacity: .3; }
+  .gl-empty-icon { font-size: 4rem; opacity: .5; }
   .gl-empty-title {
     font-family: var(--font-title);
-    font-size: .65rem;
-    letter-spacing: .3em;
-    color: var(--fog);
+    font-size: 0.85rem;
+    letter-spacing: .2em;
+    color: var(--bone);
     text-transform: uppercase;
   }
-  .gl-empty-body { font-size: 1rem; color: var(--steel); font-style: italic; }
+  .gl-empty-body { font-size: 1.1rem; color: var(--fog); font-style: italic; }
 
   /* ── MODALS ───────────────────────────────────────── */
   .gl-modal-backdrop {
@@ -515,10 +520,11 @@ const styles = `
     background: var(--deep);
     border: 1px solid var(--slate);
     width: 100%;
-    max-width: 540px;
+    max-width: 600px;
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
+    border-radius: 6px;
     box-shadow: 0 40px 80px rgba(0,0,0,.8), var(--glow-soul);
   }
 
@@ -526,40 +532,40 @@ const styles = `
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem 2.5rem;
     border-bottom: 1px solid var(--slate);
   }
 
   .gl-modal-title {
     font-family: var(--font-title);
-    font-size: .65rem;
-    letter-spacing: .3em;
+    font-size: 0.85rem;
+    letter-spacing: .15em;
     color: var(--bone);
     text-transform: uppercase;
   }
 
   .gl-modal-close {
-    width: 32px; height: 32px;
+    width: 36px; height: 36px;
     display: flex; align-items: center; justify-content: center;
     background: transparent;
     border: 1px solid var(--mist);
     color: var(--fog);
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     cursor: pointer;
     transition: all .2s;
-    border-radius: 2px;
+    border-radius: 4px;
     flex-shrink: 0;
   }
   .gl-modal-close:hover { border-color: var(--crimson); color: var(--crimson); }
 
-  .gl-modal-body { padding: 2rem; }
+  .gl-modal-body { padding: 2.5rem; }
 
-  .gl-form-group { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.25rem; }
+  .gl-form-group { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.5rem; }
 
   .gl-form-label {
     font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .3em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--fog);
     text-transform: uppercase;
   }
@@ -570,59 +576,59 @@ const styles = `
     border: 1px solid var(--slate);
     color: var(--bone);
     font-family: var(--font-body);
-    font-size: 1rem;
-    padding: .7rem 1rem;
+    font-size: 1.1rem;
+    padding: 0.85rem 1.25rem;
     transition: border-color .2s, box-shadow .2s;
     outline: none;
     width: 100%;
     box-sizing: border-box;
-    border-radius: 2px;
+    border-radius: 4px;
   }
   .gl-form-input:focus,
   .gl-form-textarea:focus {
-    border-color: rgba(192,144,40,.5);
-    box-shadow: 0 0 0 2px rgba(192,144,40,.1);
+    border-color: rgba(212,168,59,.5);
+    box-shadow: 0 0 0 2px rgba(212,168,59,.1);
   }
   .gl-form-input::placeholder,
   .gl-form-textarea::placeholder { color: var(--steel); font-style: italic; }
-  .gl-form-textarea { min-height: 90px; resize: vertical; white-space: pre-wrap; }
-  .gl-form-hint { font-size: .85rem; color: var(--fog); font-style: italic; margin-top: .15rem; }
+  .gl-form-textarea { min-height: 120px; resize: vertical; white-space: pre-wrap; }
+  .gl-form-hint { font-size: 0.9rem; color: var(--fog); font-style: italic; margin-top: .25rem; }
 
   .gl-form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: .75rem;
-    padding-top: .5rem;
-    margin-top: 1rem;
+    gap: 1rem;
+    padding-top: 1rem;
+    margin-top: 1.5rem;
     border-top: 1px solid var(--slate);
   }
 
   .gl-form-cancel {
-    padding: .65rem 1.5rem;
+    padding: 0.85rem 1.75rem;
     background: transparent;
     border: 1px solid var(--mist);
-    color: var(--fog);
+    color: var(--bone);
     font-family: var(--font-title);
-    font-size: .55rem;
-    letter-spacing: .2em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 4px;
     transition: all .2s;
   }
-  .gl-form-cancel:hover { border-color: var(--steel); color: var(--bone); }
+  .gl-form-cancel:hover { border-color: var(--white); color: var(--white); }
 
   .gl-form-submit {
-    padding: .65rem 1.75rem;
+    padding: 0.85rem 2rem;
     background: linear-gradient(135deg, var(--ember), var(--ember-hot));
     border: none;
     color: var(--white);
     font-family: var(--font-title);
-    font-size: .55rem;
-    letter-spacing: .2em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 4px;
     box-shadow: 0 4px 16px rgba(184,92,26,.35);
     transition: all .2s;
   }
@@ -646,7 +652,7 @@ const styles = `
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: .85rem 1.5rem;
+    padding: 1rem 2rem;
     background: var(--abyss);
     border-bottom: 1px solid var(--slate);
     flex-shrink: 0;
@@ -655,7 +661,7 @@ const styles = `
 
   .gl-player-title {
     font-family: var(--font-display);
-    font-size: .9rem;
+    font-size: 1.1rem;
     color: var(--white);
     display: flex;
     align-items: center;
@@ -663,7 +669,7 @@ const styles = `
   }
   .gl-player-title::before {
     content: '▶';
-    font-size: .55rem;
+    font-size: 0.75rem;
     color: var(--ember-hot);
     font-family: var(--font-title);
   }
@@ -676,14 +682,14 @@ const styles = `
   }
 
   .gl-player-close {
-    width: 36px; height: 36px;
+    width: 40px; height: 40px;
     display: flex; align-items: center; justify-content: center;
     background: rgba(176,32,32,.15);
     border: 1px solid rgba(176,32,32,.35);
     color: #e07070;
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 4px;
     transition: all .2s;
     flex-shrink: 0;
   }
@@ -715,7 +721,6 @@ const styles = `
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 export default function SnippetsPage() {
-  // ── All existing state (UNTOUCHED) ──
   const [snippets, setSnippets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isNewSnippetModalOpen, setIsNewSnippetModalOpen] = useState(false);
@@ -731,7 +736,6 @@ export default function SnippetsPage() {
   const [session, setSession] = useState(null);
   const [userRole, setUserRole] = useState(null);
 
-  // ── All existing effects & handlers (UNTOUCHED) ──
   useEffect(() => {
     setLoading(true);
     const fetchUserData = async (currentSession) => {
@@ -804,7 +808,6 @@ export default function SnippetsPage() {
     else if (updatedSnippet) { setSnippets(snippets.map(s => (s.id === snippetId ? updatedSnippet : s))); }
   };
 
-  // ── Loading ──
   if (loading) {
     return (
       <>
@@ -823,9 +826,6 @@ export default function SnippetsPage() {
       <style>{styles}</style>
       <div className="gl-page">
 
-        {/* ════════════════════════════════
-            LIBRARY HEADER
-        ════════════════════════════════ */}
         <div className="gl-header">
           <div className="gl-header-bg" />
           <div className="gl-header-inner">
@@ -846,9 +846,6 @@ export default function SnippetsPage() {
         </div>
         <div className="gl-divider" />
 
-        {/* ════════════════════════════════
-            LIBRARY GRID
-        ════════════════════════════════ */}
         <div className="gl-library">
           <div className="gl-grid">
             {sortedSnippets.length === 0 ? (
@@ -864,10 +861,7 @@ export default function SnippetsPage() {
                   className={`gl-card ${snippet.is_pinned ? 'gl-pinned' : ''}`}
                   style={{ animationDelay: `${i * 0.07}s` }}
                 >
-                  {/* ── Cover Art ── */}
                   <div className="gl-card-cover">
-                    
-                    {/* INVISIBLE LINK OVERLAY: Routes to the Game Detail Page */}
                     <Link href={`/games/${snippet.slug || snippet.id}`} style={{ position: 'absolute', inset: 0, zIndex: 5 }} />
 
                     {snippet.image_url ? (
@@ -885,7 +879,6 @@ export default function SnippetsPage() {
                     )}
                     <div className="gl-card-cover-overlay" />
 
-                    {/* Pinned badge */}
                     {snippet.is_pinned && (
                       <div className="gl-pinned-tag" style={{ zIndex: 10 }}>
                         <span className="gl-pinned-dot" />
@@ -893,7 +886,6 @@ export default function SnippetsPage() {
                       </div>
                     )}
 
-                    {/* Hover CTA Buttons (over image) */}
                     <div className="gl-card-hover-actions" style={{ zIndex: 10 }}>
                       <a
                         href={snippet.game_url}
@@ -916,7 +908,6 @@ export default function SnippetsPage() {
                     </div>
                   </div>
 
-                  {/* ── Card Foot: Text ── */}
                   <div className="gl-card-foot">
                     <div className="gl-card-title">{snippet.title}</div>
                     <div className="gl-card-date">
@@ -926,7 +917,6 @@ export default function SnippetsPage() {
                       <p className="gl-card-desc">{snippet.description}</p>
                     )}
 
-                    {/* Admin Controls */}
                     {userRole === 'admin' && (
                       <div className="gl-card-admin">
                         <button
@@ -959,9 +949,6 @@ export default function SnippetsPage() {
           </div>
         </div>
 
-        {/* ════════════════════════════════
-            ADD SNIPPET MODAL
-        ════════════════════════════════ */}
         {isNewSnippetModalOpen && (
           <div className="gl-modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) closeNewSnippetModal(); }}>
             <div className="gl-modal">
@@ -996,9 +983,6 @@ export default function SnippetsPage() {
           </div>
         )}
 
-        {/* ════════════════════════════════
-            EDIT SNIPPET MODAL
-        ════════════════════════════════ */}
         {isEditSnippetModalOpen && editingSnippet && (
           <div className="gl-modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) closeEditSnippetModal(); }}>
             <div className="gl-modal">
@@ -1032,9 +1016,6 @@ export default function SnippetsPage() {
           </div>
         )}
 
-        {/* ════════════════════════════════
-            GAME PLAYER MODAL (UNTOUCHED LOGIC)
-        ════════════════════════════════ */}
         {isGamePlayerOpen && (
           <div
             className="gl-player-overlay"

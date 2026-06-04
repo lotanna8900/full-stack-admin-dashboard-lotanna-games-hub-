@@ -49,12 +49,53 @@ export default function AboutPage() {
                 interactive React components, triggering real-time Web3 events based on user choices. 
                 This isn't a template; it's a proprietary engine built on <strong>Next.js 15, PostgreSQL,</strong> and <strong>Graph Theory</strong>.
               </p>
+            </div>
 
+            {/* --- THE MANIFESTO BLOCK MERGED HERE --- */}
+            <div className="about-section" style={{ padding: '2.5rem', border: '1px solid var(--slate)', borderRadius: '8px', background: 'var(--deep)' }}>
+              <div className="about-section-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+                <span className="about-section-icon" style={{ fontSize: '1.5rem' }}>📖</span>
+                <h2 className="about-section-title" style={{ fontSize: '1.5rem', color: 'var(--white)', margin: 0 }}>Our Philosophy</h2>
+              </div>
+              <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--ash)', marginBottom: '2rem' }}>
+                We believe interactive fiction is one of the most underexplored art forms of our time. We are building narratives where your choices carry moral weight, where characters breathe, and where the world responds to who you are.
+              </p>
+
+              <div style={{ marginBottom: '2.5rem', padding: '1.5rem', background: 'rgba(255,255,255,0.03)', borderLeft: '4px solid var(--gold)', borderRadius: '4px' }}>
+                <h3 style={{ fontSize: '1.2rem', color: 'var(--gold-bright)', marginBottom: '0.75rem', fontFamily: 'var(--font-title)' }}>
+                  ✦ True Ownership of Your Story
+                </h3>
+                <p style={{ fontSize: '1.05rem', lineHeight: '1.7', color: 'var(--bone)' }}>
+                  We are pioneering the bridge between interactive narrative and true digital ownership. For traditional players, it is a seamless, immersive RPG. But for those who want to go deeper, you can connect your wallet and forge your choices into the blockchain. The artifacts you earn actually belong to you. <strong>No friction, no forced jargon. Just absolute player agency.</strong>
+                </p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                <div style={{ background: 'var(--abyss)', padding: '1.5rem', border: '1px solid var(--slate)', borderRadius: '4px' }}>
+                  <div style={{ fontFamily: 'var(--font-title)', fontSize: '0.9rem', color: 'var(--white)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>⚔️ Dark Narrative</div>
+                  <p style={{ color: 'var(--fog)', fontSize: '0.95rem', lineHeight: '1.5' }}>Stories for adults. Moral ambiguity, real consequence, earned catharsis.</p>
+                </div>
+                <div style={{ background: 'var(--abyss)', padding: '1.5rem', border: '1px solid var(--slate)', borderRadius: '4px' }}>
+                  <div style={{ fontFamily: 'var(--font-title)', fontSize: '0.9rem', color: 'var(--white)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>🎭 Player Agency</div>
+                  <p style={{ color: 'var(--fog)', fontSize: '0.95rem', lineHeight: '1.5' }}>Your identity, your choices, your story. No two playthroughs are the same.</p>
+                </div>
+                <div style={{ background: 'var(--abyss)', padding: '1.5rem', border: '1px solid var(--slate)', borderRadius: '4px' }}>
+                  <div style={{ fontFamily: 'var(--font-title)', fontSize: '0.9rem', color: 'var(--white)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>🌐 Community-First</div>
+                  <p style={{ color: 'var(--fog)', fontSize: '0.95rem', lineHeight: '1.5' }}>Built in public. Lota Labs is as much the players' studio as ours.</p>
+                </div>
+                <div style={{ background: 'var(--abyss)', padding: '1.5rem', border: '1px solid var(--slate)', borderRadius: '4px' }}>
+                  <div style={{ fontFamily: 'var(--font-title)', fontSize: '0.9rem', color: 'var(--white)', textTransform: 'uppercase', marginBottom: '0.5rem' }}>✨ Craft Over Clicks</div>
+                  <p style={{ color: 'var(--fog)', fontSize: '0.95rem', lineHeight: '1.5' }}>Every word earns its place. Quality of story above quantity of content.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* --- RESUME THE REST OF THE PAGE --- */}
+            <div className="about-section">
               <div className="about-section-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                 <span className="about-section-icon" style={{ fontSize: '1.5rem' }}>🛠️</span>
                 <h2 className="about-section-title" style={{ fontSize: '1.5rem', color: 'var(--white)', margin: 0 }}>The Stack</h2>
               </div>
-              
               <ul style={{ listStyleType: 'none', padding: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', color: 'var(--ash)', fontSize: '1.05rem' }}>
                 <li style={{ background: 'var(--deep)', padding: '1rem', borderRadius: '4px', border: '1px solid var(--slate)' }}><strong>Core:</strong> Next.js (App Router), TypeScript, Python</li>
                 <li style={{ background: 'var(--deep)', padding: '1rem', borderRadius: '4px', border: '1px solid var(--slate)' }}><strong>AI & Data:</strong> Agent Frameworks, Supabase/PostgreSQL</li>
@@ -90,10 +131,10 @@ export default function AboutPage() {
                While scaling Lota Labs, we remain open to strategic collaborations. Whether you need a technical architect for production-grade AI/Web3 features, or a digital strategist to elevate your brand's content, let's talk.
               </p>
               <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-                <a href="mailto:lotanna8900@gmail.com" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--ember) 0%, var(--ember-hot) 100%)', padding: '0.75rem 1.5rem', fontWeight: 'bold' }}>
+                <a href="mailto:lotanna8900@gmail.com" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--ember) 0%, var(--ember-hot) 100%)', padding: '0.75rem 1.5rem', fontWeight: 'bold', textDecoration: 'none', color: 'var(--white)', borderRadius: '4px' }}>
                   📧 Contact Lota Labs
                 </a>
-                <a href="https://github.com/lotanna8900" target="_blank" rel="noopener noreferrer" className="btn" style={{ background: 'transparent', border: '1px solid var(--fog)', padding: '0.75rem 1.5rem' }}>
+                <a href="https://github.com/lotanna8900" target="_blank" rel="noopener noreferrer" className="btn" style={{ background: 'transparent', border: '1px solid var(--fog)', padding: '0.75rem 1.5rem', textDecoration: 'none', color: 'var(--white)', borderRadius: '4px' }}>
                   🔗 View GitHub
                 </a>
               </div>

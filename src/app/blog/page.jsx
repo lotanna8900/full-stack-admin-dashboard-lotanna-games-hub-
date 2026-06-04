@@ -17,17 +17,18 @@ const styles = `
     --slate:       #1e2d45;
     --mist:        #2b3f5c;
     --steel:       #3d5278;
-    --fog:         #5c7099;
-    --ash:         #8ca0c0;
-    --bone:        #c5d4e8;
-    --white:       #eef3f9;
+    
+    --fog:        #7c93b8; 
+    --ash:        #a5b6cf; 
+    --bone:       #e2e8f0; 
+    --white:      #ffffff;
 
     --ember:       #b85c1a;
     --ember-mid:   #d4711f;
     --ember-hot:   #f08030;
-    --gold:        #c4922a;
-    --gold-mid:    #dba93a;
-    --gold-bright: #f0c050;
+    --gold:        #d4a83b; 
+    --gold-mid:    #eebb4d;
+    --gold-bright: #f4cd67;
 
     --soul-deep:   #2d1a5c;
     --soul:        #5535a0;
@@ -57,8 +58,8 @@ const styles = `
   @keyframes bl-pulse { 0%,100%{opacity:.2} 50%{opacity:1} }
   .bl-loading-text {
     font-family: var(--font-title);
-    font-size: .6rem;
-    letter-spacing: .5em;
+    font-size: 0.85rem;
+    letter-spacing: .2em;
     color: var(--fog);
     text-transform: uppercase;
     animation: bl-pulse 2s ease infinite;
@@ -66,9 +67,9 @@ const styles = `
 
   /* ── HEADER ─────────────────────────────────────────── */
   .bl-header {
-    padding: 3rem 0 2rem;
+    padding: 4rem 0 2rem;
     border-bottom: 1px solid var(--slate);
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -76,33 +77,33 @@ const styles = `
 
   .bl-eyebrow {
     font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .45em;
+    font-size: 0.85rem;
+    letter-spacing: .15em;
     color: var(--ember-mid);
     text-transform: uppercase;
     display: flex;
     align-items: center;
     gap: .6rem;
-    margin-bottom: .6rem;
+    margin-bottom: .8rem;
   }
   .bl-eyebrow::before {
     content: '';
     display: inline-block;
-    width: 20px; height: 1px;
+    width: 24px; height: 2px;
     background: var(--ember-mid);
   }
 
   .bl-page-title {
     font-family: var(--font-title);
-    font-size: clamp(1.5rem, 3vw, 2.2rem);
-    font-weight: 600;
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
+    font-weight: 700;
     color: var(--white);
     line-height: 1.1;
-    margin: 0 0 .3rem;
+    margin: 0 0 .5rem;
   }
 
   .bl-page-sub {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
     color: var(--fog);
     font-style: italic;
   }
@@ -112,24 +113,24 @@ const styles = `
     display: inline-flex;
     align-items: center;
     gap: .5rem;
-    padding: .6rem 1.5rem;
-    background: linear-gradient(135deg, rgba(184,92,26,.2), rgba(192,144,40,.15));
-    border: 1px solid rgba(192,144,40,.4);
+    padding: 0.85rem 1.75rem;
+    background: linear-gradient(135deg, rgba(184,92,26,.2), rgba(212,168,59,.15));
+    border: 1px solid rgba(212,168,59,.4);
     color: var(--gold);
     font-family: var(--font-title);
-    font-size: .55rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    letter-spacing: .25em;
+    letter-spacing: .15em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 4px;
     transition: all .2s;
     white-space: nowrap;
   }
   .bl-new-post-btn:hover {
-    background: linear-gradient(135deg, rgba(184,92,26,.35), rgba(192,144,40,.3));
+    background: linear-gradient(135deg, rgba(184,92,26,.35), rgba(212,168,59,.3));
     border-color: var(--gold);
-    box-shadow: 0 0 20px rgba(192,144,40,.2);
+    box-shadow: 0 0 20px rgba(212,168,59,.2);
   }
 
   /* ── POST FEED ──────────────────────────────────────── */
@@ -149,14 +150,14 @@ const styles = `
     background: var(--abyss);
     border: 1px solid var(--slate);
     border-top: none;
-    padding: 2rem 2.25rem;
+    padding: 2.5rem 3rem;
     transition: background .2s;
     opacity: 0;
     animation: bl-fadeUp .5s ease forwards;
     position: relative;
   }
-  .bl-post:first-child { border-top: 1px solid var(--slate); border-radius: 2px 2px 0 0; }
-  .bl-post:last-child  { border-radius: 0 0 2px 2px; }
+  .bl-post:first-child { border-top: 1px solid var(--slate); border-radius: 4px 4px 0 0; }
+  .bl-post:last-child  { border-radius: 0 0 4px 4px; }
   .bl-post:hover       { background: var(--deep); }
 
   /* Pinned left accent */
@@ -164,7 +165,7 @@ const styles = `
     content: '';
     position: absolute;
     left: 0; top: 0; bottom: 0;
-    width: 2px;
+    width: 3px;
     background: linear-gradient(to bottom, var(--gold), var(--ember));
   }
 
@@ -172,10 +173,11 @@ const styles = `
   .bl-cover-wrap {
     position: relative;
     width: 100%;
-    height: 220px;
-    margin-bottom: 1.5rem;
+    height: 300px;
+    margin-bottom: 2rem;
     overflow: hidden;
     border: 1px solid var(--slate);
+    border-radius: 4px;
   }
   .bl-cover-wrap::after {
     content: '';
@@ -192,12 +194,12 @@ const styles = `
     justify-content: space-between;
     align-items: flex-start;
     gap: 1rem;
-    margin-bottom: .6rem;
+    margin-bottom: .85rem;
   }
 
   .bl-post-title {
     font-family: var(--font-title);
-    font-size: 1.15rem;
+    font-size: 1.75rem;
     font-weight: 600;
     color: var(--white);
     letter-spacing: .04em;
@@ -213,11 +215,11 @@ const styles = `
     border: none;
     color: var(--fog);
     font-family: var(--font-title);
-    font-size: .48rem;
-    letter-spacing: .2em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     text-transform: uppercase;
     cursor: pointer;
-    padding: .3rem .5rem;
+    padding: .5rem .75rem;
     transition: color .2s;
     white-space: nowrap;
     flex-shrink: 0;
@@ -227,35 +229,35 @@ const styles = `
   .bl-pinned-badge {
     display: inline-flex;
     align-items: center;
-    gap: .3rem;
+    gap: .4rem;
     font-family: var(--font-title);
-    font-size: .45rem;
-    letter-spacing: .3em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--gold);
     text-transform: uppercase;
-    background: rgba(192,144,40,.1);
-    border: 1px solid rgba(192,144,40,.3);
-    padding: .2rem .6rem;
-    border-radius: 1px;
-    margin-bottom: .5rem;
+    background: rgba(212,168,59,.1);
+    border: 1px solid rgba(212,168,59,.3);
+    padding: .3rem .85rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
   }
 
   .bl-post-date {
     font-family: var(--font-title);
-    font-size: .48rem;
-    letter-spacing: .25em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--fog);
     text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   /* ── POST BODY PREVIEW ──────────────────────────────── */
   .bl-post-preview {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     color: var(--ash);
     line-height: 1.75;
     font-style: italic;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2.5rem;
     white-space: pre-wrap;
   }
 
@@ -263,9 +265,9 @@ const styles = `
   .bl-post-actions {
     display: flex;
     align-items: center;
-    gap: .75rem;
+    gap: 1rem;
     flex-wrap: wrap;
-    padding-bottom: 1.25rem;
+    padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--slate);
   }
 
@@ -273,15 +275,15 @@ const styles = `
     display: inline-flex;
     align-items: center;
     gap: .4rem;
-    padding: .5rem 1.1rem;
+    padding: 0.75rem 1.5rem;
     font-family: var(--font-title);
-    font-size: .52rem;
-    font-weight: 500;
-    letter-spacing: .2em;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: .15em;
     text-transform: uppercase;
     text-decoration: none;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 4px;
     transition: all .2s;
   }
 
@@ -323,8 +325,8 @@ const styles = `
     border: none;
     color: var(--fog);
     font-family: var(--font-title);
-    font-size: .48rem;
-    letter-spacing: .2em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     text-transform: uppercase;
     cursor: pointer;
     padding: .25rem .1rem;
@@ -347,16 +349,16 @@ const styles = `
   .bl-sub-wrap {
     display: flex;
     align-items: center;
-    gap: .6rem;
+    gap: 1rem;
     background: rgba(255,255,255,.03);
     border: 1px solid var(--slate);
-    padding: .3rem .75rem .3rem .4rem;
-    border-radius: 2px;
+    padding: .4rem 1rem .4rem .5rem;
+    border-radius: 4px;
   }
   .bl-sub-count {
     font-family: var(--font-title);
-    font-size: .48rem;
-    letter-spacing: .15em;
+    font-size: 0.75rem;
+    letter-spacing: .1em;
     color: var(--fog);
     text-transform: uppercase;
     white-space: nowrap;
@@ -365,18 +367,18 @@ const styles = `
   /* ── TOGGLE COMMENTS BUTTON ─────────────────────────── */
   .bl-toggle-comments {
     width: 100%;
-    margin-top: 1.25rem;
+    margin-top: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: .6rem;
-    padding: .6rem;
+    gap: .85rem;
+    padding: .85rem;
     background: transparent;
     border: none;
     color: var(--fog);
     font-family: var(--font-title);
-    font-size: .5rem;
-    letter-spacing: .25em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     text-transform: uppercase;
     cursor: pointer;
     transition: color .2s;
@@ -387,18 +389,18 @@ const styles = `
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px; height: 20px;
+    width: 28px; height: 28px;
     background: var(--slate);
     color: var(--bone);
     font-family: var(--font-title);
-    font-size: .5rem;
+    font-size: 0.75rem;
     border-radius: 50%;
   }
 
   /* ── COMMENTS SECTION ───────────────────────────────── */
   .bl-comments {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
     border-top: 1px solid var(--slate);
   }
 
@@ -406,13 +408,13 @@ const styles = `
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
   }
 
   .bl-comments-title {
     font-family: var(--font-title);
-    font-size: .6rem;
-    letter-spacing: .3em;
+    font-size: 0.85rem;
+    letter-spacing: .15em;
     color: var(--ash);
     text-transform: uppercase;
     margin: 0;
@@ -420,7 +422,7 @@ const styles = `
 
   /* ── COMMENT FORM ───────────────────────────────────── */
   .bl-comment-form {
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
   }
 
   .bl-textarea {
@@ -429,27 +431,27 @@ const styles = `
     border: 1px solid var(--slate);
     color: var(--bone);
     font-family: var(--font-body);
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     line-height: 1.6;
-    padding: .8rem 1rem;
+    padding: 1rem 1.25rem;
     resize: vertical;
-    min-height: 90px;
+    min-height: 120px;
     transition: border-color .2s, box-shadow .2s;
     outline: none;
     box-sizing: border-box;
-    border-radius: 2px;
+    border-radius: 4px;
   }
   .bl-textarea:focus {
-    border-color: rgba(192,144,40,.4);
-    box-shadow: 0 0 0 2px rgba(192,144,40,.08);
+    border-color: rgba(212,168,59,.4);
+    box-shadow: 0 0 0 2px rgba(212,168,59,.08);
   }
   .bl-textarea::placeholder { color: var(--steel); font-style: italic; }
 
-  .bl-form-actions { display: flex; gap: .75rem; margin-top: .75rem; }
+  .bl-form-actions { display: flex; gap: 1rem; margin-top: 1rem; }
 
   /* ── COMMENT LIST ───────────────────────────────────── */
   .bl-comment-item {
-    padding: 1rem 0;
+    padding: 1.5rem 0;
     border-bottom: 1px solid var(--slate);
     position: relative;
   }
@@ -458,33 +460,33 @@ const styles = `
   .bl-comment-pinned-badge {
     float: right;
     font-family: var(--font-title);
-    font-size: .42rem;
-    letter-spacing: .25em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--gold);
     text-transform: uppercase;
-    background: rgba(192,144,40,.1);
-    border: 1px solid rgba(192,144,40,.25);
-    padding: .15rem .5rem;
-    border-radius: 1px;
+    background: rgba(212,168,59,.1);
+    border: 1px solid rgba(212,168,59,.25);
+    padding: .25rem .75rem;
+    border-radius: 4px;
   }
 
   .bl-comment-body {
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     color: var(--bone);
     line-height: 1.7;
     white-space: pre-wrap;
-    margin-bottom: .75rem;
+    margin-bottom: 1rem;
   }
 
   .bl-comment-author-row {
     display: flex;
     align-items: center;
-    gap: .65rem;
-    margin-bottom: .5rem;
+    gap: .85rem;
+    margin-bottom: .75rem;
   }
 
   .bl-avatar {
-    width: 28px; height: 28px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid var(--slate);
@@ -492,25 +494,25 @@ const styles = `
   }
 
   .bl-avatar-placeholder {
-    width: 28px; height: 28px;
+    width: 36px; height: 36px;
     border-radius: 50%;
     background: var(--slate);
     border: 1px solid var(--mist);
     display: flex; align-items: center; justify-content: center;
     font-family: var(--font-title);
-    font-size: .6rem;
+    font-size: 0.85rem;
     color: var(--ash);
     flex-shrink: 0;
   }
 
   .bl-comment-meta {
     font-family: var(--font-title);
-    font-size: .45rem;
-    letter-spacing: .15em;
+    font-size: 0.75rem;
+    letter-spacing: .1em;
     color: var(--fog);
     display: flex;
     align-items: center;
-    gap: .3rem;
+    gap: .5rem;
   }
 
   .bl-comment-author-link {
@@ -525,18 +527,18 @@ const styles = `
 
   .bl-comment-actions {
     display: flex;
-    gap: .75rem;
+    gap: 1rem;
     align-items: center;
     flex-wrap: wrap;
-    margin-top: .35rem;
+    margin-top: .75rem;
   }
 
   /* ── REPLIES ────────────────────────────────────────── */
   .bl-replies {
-    margin-left: 1.75rem;
-    margin-top: 1rem;
-    padding-left: 1rem;
-    border-left: 1px solid var(--slate);
+    margin-left: 2rem;
+    margin-top: 1.5rem;
+    padding-left: 1.5rem;
+    border-left: 2px solid var(--slate);
   }
 
   /* ── MODALS ─────────────────────────────────────────── */
@@ -559,7 +561,7 @@ const styles = `
     max-width: 640px;
     max-height: 90vh;
     overflow-y: auto;
-    border-radius: 2px;
+    border-radius: 6px;
     box-shadow: 0 40px 80px rgba(0,0,0,.8), 0 0 30px rgba(115,80,200,.15);
   }
 
@@ -567,7 +569,7 @@ const styles = `
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.25rem 1.75rem;
+    padding: 1.5rem 2rem;
     border-bottom: 1px solid var(--slate);
     position: sticky;
     top: 0;
@@ -577,35 +579,35 @@ const styles = `
 
   .bl-modal-title {
     font-family: var(--font-title);
-    font-size: .62rem;
-    letter-spacing: .3em;
+    font-size: 0.85rem;
+    letter-spacing: .15em;
     color: var(--bone);
     text-transform: uppercase;
     margin: 0;
   }
 
   .bl-modal-close {
-    width: 32px; height: 32px;
+    width: 40px; height: 40px;
     display: flex; align-items: center; justify-content: center;
     background: transparent;
     border: 1px solid var(--mist);
     color: var(--fog);
-    font-size: 1rem;
+    font-size: 1.25rem;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 4px;
     transition: all .2s;
     flex-shrink: 0;
   }
   .bl-modal-close:hover { border-color: var(--crimson); color: #e07070; }
 
-  .bl-modal-body { padding: 1.75rem; }
+  .bl-modal-body { padding: 2rem; }
 
-  .bl-form-group { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.1rem; }
+  .bl-form-group { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.5rem; }
 
   .bl-form-label {
     font-family: var(--font-title);
-    font-size: .48rem;
-    letter-spacing: .3em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     color: var(--fog);
     text-transform: uppercase;
   }
@@ -615,17 +617,17 @@ const styles = `
     border: 1px solid var(--slate);
     color: var(--bone);
     font-family: var(--font-body);
-    font-size: 1rem;
-    padding: .65rem .9rem;
+    font-size: 1.1rem;
+    padding: 0.85rem 1.25rem;
     outline: none;
     transition: border-color .2s, box-shadow .2s;
-    border-radius: 2px;
+    border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
   }
   .bl-form-input:focus {
-    border-color: rgba(192,144,40,.4);
-    box-shadow: 0 0 0 2px rgba(192,144,40,.08);
+    border-color: rgba(212,168,59,.4);
+    box-shadow: 0 0 0 2px rgba(212,168,59,.08);
   }
   .bl-form-input::placeholder { color: var(--steel); font-style: italic; }
 
@@ -634,51 +636,51 @@ const styles = `
     border: 1px solid var(--slate);
     color: var(--bone);
     font-family: var(--font-body);
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     line-height: 1.7;
-    padding: .75rem .9rem;
+    padding: 1rem 1.25rem;
     min-height: 260px;
     resize: vertical;
     outline: none;
     transition: border-color .2s, box-shadow .2s;
-    border-radius: 2px;
+    border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
   }
   .bl-form-textarea-tall:focus {
-    border-color: rgba(192,144,40,.4);
-    box-shadow: 0 0 0 2px rgba(192,144,40,.08);
+    border-color: rgba(212,168,59,.4);
+    box-shadow: 0 0 0 2px rgba(212,168,59,.08);
   }
   .bl-form-textarea-tall::placeholder { color: var(--steel); font-style: italic; }
 
   .bl-form-cta-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .bl-modal-actions {
     display: flex;
     justify-content: flex-end;
-    gap: .75rem;
-    padding-top: 1rem;
+    gap: 1rem;
+    padding-top: 1.5rem;
     margin-top: .5rem;
     border-top: 1px solid var(--slate);
   }
 
   .bl-form-submit {
     display: inline-flex; align-items: center; gap: .4rem;
-    padding: .6rem 1.5rem;
+    padding: 0.85rem 2rem;
     background: linear-gradient(135deg, var(--ember), var(--ember-hot));
     color: var(--white);
     font-family: var(--font-title);
-    font-size: .52rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: .2em;
+    letter-spacing: .15em;
     text-transform: uppercase;
     border: none;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 4px;
     box-shadow: 0 2px 12px rgba(184,92,26,.3);
     transition: all .2s;
   }
@@ -689,16 +691,16 @@ const styles = `
 
   .bl-form-cancel {
     display: inline-flex; align-items: center;
-    padding: .6rem 1.25rem;
+    padding: 0.85rem 1.75rem;
     background: transparent;
     border: 1px solid var(--mist);
     color: var(--fog);
     font-family: var(--font-title);
-    font-size: .52rem;
-    letter-spacing: .2em;
+    font-size: 0.75rem;
+    letter-spacing: .15em;
     text-transform: uppercase;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 4px;
     transition: all .2s;
   }
   .bl-form-cancel:hover { border-color: var(--steel); color: var(--bone); }
@@ -712,7 +714,6 @@ const styles = `
 
 // ─── COMPONENT ───────────────────────────────────────────────────────────────
 export default function BlogListPage() {
-  // ── All state (UNTOUCHED) ──
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isNewPostModalOpen, setIsNewPostModalOpen] = useState(false);
@@ -735,7 +736,6 @@ export default function BlogListPage() {
   const [userRole, setUserRole] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
 
-  // ── All effects & handlers (UNTOUCHED) ──
   useEffect(() => {
     setLoading(true);
     const fetchUserData = async (currentSession) => {
@@ -873,8 +873,8 @@ export default function BlogListPage() {
         <form onSubmit={(e) => handleUpdateComment(e, comment.id)}>
           <textarea className="bl-textarea" value={editingCommentContent} onChange={(e) => setEditingCommentContent(e.target.value)} />
           <div className="bl-form-actions" style={{ marginTop: '.5rem' }}>
-            <button type="submit" className="bl-btn bl-btn-primary" style={{ padding: '.4rem .9rem', fontSize: '.5rem' }}>Save</button>
-            <button type="button" className="bl-btn bl-btn-ghost" style={{ padding: '.4rem .9rem', fontSize: '.5rem' }} onClick={() => setEditingCommentId(null)}>Cancel</button>
+            <button type="submit" className="bl-btn bl-btn-primary" style={{ padding: '.6rem 1.25rem', fontSize: '0.75rem' }}>Save</button>
+            <button type="button" className="bl-btn bl-btn-ghost" style={{ padding: '.6rem 1.25rem', fontSize: '0.75rem' }} onClick={() => setEditingCommentId(null)}>Cancel</button>
           </div>
         </form>
       ) : (
@@ -885,7 +885,7 @@ export default function BlogListPage() {
           <div className="bl-comment-author-row">
             <Link href={`/users/${comment.author_id}`}>
               {comment.author?.avatar_url ? (
-                <Image className="bl-avatar" src={comment.author.avatar_url} alt={comment.author.username || 'avatar'} width={28} height={28} />
+                <Image className="bl-avatar" src={comment.author.avatar_url} alt={comment.author.username || 'avatar'} width={36} height={36} />
               ) : (
                 <div className="bl-avatar-placeholder">
                   <span>{comment.author ? comment.author.username.charAt(0).toUpperCase() : '?'}</span>
@@ -933,7 +933,7 @@ export default function BlogListPage() {
 
       {/* Reply Form */}
       {replyingToCommentId === comment.id && (
-        <form onSubmit={(e) => handleCreateReply(e, postId, comment.id)} style={{ marginTop: '1rem', marginLeft: '1.5rem' }}>
+        <form onSubmit={(e) => handleCreateReply(e, postId, comment.id)} style={{ marginTop: '1.25rem', marginLeft: '2rem' }}>
           <textarea
             className="bl-textarea"
             placeholder={`Replying to ${comment.author?.username || 'Anonymous'}...`}
@@ -942,8 +942,8 @@ export default function BlogListPage() {
             required
           />
           <div className="bl-form-actions">
-            <button type="submit" className="bl-btn bl-btn-primary" style={{ padding: '.45rem 1rem', fontSize: '.5rem' }}>Post Reply</button>
-            <button type="button" className="bl-btn bl-btn-ghost" style={{ padding: '.45rem 1rem', fontSize: '.5rem' }} onClick={() => { setReplyingToCommentId(null); setReplyContent(''); }}>Cancel</button>
+            <button type="submit" className="bl-btn bl-btn-primary" style={{ padding: '.65rem 1.25rem', fontSize: '0.75rem' }}>Post Reply</button>
+            <button type="button" className="bl-btn bl-btn-ghost" style={{ padding: '.65rem 1.25rem', fontSize: '0.75rem' }} onClick={() => { setReplyingToCommentId(null); setReplyContent(''); }}>Cancel</button>
           </div>
         </form>
       )}
@@ -1097,8 +1097,8 @@ export default function BlogListPage() {
                           required
                         />
                         <div className="bl-form-actions">
-                          <button type="submit" className="bl-btn bl-btn-primary" style={{ padding: '.5rem 1.1rem', fontSize: '.52rem' }}>Post Comment</button>
-                          <button type="button" className="bl-btn bl-btn-ghost" style={{ padding: '.5rem 1.1rem', fontSize: '.52rem' }} onClick={() => { setCommentFormOpen(null); setMainCommentContent(''); }}>Cancel</button>
+                          <button type="submit" className="bl-btn bl-btn-primary" style={{ padding: '.75rem 1.5rem', fontSize: '0.75rem' }}>Post Comment</button>
+                          <button type="button" className="bl-btn bl-btn-ghost" style={{ padding: '.75rem 1.5rem', fontSize: '0.75rem' }} onClick={() => { setCommentFormOpen(null); setMainCommentContent(''); }}>Cancel</button>
                         </div>
                       </form>
                     )}

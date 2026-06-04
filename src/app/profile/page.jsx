@@ -101,19 +101,36 @@ export default function ProfilePage() {
       notify_comments: notifyComments,
       notify_announcements: notifyAnnouncements,
       notify_subscriptions: notifySubscriptions,
-      email_on_newsletter: notifyNewsletter
+      email_on_newsletter: notifyNewsletter // Updates the profiles table
     };
 
-    const { error } = await supabase.from('profiles').upsert(profileData);
+    try {
+      // 1. Update the profiles table
+      const { error: profileError } = await supabase.from('profiles').upsert(profileData);
+      if (profileError) throw profileError;
 
-    if (error) {
-      console.error('Error updating profile:', error);
-      alert('Failed to update profile.');
-    } else {
+      // 2. Sync with the subscribers table
+      if (notifyNewsletter) {
+        // Add them to marketing subscribers (upsert handles duplicates safely if already there)
+        await supabase
+          .from('subscribers')
+          .upsert([{ email: user.email }], { onConflict: 'email' });
+      } else {
+        // Remove them from marketing subscribers if they opt out
+        await supabase
+          .from('subscribers')
+          .delete()
+          .eq('email', user.email);
+      }
+
       setProfile(profileData); 
       alert('Profile updated successfully!');
+    } catch (error) {
+      console.error('Error updating profile/subscribers:', error);
+      alert('Failed to update preferences.');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   // --- Handle change password

@@ -19,7 +19,6 @@ const pageStyles = `
     --mist:       #2b3f5c;
     --steel:      #3d5278;
     
-    /* Brighter greys/blues for much sharper contrast */
     --fog:        #7c93b8; 
     --ash:        #a5b6cf; 
     --bone:       #e2e8f0; 
@@ -29,7 +28,6 @@ const pageStyles = `
     --ember-mid:  #d4711f;
     --ember-hot:  #f08030;
     
-    /* Brighter golds for better pop */
     --gold:       #d4a83b; 
     --gold-mid:   #eebb4d;
     --gold-bright:#f4cd67;
@@ -60,7 +58,6 @@ const pageStyles = `
     position: relative;
   }
 
-  /* ── GRAIN OVERLAY ───────────────────────────────── */
   .ll-page::before {
     content: '';
     position: fixed;
@@ -72,7 +69,6 @@ const pageStyles = `
     background-size: 128px;
   }
 
-  /* ── LOADING ─────────────────────────────────────── */
   .ll-loading {
     min-height: 100vh;
     display: flex;
@@ -91,17 +87,17 @@ const pageStyles = `
   }
 
   /* ══════════════════════════════════════════════════
-     SECTION 1 — HERO
+     HERO & SHARED BUTTONS
   ══════════════════════════════════════════════════ */
   .ll-hero {
     position: relative;
     min-height: 100vh;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /* CHANGED: Gave the image column more space (1.2fr) so it isn't hidden on PC */
+    grid-template-columns: 1fr 1.2fr; 
     align-items: center;
     overflow: hidden;
   }
-
   .ll-hero-bg {
     position: absolute;
     inset: 0;
@@ -112,7 +108,6 @@ const pageStyles = `
       var(--void);
     z-index: 0;
   }
-
   .ll-hero-bg::after {
     content: '';
     position: absolute;
@@ -139,504 +134,35 @@ const pageStyles = `
     gap: .6rem;
     width: fit-content;
     padding: .35rem .9rem;
-    border: 1px solid rgba(192,144,40,.35);
-    background: rgba(192,144,40,.07);
+    border: 1px solid rgba(115,80,200,.4);
+    background: rgba(85,53,160,.12);
     border-radius: 2px;
   }
   .ll-studio-badge-dot {
     width: 6px; height: 6px;
     border-radius: 50%;
-    background: var(--gold-bright);
-    box-shadow: 0 0 6px var(--gold-bright);
+    background: var(--soul-bright);
+    box-shadow: 0 0 6px var(--soul-bright);
     animation: pulse 2s ease infinite;
   }
   .ll-studio-badge-text {
     font-family: var(--font-title);
     font-size: 0.75rem;
     letter-spacing: .2em;
-    color: var(--gold);
+    color: var(--soul-bright);
     text-transform: uppercase;
   }
 
   .ll-hero-headline {
     font-family: var(--font-display);
-    font-size: clamp(2.2rem, 4.5vw, 4rem);
+    font-size: clamp(2.5rem, 5vw, 5rem); 
     font-weight: 700;
     line-height: 1.05;
     color: var(--white);
     text-shadow: 0 2px 40px rgba(0,0,0,.8);
   }
 
-  .ll-hero-headline em {
-    font-style: normal;
-    background: linear-gradient(135deg, var(--gold-mid) 0%, var(--gold-bright) 50%, var(--ember-hot) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: block;
-  }
-
-  .ll-hero-sub {
-    font-size: 1.25rem;
-    color: var(--ash);
-    line-height: 1.7;
-    max-width: 480px;
-  }
-
-  .ll-hero-sub strong {
-    color: var(--white);
-    font-weight: 500;
-    font-style: italic;
-  }
-
-  .ll-hero-actions {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    padding-top: .5rem;
-  }
-
-  .ll-btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: .6rem;
-    padding: 1rem 2rem;
-    background: linear-gradient(135deg, var(--ember) 0%, var(--ember-hot) 100%);
-    color: var(--white);
-    font-family: var(--font-title);
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: none;
-    border-radius: 2px;
-    cursor: pointer;
-    box-shadow: 0 4px 24px rgba(184,92,26,.4), inset 0 1px 0 rgba(255,255,255,.15);
-    transition: all .25s ease;
-    position: relative;
-    overflow: hidden;
-  }
-  .ll-btn-primary::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--ember-hot), var(--gold));
-    opacity: 0;
-    transition: opacity .25s;
-  }
-  .ll-btn-primary:hover::before { opacity: 1; }
-  .ll-btn-primary:hover { box-shadow: 0 6px 32px rgba(240,128,48,.5), inset 0 1px 0 rgba(255,255,255,.2); transform: translateY(-1px); }
-  .ll-btn-primary span { position: relative; z-index: 1; }
-
-  .ll-btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: .6rem;
-    padding: 1rem 1.75rem;
-    background: transparent;
-    color: var(--bone);
-    font-family: var(--font-title);
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    text-decoration: none;
-    border: 1px solid var(--fog);
-    border-radius: 2px;
-    cursor: pointer;
-    transition: all .25s ease;
-  }
-  .ll-btn-ghost:hover {
-    border-color: var(--white);
-    color: var(--white);
-    background: rgba(255,255,255,.08);
-  }
-
-  .ll-hero-right {
-    position: relative;
-    z-index: 2;
-    height: 100%;
-    min-height: 100vh;
-    display: flex;
-    align-items: stretch;
-  }
-
-  .ll-hero-image-wrap {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .ll-hero-image-wrap::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 35%;
-    background: linear-gradient(to right, var(--void), transparent);
-    z-index: 2;
-  }
-  .ll-hero-image-wrap::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 30%;
-    background: linear-gradient(to top, var(--void), transparent);
-    z-index: 2;
-  }
-
-  .ll-hero-cover-img {
-    object-fit: cover;
-    object-position: center top;
-    width: 100%;
-    height: 100%;
-  }
-
-  .ll-hero-cover-placeholder {
-    width: 100%;
-    height: 100%;
-    min-height: 100vh;
-    background:
-      radial-gradient(ellipse 80% 100% at 50% 30%, rgba(85,53,160,.5) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(184,92,26,.3) 0%, transparent 50%),
-      linear-gradient(to bottom, var(--abyss), var(--void));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-title);
-    font-size: 0.85rem;
-    letter-spacing: .2em;
-    color: var(--fog);
-    text-transform: uppercase;
-  }
-
-  .ll-hero-game-tag {
-    position: absolute;
-    bottom: 3rem;
-    right: 2.5rem;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: .4rem;
-  }
-  .ll-hero-game-label {
-    font-family: var(--font-title);
-    font-size: 0.75rem;
-    letter-spacing: .2em;
-    color: var(--bone);
-    text-transform: uppercase;
-  }
-  .ll-hero-game-title {
-    font-family: var(--font-display);
-    font-size: 1.4rem;
-    color: var(--gold-bright);
-    text-shadow: var(--glow-gold);
-    text-align: right;
-  }
-
-  @keyframes scrollBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
-  .ll-scroll-hint {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: .5rem;
-    opacity: .6;
-  }
-  .ll-scroll-hint span {
-    font-family: var(--font-title);
-    font-size: 0.75rem;
-    letter-spacing: .2em;
-    color: var(--fog);
-    text-transform: uppercase;
-  }
-  .ll-scroll-arrow {
-    width: 2px;
-    height: 28px;
-    background: linear-gradient(to bottom, var(--fog), transparent);
-    animation: scrollBounce 2s ease infinite;
-  }
-
-  /* ══════════════════════════════════════════════════
-     SECTION 2 — MANIFESTO
-  ══════════════════════════════════════════════════ */
-  .ll-manifesto {
-    position: relative;
-    padding: 8rem 2rem;
-    overflow: hidden;
-  }
-
-  .ll-manifesto-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 80% at 10% 50%, rgba(22,32,53,.7) 0%, transparent 60%),
-      var(--abyss);
-  }
-
-  .ll-manifesto-inner {
-    position: relative;
-    z-index: 2;
-    max-width: 900px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 5rem;
-    align-items: start;
-  }
-
-  .ll-manifesto-left {
-    position: sticky;
-    top: 6rem;
-  }
-
-  .ll-section-eyebrow {
-    font-family: var(--font-title);
-    font-size: 0.85rem;
-    letter-spacing: .2em;
-    color: var(--ember-mid);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-  }
-  .ll-section-eyebrow::before {
-    content: '';
-    display: inline-block;
-    width: 24px;
-    height: 2px;
-    background: var(--ember-mid);
-  }
-
-  .ll-manifesto-heading {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1.25;
-    color: var(--white);
-    margin-bottom: 1rem;
-  }
-
-  .ll-manifesto-heading em {
-    font-style: normal;
-    display: block;
-    background: linear-gradient(135deg, var(--soul-mid), var(--soul-bright));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .ll-manifesto-rule {
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(to right, var(--soul-mid), transparent);
-    margin-top: 1.5rem;
-  }
-
-  .ll-manifesto-right {
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-  }
-
-  .ll-manifesto-body {
-    font-size: 1.25rem;
-    line-height: 1.85;
-    color: var(--ash);
-  }
-
-  .ll-manifesto-body strong {
-    color: var(--white);
-    font-weight: 500;
-  }
-
-  .ll-manifesto-body em {
-    color: var(--soul-bright);
-    font-style: italic;
-  }
-
-  .ll-manifesto-placeholder {
-    padding: 2rem;
-    border: 1px solid var(--slate);
-    border-radius: 4px;
-    background: rgba(255,255,255,.03);
-  }
-
-  .ll-pillars {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  .ll-pillar {
-    padding: 1.5rem;
-    background: var(--deep);
-    border: 1px solid var(--slate);
-    border-radius: 4px;
-    transition: background .2s, border-color .2s;
-  }
-  .ll-pillar:hover { background: var(--navy); border-color: var(--steel); }
-
-  .ll-pillar-icon {
-    font-size: 1.5rem;
-    margin-bottom: .75rem;
-    display: block;
-  }
-  .ll-pillar-title {
-    font-family: var(--font-title);
-    font-size: 0.85rem;
-    letter-spacing: .15em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: .5rem;
-  }
-  .ll-pillar-text {
-    font-size: 1rem;
-    color: var(--fog);
-    line-height: 1.6;
-  }
-
-  /* ══════════════════════════════════════════════════
-     SECTION 3 — COMING SOON: KEEPER'S VIGIL
-  ══════════════════════════════════════════════════ */
-  .ll-coming-soon {
-    position: relative;
-    padding: 8rem 2rem;
-    overflow: hidden;
-  }
-
-  .ll-coming-soon-bg {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 100% 60% at 50% 50%, rgba(45,26,92,.6) 0%, transparent 65%),
-      radial-gradient(ellipse 40% 40% at 20% 100%, rgba(184,92,26,.15) 0%, transparent 50%),
-      var(--void);
-  }
-
-  .ll-coming-soon-bg::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(115,80,200,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(115,80,200,0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-  }
-
-  .ll-coming-soon-inner {
-    position: relative;
-    z-index: 2;
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .ll-game-crest {
-    width: 80px;
-    height: 80px;
-    border: 1px solid rgba(115,80,200,.6);
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(85,53,160,.4), transparent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    box-shadow: var(--glow-soul);
-    animation: pulse 3s ease infinite;
-    margin-bottom: .5rem;
-  }
-
-  .ll-cs-eyebrow {
-    font-family: var(--font-title);
-    font-size: 0.85rem;
-    letter-spacing: .2em;
-    color: var(--soul-bright);
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-  }
-  .ll-cs-eyebrow::before, .ll-cs-eyebrow::after {
-    content: '';
-    display: inline-block;
-    width: 30px; height: 2px;
-    background: var(--soul-mid);
-  }
-
-  .ll-cs-title {
-    font-family: var(--font-display);
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 900;
-    color: var(--white);
-    text-shadow: var(--glow-soul);
-    line-height: 1.1;
-  }
-
-  .ll-cs-subtitle {
-    font-size: 1.25rem;
-    color: var(--bone);
-    line-height: 1.75;
-    max-width: 600px;
-  }
-
-  .ll-status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: .6rem;
-    padding: .5rem 1.25rem;
-    border: 1px solid rgba(115,80,200,.6);
-    background: rgba(85,53,160,.2);
-    border-radius: 4px;
-  }
-  .ll-status-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--soul-bright);
-    box-shadow: 0 0 8px var(--soul-bright);
-    animation: pulse 2s ease infinite;
-  }
-  .ll-status-text {
-    font-family: var(--font-title);
-    font-size: 0.75rem;
-    letter-spacing: .15em;
-    color: var(--soul-bright);
-    text-transform: uppercase;
-  }
-
-  .ll-platforms {
-    display: flex;
-    gap: 1.5rem;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem 0;
-  }
-  .ll-platform {
-    font-family: var(--font-title);
-    font-size: 0.75rem;
-    letter-spacing: .15em;
-    color: var(--fog);
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-  }
-  .ll-platform::before {
-    content: '◆';
-    font-size: .4rem;
-    color: var(--mist);
-  }
-  .ll-platform:first-child::before { display: none; }
+  .ll-hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; padding-top: .5rem; }
 
   .ll-btn-soul {
     display: inline-flex;
@@ -663,814 +189,402 @@ const pageStyles = `
     box-shadow: 0 0 40px rgba(115,80,200,.5), 0 0 80px rgba(115,80,200,.2);
   }
 
-  /* ══════════════════════════════════════════════════
-     SECTION 4 — COMMUNITY DASHBOARD
-  ══════════════════════════════════════════════════ */
-  .ll-dashboard {
-    padding: 6rem 2rem 8rem;
-    background: var(--abyss);
-    position: relative;
-  }
-
-  .ll-dashboard::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--slate), transparent);
-  }
-
-  .ll-dashboard-inner {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  .ll-dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 2.5rem;
-  }
-
-  .ll-greeting-sub {
-    font-family: var(--font-title);
-    font-size: 0.85rem;
-    letter-spacing: .2em;
-    color: var(--ember-mid);
-    text-transform: uppercase;
-    display: flex;
+  .ll-btn-ghost {
+    display: inline-flex;
     align-items: center;
     gap: .6rem;
-    margin-bottom: .6rem;
-  }
-  .ll-greeting-sub::before { content: ''; display: inline-block; width: 24px; height: 2px; background: var(--ember-mid); }
-
-  .ll-greeting-title {
-    font-family: var(--font-display);
-    font-size: 2rem;
-    color: var(--white);
-    line-height: 1.1;
-  }
-
-  .ll-greeting-body {
-    font-size: 1.1rem;
-    color: var(--ash);
-    margin-top: .4rem;
-  }
-
-  .ll-admin-actions {
-    display: flex;
-    gap: 1rem;
-  }
-
-  /* Decluttered Stat cards */
-  .ll-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-  }
-
-  .ll-stat-card {
-    background: var(--deep);
-    border: 1px solid var(--slate);
-    border-radius: 6px;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: .75rem;
-    transition: background .2s, border-color .2s;
-    text-decoration: none;
-    color: inherit;
-    position: relative;
-    overflow: hidden;
-  }
-  .ll-stat-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(192,144,40,.08), transparent);
-    opacity: 0;
-    transition: opacity .25s;
-  }
-  .ll-stat-card:hover { background: var(--navy); border-color: var(--steel); }
-  .ll-stat-card:hover::before { opacity: 1; }
-
-  .ll-stat-card-wide {
-    grid-column: span 2;
-  }
-
-  .ll-stat-icon-wrap {
-    width: 44px; height: 44px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    flex-shrink: 0;
-    margin-bottom: .5rem;
-  }
-
-  .ll-stat-label {
-    font-family: var(--font-title);
-    font-size: 0.75rem;
-    letter-spacing: .15em;
-    color: var(--fog);
-    text-transform: uppercase;
-  }
-
-  .ll-stat-value {
-    font-family: var(--font-display);
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--white);
-    line-height: 1;
-  }
-
-  .ll-stat-arrow {
-    position: absolute;
-    top: 2rem; right: 2rem;
-    font-size: 1rem;
-    color: var(--steel);
-    transition: color .2s, transform .2s;
-  }
-  .ll-stat-card:hover .ll-stat-arrow { color: var(--gold-bright); transform: translate(3px, -3px); }
-
-  /* Social stats */
-  .ll-social-grid {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-    margin-top: .75rem;
-  }
-  .ll-social-item {
-    display: flex;
-    flex-direction: column;
-    gap: .4rem;
-  }
-  .ll-social-platform {
-    font-family: var(--font-title);
-    font-size: 0.75rem;
-    letter-spacing: .1em;
-    color: var(--fog);
-    text-transform: uppercase;
-  }
-  .ll-social-count {
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    color: var(--gold-bright);
-  }
-
-  /* Content grid */
-  .ll-content-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-  }
-
-  .ll-panel {
-    background: var(--deep);
-    border: 1px solid var(--slate);
-    border-radius: 6px;
-    padding: 2.5rem;
-  }
-
-  .ll-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--slate);
-  }
-
-  .ll-panel-title {
+    padding: 1rem 1.75rem;
+    background: transparent;
+    color: var(--bone);
     font-family: var(--font-title);
     font-size: 0.85rem;
+    font-weight: 600;
     letter-spacing: .15em;
-    color: var(--bone);
-    text-transform: uppercase;
-  }
-
-  .ll-panel-meta {
-    font-size: 1rem;
-    color: var(--fog);
-    margin-top: .4rem;
-  }
-
-  .ll-panel-link {
-    font-family: var(--font-title);
-    font-size: 0.75rem;
-    letter-spacing: .15em;
-    color: var(--gold);
     text-transform: uppercase;
     text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: .4rem;
-    transition: color .2s;
-    white-space: nowrap;
+    border: 1px solid var(--fog);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .25s ease;
   }
-  .ll-panel-link:hover { color: var(--gold-bright); }
+  .ll-btn-ghost:hover { border-color: var(--white); color: var(--white); background: rgba(255,255,255,.08); }
 
-  /* Activity feed */
-  .ll-activity-feed { display: flex; flex-direction: column; gap: 0; }
-
-  .ll-activity-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.25rem;
-    padding: 1.25rem 0;
-    border-bottom: 1px solid var(--slate);
-    text-decoration: none;
-    color: inherit;
-    transition: background .15s;
-    margin: 0 -1.5rem;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-  .ll-activity-item:last-child { border-bottom: none; }
-  .ll-activity-item:hover { background: rgba(255,255,255,.03); }
-
-  .ll-activity-icon {
-    width: 36px; height: 36px; border-radius: 4px;
+  .ll-hero-right { position: relative; z-index: 2; height: 100%; min-height: 100vh; display: flex; align-items: stretch; }
+  .ll-hero-image-wrap { position: relative; width: 100%; overflow: hidden; }
+  
+  .ll-hero-image-wrap::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 15%; background: linear-gradient(to right, var(--void), transparent); z-index: 2; }
+  .ll-hero-image-wrap::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 20%; background: linear-gradient(to top, var(--void), transparent); z-index: 2; }
+  
+  .ll-hero-cover-img { object-fit: cover; object-position: center; width: 100%; height: 100%; }
+  
+  .ll-hero-cover-placeholder {
+    width: 100%; height: 100%; min-height: 100vh;
+    background: radial-gradient(ellipse 80% 100% at 50% 30%, rgba(85,53,160,.5) 0%, transparent 60%), linear-gradient(to bottom, var(--abyss), var(--void));
     display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; flex-shrink: 0;
-    border: 1px solid var(--slate);
-  }
-  .ll-activity-icon-comment { background: rgba(59,130,246,.15); border-color: rgba(59,130,246,.3); }
-  .ll-activity-icon-post    { background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.3); }
-  .ll-activity-icon-project { background: rgba(139,92,246,.15); border-color: rgba(139,92,246,.3); }
-
-  .ll-activity-text { font-size: 1.1rem; color: var(--ash); line-height: 1.5; }
-  .ll-activity-text strong { color: var(--bone); font-weight: 500; }
-  .ll-activity-time { font-size: 0.9rem; color: var(--fog); margin-top: .4rem; }
-
-  .ll-empty-state {
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; padding: 4rem 2rem; gap: 1rem;
-    color: var(--fog);
-  }
-  .ll-empty-state-icon { font-size: 2.5rem; opacity: .5; }
-  .ll-empty-state-text { font-family: var(--font-title); font-size: 0.85rem; letter-spacing: .2em; text-transform: uppercase; }
-
-  /* Quick links */
-  .ll-quick-links {
-    background: var(--deep);
-    border: 1px solid var(--slate);
-    border-radius: 6px;
-    padding: 2.5rem;
+    font-family: var(--font-title); font-size: 0.85rem; letter-spacing: .2em; color: var(--fog); text-transform: uppercase;
   }
 
-  .ll-quick-links-label {
-    font-family: var(--font-title);
-    font-size: 0.85rem;
-    letter-spacing: .2em;
-    color: var(--fog);
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-  }
+  /* ══════════════════════════════════════════════════
+     SECTION 2 — GAME LIBRARY
+  ══════════════════════════════════════════════════ */
+  .ll-games-library { padding: 6rem 2rem; background: var(--abyss); position: relative; border-top: 1px solid var(--slate); }
+  .ll-games-inner { max-width: 1200px; margin: 0 auto; }
+  .ll-section-eyebrow { font-family: var(--font-title); font-size: 0.85rem; letter-spacing: .2em; color: var(--ember-mid); text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: .6rem; }
+  .ll-section-eyebrow::before { content: ''; display: inline-block; width: 24px; height: 2px; background: var(--ember-mid); }
+  .ll-manifesto-heading { font-family: var(--font-display); font-size: 2rem; font-weight: 700; line-height: 1.25; color: var(--white); margin-bottom: 1rem; }
+  .ll-manifesto-heading em { font-style: normal; display: block; background: linear-gradient(135deg, var(--soul-mid), var(--soul-bright)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
-  .ll-quick-links-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.25rem;
-  }
+  .ll-games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
 
-  .ll-quick-link {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.25rem;
-    background: var(--abyss);
-    border: 1px solid var(--slate);
-    border-radius: 4px;
-    text-decoration: none;
-    color: var(--bone);
-    font-family: var(--font-title);
-    font-size: 0.85rem;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    transition: all .2s;
-  }
-  .ll-quick-link:hover {
-    background: var(--navy);
-    border-color: var(--steel);
-    color: var(--white);
-  }
-  .ll-quick-link-icon { font-size: 1.25rem; }
+  .ll-game-card { background: var(--void); border: 1px solid var(--slate); border-radius: 6px; padding: 2.5rem; display: flex; flex-direction: column; position: relative; overflow: hidden; transition: border-color .3s; }
+  .ll-game-card:hover { border-color: rgba(192,144,40,.4); }
 
-  /* ── RESPONSIVE ──────────────────────────────────── */
+  .ll-btn-primary { display: inline-flex; align-items: center; gap: .6rem; padding: 1rem 2rem; background: linear-gradient(135deg, var(--ember) 0%, var(--ember-hot) 100%); color: var(--white); font-family: var(--font-title); font-size: 0.85rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; text-decoration: none; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 4px 24px rgba(184,92,26,.4), inset 0 1px 0 rgba(255,255,255,.15); transition: all .25s ease; }
+  .ll-btn-primary:hover { box-shadow: 0 6px 32px rgba(240,128,48,.5); transform: translateY(-1px); }
+
+  /* ══════════════════════════════════════════════════
+     SECTION 3 — NEWSLETTER & DASHBOARD
+  ══════════════════════════════════════════════════ */
+  .ll-newsletter { padding: 5rem 2rem; background: var(--void); border-top: 1px solid var(--slate); border-bottom: 1px solid var(--slate); text-align: center; }
+  .ll-newsletter-inner { max-width: 600px; margin: 0 auto; }
+  .ll-newsletter-form { display: flex; gap: 0.5rem; margin-top: 2rem; justify-content: center; flex-wrap: wrap; }
+  .ll-input { flex: 1; min-width: 250px; padding: 1rem 1.5rem; background: var(--abyss); border: 1px solid var(--slate); color: var(--bone); border-radius: 4px; font-family: var(--font-body); font-size: 1rem; outline: none; }
+  .ll-input:focus { border-color: var(--gold-mid); }
+
+  .ll-dashboard { padding: 6rem 2rem; background: var(--abyss); }
+  .ll-dashboard-inner { max-width: 1200px; margin: 0 auto; }
+  .ll-dashboard-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; }
+  .ll-greeting-sub { font-family: var(--font-title); font-size: 0.85rem; letter-spacing: .2em; color: var(--ember-mid); text-transform: uppercase; display: flex; align-items: center; gap: .6rem; margin-bottom: .6rem; }
+  .ll-greeting-sub::before { content: ''; display: inline-block; width: 24px; height: 2px; background: var(--ember-mid); }
+  .ll-greeting-title { font-family: var(--font-display); font-size: 2rem; color: var(--white); line-height: 1.1; }
+  
+  .ll-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+  .ll-stat-card { background: var(--deep); border: 1px solid var(--slate); border-radius: 6px; padding: 2rem; display: flex; flex-direction: column; gap: .75rem; text-decoration: none; color: inherit; transition: all .2s; }
+  .ll-stat-card:hover { background: var(--navy); border-color: var(--steel); }
+  .ll-stat-icon-wrap { width: 44px; height: 44px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: .5rem; }
+  .ll-stat-label { font-family: var(--font-title); font-size: 0.75rem; letter-spacing: .15em; color: var(--fog); text-transform: uppercase; }
+  .ll-stat-value { font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; color: var(--white); line-height: 1; }
+
+  .ll-social-links-container { display: flex; gap: 1rem; margin-top: 1rem; }
+  .ll-social-badge { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--void); border: 1px solid var(--slate); border-radius: 4px; color: var(--bone); text-decoration: none; font-family: var(--font-title); font-size: 0.75rem; text-transform: uppercase; transition: all .2s; }
+  .ll-social-badge:hover { background: var(--navy); border-color: var(--gold-mid); color: var(--gold-bright); }
+
+  .ll-panel { background: var(--deep); border: 1px solid var(--slate); border-radius: 6px; padding: 2.5rem; }
+  .ll-panel-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--slate); }
+  .ll-panel-title { font-family: var(--font-title); font-size: 0.85rem; letter-spacing: .15em; color: var(--bone); text-transform: uppercase; }
+  .ll-activity-item { display: flex; align-items: flex-start; gap: 1.25rem; padding: 1.25rem 0; border-bottom: 1px solid var(--slate); text-decoration: none; color: inherit; transition: background .15s; margin: 0 -1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; }
+  .ll-activity-item:hover { background: rgba(255,255,255,.03); }
+  .ll-activity-icon { width: 36px; height: 36px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; border: 1px solid var(--slate); }
+
+  /* ── RESPONSIVE OVERRIDES ── */
   @media (max-width: 900px) {
     .ll-hero { grid-template-columns: 1fr; }
-    .ll-hero-right { display: none; }
-    .ll-hero-left { padding: 7rem 2rem 5rem; }
-    .ll-manifesto-inner { grid-template-columns: 1fr; gap: 3rem; }
-    .ll-manifesto-left { position: static; }
-    .ll-content-grid { grid-template-columns: 1fr; }
-    .ll-stat-card-wide { grid-column: span 1; }
+    
+    /* CHANGED: Fixed the missing image on mobile by ensuring it fills the absolute container */
+    .ll-hero-right { 
+        position: absolute; 
+        inset: 0; 
+        z-index: 1; 
+        opacity: 0.25; 
+        display: block; 
+    }
+    .ll-hero-image-wrap { height: 100%; width: 100%; position: absolute; inset: 0; }
+    .ll-hero-cover-img { height: 100% !important; object-fit: cover; }
+    .ll-hero-image-wrap::before, .ll-hero-image-wrap::after { display: none; }
+    .ll-hero-game-tag { display: none; } /* Hide the floating tag on mobile to keep it clean */
+    
+    .ll-hero-left { z-index: 2; padding: 7rem 2rem 5rem; }
   }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
   .ll-fade-up { opacity: 0; animation: fadeUp .7s ease forwards; }
-  .ll-delay-1 { animation-delay: .1s; }
-  .ll-delay-2 { animation-delay: .2s; }
-  .ll-delay-3 { animation-delay: .35s; }
-  .ll-delay-4 { animation-delay: .5s; }
-  .ll-delay-5 { animation-delay: .65s; }
+  .ll-delay-1 { animation-delay: .1s; } .ll-delay-2 { animation-delay: .2s; } .ll-delay-3 { animation-delay: .35s; } .ll-delay-4 { animation-delay: .5s; }
 `;
 
-// ─── COMPONENT ───────────────────────────────────────────────────────────────
 export default function HomePage() {
   const router = useRouter();
 
-  // --- EXISTING STATE ---
+  // --- STATE ---
   const [projectCount, setProjectCount] = useState(0);
-  const [snippetCount, setSnippetCount] = useState(0);
   const [memberCount, setMemberCount] = useState(0);
-  const [totalPostViews, setTotalPostViews] = useState(0);
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState(null);
   const [username, setUsername] = useState('');
-  const [socialStats, setSocialStats] = useState([]);
 
-  // --- NEW STATE FOR DYNAMIC CONTENT ---
-  const [heroConfig, setHeroConfig] = useState(null);
-  const [demoConfig, setDemoConfig] = useState(null);
+  // Newsletter State
+  const [email, setEmail] = useState('');
+  const [subscribeStatus, setSubscribeStatus] = useState('idle'); 
+  
+  // Dynamic Game State & Carousel
+  const [featuredGames, setFeaturedGames] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [libraryGames, setLibraryGames] = useState([]);
 
-  // --- EXISTING useEffect ---
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
 
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        const { data: profile } = await supabase
-          .from('profiles').select('role, username').eq('id', session.user.id).single();
-        setUserRole(profile?.role || 'guest');
+        const { data: profile } = await supabase.from('profiles').select('username').eq('id', session.user.id).single();
         setUsername(profile?.username || 'User');
       } else {
-        setUserRole('guest');
         setUsername('Guest');
       }
 
-      const { data: configData } = await supabase
-        .from('site_config').select('*').in('section_key', ['home_hero', 'home_demo']);
-      if (configData) {
-        const hero = configData.find(item => item.section_key === 'home_hero');
-        const demo = configData.find(item => item.section_key === 'home_demo');
-        setHeroConfig(hero);
-        setDemoConfig(demo);
+      // Fetch dynamic games (snippets)
+      const { data: snippetsData } = await supabase
+        .from('snippets')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (snippetsData && snippetsData.length > 0) {
+        // Split data into Pinned (Carousel) and Unpinned (Library)
+        const pinned = snippetsData.filter(game => game.is_pinned);
+        const unpinned = snippetsData.filter(game => !game.is_pinned);
+
+        setFeaturedGames(pinned.length > 0 ? pinned : [snippetsData[0]]); // Fallback to newest if none pinned
+        setLibraryGames(unpinned.slice(0, 3)); // Show up to 3 unpinned games in library
       }
 
       const { count: projCount } = await supabase.from('projects').select('*', { count: 'exact', head: true });
       setProjectCount(projCount || 0);
-      const { count: snipCount } = await supabase.from('snippets').select('*', { count: 'exact', head: true });
-      setSnippetCount(snipCount || 0);
       const { data: memCount } = await supabase.rpc('get_public_member_count');
       setMemberCount(memCount || 0);
 
-      const { data: totalViewsData } = await supabase.from('posts').select('view_count');
-      if (totalViewsData) {
-        const total = totalViewsData.reduce((sum, post) => sum + (post.view_count || 0), 0);
-        setTotalPostViews(total);
-      }
-
-      let combinedActivity = [];
-      const { data: recentCommentsData } = await supabase.from('comments')
-        .select('*, post:posts(id, title), author:profiles(username)')
-        .order('created_at', { ascending: false }).limit(5);
-      if (recentCommentsData) combinedActivity.push(...recentCommentsData.map(c => ({ ...c, type: 'comment' })));
-
-      const { data: latestPostData } = await supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(1);
-      const latestPost = latestPostData?.[0];
-      const { data: latestProjectData } = await supabase.from('projects').select('*').order('created_at', { ascending: false }).limit(1);
-      const latestProject = latestProjectData?.[0];
-
-      let newestContentItem = null;
-      if (latestPost && latestProject) {
-        newestContentItem = new Date(latestPost.created_at) > new Date(latestProject.created_at)
-          ? { ...latestPost, type: 'post' } : { ...latestProject, type: 'project' };
-      } else if (latestPost) newestContentItem = { ...latestPost, type: 'post' };
-      else if (latestProject) newestContentItem = { ...latestProject, type: 'project' };
-      if (newestContentItem) combinedActivity.push(newestContentItem);
-
-      combinedActivity.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-      setRecentActivity(combinedActivity.slice(0, 6));
-
-      const { data: socialStatsData } = await supabase.from('social_stats').select('*');
-      if (socialStatsData) setSocialStats(socialStatsData);
+      const { data: recentCommentsData } = await supabase.from('comments').select('*, post:posts(id, title), author:profiles(username)').order('created_at', { ascending: false }).limit(5);
+      setRecentActivity(recentCommentsData ? recentCommentsData.map(c => ({ ...c, type: 'comment' })) : []);
 
       setLoading(false);
     };
     fetchDashboardData();
   }, []);
 
-  // --- HELPERS ---
+  // CAROUSEL LOGIC: Cycle games every 7 seconds
+  useEffect(() => {
+    if (featuredGames.length <= 1) return; 
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % featuredGames.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, [featuredGames]);
+
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';
     if (hour < 18) return 'Good afternoon';
     return 'Good evening';
   };
-  const formatNumber = (num) => num >= 1000 ? (num / 1000).toFixed(1) + 'K' : num;
   const getRelativeTime = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - date) / 1000);
-    if (diffInSeconds < 60) return 'just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    return date.toLocaleDateString();
+    const diff = Math.floor((new Date() - new Date(dateString)) / 1000);
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return new Date(dateString).toLocaleDateString();
   };
 
-  if (loading) {
-    return (
-      <>
-        <style>{pageStyles}</style>
-        <div className="ll-loading">
-          <span className="ll-loading-text">Entering the Dark</span>
-        </div>
-      </>
-    );
-  }
+  if (loading) return <><style>{pageStyles}</style><div className="ll-loading"><span className="ll-loading-text">Loading Hub</span></div></>;
 
-  const coverImageSrc = heroConfig?.image_url || null;
+  const activeFeature = featuredGames[currentSlide];
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+    setSubscribeStatus('loading');
+
+    try {
+
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session) {
+        await supabase
+          .from('profiles')
+          .update({ email_on_newsletter: true })
+          .eq('id', session.user.id);
+      }
+
+      const { error } = await supabase
+        .from('subscribers')
+        .insert([{ email }]);
+
+      if (error && error.code !== '23505') throw error;
+
+      setSubscribeStatus('success');
+      setEmail('');
+      
+      setTimeout(() => setSubscribeStatus('idle'), 3000);
+      
+    } catch (error) {
+      console.error('Subscription error:', error);
+      setSubscribeStatus('error');
+      setTimeout(() => setSubscribeStatus('idle'), 3000);
+    }
+  };
 
   return (
     <>
+    
       <style>{pageStyles}</style>
       <div className="ll-page">
 
-        {/* ════════════════════════════════
-            SECTION 1 — HERO
-        ════════════════════════════════ */}
-        <section className="ll-hero">
-          <div className="ll-hero-bg" />
-
-          {/* LEFT: Text */}
-          <div className="ll-hero-left">
-            <div className="ll-studio-badge ll-fade-up ll-delay-1">
-              <span className="ll-studio-badge-dot" />
-              <span className="ll-studio-badge-text">Lota Labs Interactive Fiction</span>
+        {/* 1. DYNAMIC ROTATING HERO SECTION */}
+        {activeFeature && (
+          <section className="ll-hero">
+            <div className="ll-hero-bg" />
+            
+            
+            <div className="ll-hero-left" key={`text-${activeFeature.id}`}>
+              <div className="ll-studio-badge ll-fade-up ll-delay-1">
+                <span className="ll-studio-badge-dot" />
+                <span className="ll-studio-badge-text">
+                  {activeFeature.game_url === '#local-demo' ? 'Free Demo Available' : 'Featured Release'}
+                </span>
+              </div>
+              <h1 className="ll-hero-headline ll-fade-up ll-delay-2">
+                {activeFeature.title}
+              </h1>
+              
+              <div className="ll-hero-actions ll-fade-up ll-delay-3">
+                <Link href={`/games/${activeFeature.slug || activeFeature.id}`} className="ll-btn-soul">
+                  <span>▶ Play Now</span>
+                </Link>
+              </div>
             </div>
 
-            <h1 className="ll-hero-headline ll-fade-up ll-delay-2">
-              Welcome to<br />
-              <em>Lota Labs.</em>
-            </h1>
+            <div className="ll-hero-right" key={`img-${activeFeature.id}`}>
+              <div className="ll-hero-image-wrap">
+                {activeFeature.image_url ? (
+                  <Image src={activeFeature.image_url} alt={activeFeature.title} fill priority className="ll-hero-cover-img ll-fade-up" />
+                ) : (
+                  <div className="ll-hero-cover-placeholder ll-fade-up">Cover Art Placeholder</div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
 
-            <p className="ll-hero-sub ll-fade-up ll-delay-3">
-              Stories with weight. Choices that echo.<br />
-              Our debut chapter, <strong>Supernatural Fugitive</strong>, is live now. It is
-              a 40-minute dark-fantasy interactive fiction experience.
+        {/* 2. MORE GAMES LIBRARY */}
+        {libraryGames.length > 0 && (
+          <section id="library" className="ll-games-library">
+            <div className="ll-games-inner">
+              <p className="ll-section-eyebrow">Explore</p>
+              <h2 className="ll-manifesto-heading">More <em>Titles.</em></h2>
+              
+              <div className="ll-games-grid">
+                {libraryGames.map(game => (
+                  <div key={game.id} className="ll-game-card">
+                    <div style={{fontFamily: 'var(--font-title)', fontSize: '0.75rem', color: 'var(--gold)', textTransform: 'uppercase', marginBottom: '1rem'}}>
+                      {game.game_url === '#local-demo' ? 'Free Demo' : 'Full Release'}
+                    </div>
+                    <h3 style={{fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: 'var(--white)', marginBottom: '0.5rem'}}>{game.title}</h3>
+                    <p style={{color: 'var(--ash)', lineHeight: '1.6', marginBottom: '2rem', flex: 1, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {game.description}
+                    </p>
+                    <div style={{display: 'flex', gap: '0.75rem', flexWrap: 'wrap'}}>
+                      <Link href={`/games/${game.slug || game.id}`} className="ll-btn-primary" style={{width: '100%', justifyContent: 'center'}}>
+                        View Details
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ textAlign: 'center', marginTop: '3rem' }}>
+                <Link href="/games" className="ll-btn-ghost">Browse Full Library →</Link>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* 3. NEWSLETTER SIGNUP */}
+        <section className="ll-newsletter">
+          <div className="ll-newsletter-inner">
+            <h2 className="ll-manifesto-heading">Join the <em>Vanguard.</em></h2>
+            <p style={{color: 'var(--ash)', fontSize: '1.1rem', marginTop: '0.5rem'}}>
+              Get notified the exact moment new chapters, devlogs, and exclusive Web3 artifacts drop. No spam, just stories.
             </p>
-
-            <div className="ll-hero-actions ll-fade-up ll-delay-4">
-              <Link href="/games" className="ll-btn-primary">
-                <span>▶ Play 40-Min Demo</span>
-              </Link>
-              <Link href="/blog" className="ll-btn-ghost">
-                Read the Devlogs
-              </Link>
-            </div>
-          </div>
-
-          {/* RIGHT: Cover Art */}
-          <div className="ll-hero-right">
-            <div className="ll-hero-image-wrap">
-              {coverImageSrc ? (
-                <Image
-                  src={coverImageSrc}
-                  alt="Supernatural Fugitive — Cover Art"
-                  fill
-                  priority
-                  className="ll-hero-cover-img"
-                />
-              ) : (
-                <div className="ll-hero-cover-placeholder">
-                  Cover Art Placeholder
-                </div>
-              )}
-              <div className="ll-hero-game-tag">
-                <span className="ll-hero-game-label">Featured Title</span>
-                <span className="ll-hero-game-title">Supernatural<br />Fugitive</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="ll-scroll-hint">
-            <span>Scroll</span>
-            <div className="ll-scroll-arrow" />
+            <form className="ll-newsletter-form" onSubmit={handleSubscribe}>
+              <input 
+                type="email" 
+                placeholder="Enter your email address" 
+                className="ll-input" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={subscribeStatus === 'loading' || subscribeStatus === 'success'}
+                required 
+              />
+              <button 
+                type="submit" 
+                className="ll-btn-primary"
+                disabled={subscribeStatus === 'loading' || subscribeStatus === 'success'}
+              >
+                {subscribeStatus === 'loading' ? 'Joining...' : 
+                 subscribeStatus === 'success' ? '✓ Welcome to the Vanguard' : 
+                 subscribeStatus === 'error' ? 'Error. Try Again' : 
+                 'Subscribe'}
+              </button>
+            </form>
           </div>
         </section>
 
-        {/* ════════════════════════════════
-            SECTION 2 — MANIFESTO
-        ════════════════════════════════ */}
-        <section className="ll-manifesto">
-          <div className="ll-manifesto-bg" />
-          <div className="ll-manifesto-inner">
-
-            <div className="ll-manifesto-left">
-              <p className="ll-section-eyebrow">Our Mission</p>
-              <h2 className="ll-manifesto-heading">
-                Building the
-                <em>next generation</em>
-                of Interactive Fiction.
-              </h2>
-              <div className="ll-manifesto-rule" />
-            </div>
-
-            <div className="ll-manifesto-right">
-              <p className="ll-manifesto-body">
-                We believe interactive fiction is one of the most <strong>underexplored art forms</strong> of our time.
-                At Lota Labs, we're building stories that will not just entertain you but will also <em>stay with you</em>.
-                Narratives where your choices carry moral weight, where characters breathe, and where
-                the world responds to who you are.
-              </p>
-
-              <div className="ll-manifesto-placeholder">
-                <div style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>
-                <h3 style={{ fontFamily: 'var(--font-title)', fontSize: '1.2rem', color: 'var(--white)', marginBottom: '1rem' }}>
-                  ✦ True Ownership of Your Story ✦
-                </h3>
-                <p className="ll-manifesto-body" style={{ marginBottom: '1rem' }}>
-                  We are pioneering the bridge between interactive narrative and true digital ownership. In a Lota Labs experience, the artifacts you earn, whether it is a cursed blade or a celestial relic, actually belong to you. 
-                </p>
-                <p className="ll-manifesto-body">
-                  For traditional players, it is a seamless, immersive RPG. But for those who want to go deeper, you can connect your wallet and forge your choices into the blockchain, carrying your inventory across the digital frontier. <strong>No friction, no forced jargon. Just absolute player agency and freedom.</strong>
-                </p>
-              </div>
-              </div>
-
-              <div className="ll-pillars">
-                <div className="ll-pillar">
-                  <span className="ll-pillar-icon">⚔️</span>
-                  <div className="ll-pillar-title">Dark Narrative</div>
-                  <p className="ll-pillar-text">Stories for adults. Moral ambiguity, real consequence, earned catharsis.</p>
-                </div>
-                <div className="ll-pillar">
-                  <span className="ll-pillar-icon">🎭</span>
-                  <div className="ll-pillar-title">Player Agency</div>
-                  <p className="ll-pillar-text">Your identity, your choices, your story. No two playthroughs are the same.</p>
-                </div>
-                <div className="ll-pillar">
-                  <span className="ll-pillar-icon">🌐</span>
-                  <div className="ll-pillar-title">Community-First</div>
-                  <p className="ll-pillar-text">Built in public. Lota Labs is as much the players' studio as ours.</p>
-                </div>
-                <div className="ll-pillar">
-                  <span className="ll-pillar-icon">✨</span>
-                  <div className="ll-pillar-title">Craft Over Clicks</div>
-                  <p className="ll-pillar-text">Every word earns its place. Quality of story above quantity of content.</p>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* ════════════════════════════════
-            SECTION 3 — COMING SOON
-        ════════════════════════════════ */}
-        <section className="ll-coming-soon">
-          <div className="ll-coming-soon-bg" />
-          <div className="ll-coming-soon-inner">
-
-            <div className="ll-game-crest">🏰</div>
-
-            <p className="ll-cs-eyebrow">Next Title</p>
-
-            <h2 className="ll-cs-title">Keeper's Vigil</h2>
-
-            <p className="ll-cs-subtitle">
-              Play as the Harbinger—a mutated monster hunter wielding forbidden necromancy. 
-              Stop a plague of Abominations, uncover an ancient Elven conspiracy, and decide 
-              the fate of a dying world in this massive 193,000-word dark fantasy epic.
-            </p>
-
-            <div className="ll-status-badge">
-              <span className="ll-status-dot" />
-              <span className="ll-status-text">Coming Q2 2026 · All Platforms</span>
-            </div>
-
-            <div className="ll-platforms">
-              <span className="ll-platform">Web</span>
-              <span className="ll-platform">iOS</span>
-              <span className="ll-platform">Android</span>
-              <span className="ll-platform">Steam</span>
-            </div>
-
-            <Link href="/blog" className="ll-btn-soul">
-              Read Devlogs &amp; Join Waitlist →
-            </Link>
-
-          </div>
-        </section>
-
-        {/* ════════════════════════════════
-            SECTION 4 — COMMUNITY DASHBOARD
-        ════════════════════════════════ */}
+        {/* 4. DASHBOARD & SOCIALS */}
         <section className="ll-dashboard">
           <div className="ll-dashboard-inner">
-
             <div className="ll-dashboard-header">
               <div>
                 <p className="ll-greeting-sub">Community Hub</p>
                 <h2 className="ll-greeting-title">The Lab</h2>
                 <p className="ll-greeting-body">{getGreeting()}, {username}. Here's what's happening.</p>
               </div>
-              {userRole === 'admin' && (
-                <div className="ll-admin-actions">
-                  <Link href="/games" className="ll-btn-ghost" style={{ fontSize: '0.75rem', padding: '.75rem 1.25rem' }}>
-                    Upload Snippet
-                  </Link>
-                  <Link href="/blog" className="ll-btn-primary" style={{ fontSize: '0.75rem', padding: '.75rem 1.25rem' }}>
-                    New Post
-                  </Link>
-                </div>
-              )}
             </div>
 
-            {/* Stat Cards */}
             <div className="ll-stats-grid">
-              <Link href="/projects" className="ll-stat-card">
+              <div className="ll-stat-card">
                 <div className="ll-stat-icon-wrap" style={{ background: 'rgba(139,92,246,.15)', border: '1px solid rgba(139,92,246,.3)' }}>📁</div>
                 <div className="ll-stat-label">Active Projects</div>
                 <div className="ll-stat-value">{projectCount}</div>
-                <span className="ll-stat-arrow">↗</span>
-              </Link>
-
-              <Link href="/games" className="ll-stat-card">
-                <div className="ll-stat-icon-wrap" style={{ background: 'rgba(236,72,153,.15)', border: '1px solid rgba(236,72,153,.3)' }}>🎮</div>
-                <div className="ll-stat-label">Games</div>
-                <div className="ll-stat-value">{snippetCount}</div>
-                <span className="ll-stat-arrow">↗</span>
-              </Link>
-
-              <Link href="/blog" className="ll-stat-card">
+              </div>
+              <div className="ll-stat-card">
                 <div className="ll-stat-icon-wrap" style={{ background: 'rgba(59,130,246,.15)', border: '1px solid rgba(59,130,246,.3)' }}>👥</div>
                 <div className="ll-stat-label">Community Members</div>
                 <div className="ll-stat-value">{memberCount}</div>
-                <span className="ll-stat-arrow">↗</span>
-              </Link>
-
-              <div className="ll-stat-card">
-                <div className="ll-stat-icon-wrap" style={{ background: 'rgba(34,197,94,.15)', border: '1px solid rgba(34,197,94,.3)' }}>📖</div>
-                <div className="ll-stat-label">Total Reads</div>
-                <div className="ll-stat-value">{formatNumber(totalPostViews)}</div>
               </div>
 
-              {socialStats.length > 0 && (
-                <a href="https://linktr.ee/lota_labs" target="_blank" rel="noopener noreferrer"
-                  className="ll-stat-card ll-stat-card-wide">
-                  <div className="ll-stat-icon-wrap" style={{ background: 'rgba(245,158,11,.15)', border: '1px solid rgba(245,158,11,.3)' }}>🌐</div>
-                  <div>
-                    <div className="ll-stat-label">Social Reach</div>
-                    <div className="ll-social-grid">
-                      {/* FILTER ADDED HERE: Ensuring LinkedIn NEVER renders */}
-                      {socialStats
-                        .filter(stat => stat.platform.toLowerCase() !== 'linkedin')
-                        .map(stat => (
-                        <div key={stat.platform} className="ll-social-item">
-                          <span className="ll-social-platform">
-                            {stat.platform === 'Instagram' && '📸 '}
-                            {stat.platform === 'Tiktok' && '🎵 '}
-                            {stat.platform === 'Twitter' && '🐦 '}
-                            {stat.platform === 'YouTube' && '📺 '}
-                            {stat.platform}
-                          </span>
-                          <strong className="ll-social-count">{formatNumber(stat.count)}</strong>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <span className="ll-stat-arrow">↗</span>
-                </a>
-              )}
+              <div className="ll-stat-card" style={{gridColumn: 'span 2'}}>
+                <div className="ll-stat-icon-wrap" style={{ background: 'rgba(245,158,11,.15)', border: '1px solid rgba(245,158,11,.3)' }}>🌐</div>
+                <div className="ll-stat-label">Follow The Studio</div>
+                <div className="ll-social-links-container">
+                  <a href="https://twitter.com" target="_blank" rel="noreferrer" className="ll-social-badge">🐦 Twitter / X</a>
+                  <a href="https://youtube.com" target="_blank" rel="noreferrer" className="ll-social-badge">📺 YouTube</a>
+                  <a href="https://instagram.com" target="_blank" rel="noreferrer" className="ll-social-badge">📸 Instagram</a>
+                </div>
+              </div>
             </div>
 
-            {/* Activity Feed + Side */}
-            <div className="ll-content-grid">
-              <div className="ll-panel">
-                <div className="ll-panel-header">
-                  <div>
-                    <div className="ll-panel-title">Recent Activity</div>
-                    <div className="ll-panel-meta">Latest across the platform</div>
-                  </div>
-                  <Link href="/blog" className="ll-panel-link">View All →</Link>
+            <div className="ll-panel">
+              <div className="ll-panel-header">
+                <div>
+                  <div className="ll-panel-title">Recent Activity</div>
+                  <div className="ll-panel-meta">Latest across the platform</div>
                 </div>
-
-                <div className="ll-activity-feed">
-                  {recentActivity.length === 0 ? (
-                    <div className="ll-empty-state">
-                      <span className="ll-empty-state-icon">📭</span>
-                      <span className="ll-empty-state-text">No recent activity</span>
-                    </div>
-                  ) : (
-                    recentActivity.map((activity) => (
-                      <Link
-                        key={activity.id}
-                        href={
-                          activity.type === 'comment' ? `/blog/${activity.post?.id}?reply=${activity.id}`
-                          : activity.type === 'post' ? `/blog/${activity.id}`
-                          : `/projects?project=${activity.id}`
-                        }
-                        className="ll-activity-item"
-                      >
-                        <div className={`ll-activity-icon ll-activity-icon-${activity.type}`}>
-                          {activity.type === 'comment' ? '💬' : activity.type === 'post' ? '✍️' : '📁'}
-                        </div>
-                        <div>
-                          <div className="ll-activity-text">
-                            {activity.type === 'comment'
-                              ? <span><strong>{activity.author?.username || 'Anonymous'}</strong> commented on <strong>"{activity.post?.title || 'a post'}"</strong></span>
-                              : activity.type === 'post'
-                              ? <span>New Post: <strong>"{activity.title}"</strong></span>
-                              : <span>New Project: <strong>"{activity.title}"</strong></span>
-                            }
-                          </div>
-                          <div className="ll-activity-time">{getRelativeTime(activity.created_at)}</div>
-                        </div>
-                      </Link>
-                    ))
-                  )}
-                </div>
+                <Link href="/blog" className="ll-panel-link">View All Forum Posts →</Link>
               </div>
-
-              {/* Side: quick stats / featured */}
-              <div className="ll-panel" style={{ borderLeft: '1px solid var(--slate)', background: 'var(--abyss)' }}>
-                <div className="ll-panel-header">
-                  <div>
-                    <div className="ll-panel-title">Now Playing</div>
-                    <div className="ll-panel-meta">Featured experience</div>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                  <div style={{
-                    padding: '1.5rem',
-                    border: '1px solid rgba(192,144,40,.3)',
-                    background: 'rgba(192,144,40,.08)',
-                    borderRadius: '4px',
-                  }}>
-                    <div style={{
-                      fontFamily: 'var(--font-title)', fontSize: '0.75rem', letterSpacing: '.15em',
-                      color: 'var(--gold)', textTransform: 'uppercase', marginBottom: '.75rem'
-                    }}>
-                      Chapter 1 Demo
-                    </div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: 'var(--white)', marginBottom: '.75rem' }}>
-                      Supernatural Fugitive
-                    </div>
-                    <div style={{ fontSize: '1rem', color: 'var(--bone)', lineHeight: '1.6', marginBottom: '1.25rem' }}>
-                      You are a first responder. Something inhabits a man on Jonathan Street.
-                      And an angel has been waiting for you.
-                    </div>
-                    <Link href="/games" className="ll-btn-primary" style={{ fontSize: '0.75rem', padding: '1rem 1.25rem', width: '100%', justifyContent: 'center' }}>
-                      <span>▶ Play Now</span>
+              <div className="ll-activity-feed">
+                {recentActivity.length === 0 ? (
+                  <div style={{padding: '3rem', textAlign: 'center', color: 'var(--fog)'}}>No recent activity</div>
+                ) : (
+                  recentActivity.map((activity) => (
+                    <Link key={activity.id} href={`/blog/${activity.post?.id}`} className="ll-activity-item">
+                      <div className="ll-activity-icon" style={{background: 'rgba(59,130,246,.15)', borderColor: 'rgba(59,130,246,.3)'}}>💬</div>
+                      <div>
+                        <div className="ll-activity-text">
+                          <span><strong>{activity.author?.username || 'Anonymous'}</strong> commented on <strong>"{activity.post?.title || 'a post'}"</strong></span>
+                        </div>
+                        <div className="ll-activity-time">{getRelativeTime(activity.created_at)}</div>
+                      </div>
                     </Link>
-                  </div>
-
-                  <div style={{
-                    padding: '1.5rem',
-                    border: '1px solid rgba(85,53,160,.4)',
-                    background: 'rgba(45,26,92,.2)',
-                    borderRadius: '4px',
-                  }}>
-                    <div style={{
-                      fontFamily: 'var(--font-title)', fontSize: '0.75rem', letterSpacing: '.15em',
-                      color: 'var(--soul-bright)', textTransform: 'uppercase', marginBottom: '.75rem'
-                    }}>
-                      Coming Q2 2026
-                    </div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', color: 'var(--white)', marginBottom: '.75rem' }}>
-                      Keeper's Vigil
-                    </div>
-                    <Link href="/blog" className="ll-btn-soul" style={{ fontSize: '0.75rem', padding: '1rem 1.25rem', width: '100%', justifyContent: 'center' }}>
-                      Join Waitlist →
-                    </Link>
-                  </div>
-                </div>
+                  ))
+                )}
               </div>
             </div>
-
-            {/* Quick Links */}
-            <div className="ll-quick-links">
-              <div className="ll-quick-links-label">Navigate</div>
-              <div className="ll-quick-links-grid">
-                <Link href="/projects" className="ll-quick-link"><span className="ll-quick-link-icon">📁</span>Browse Projects</Link>
-                <Link href="/games" className="ll-quick-link"><span className="ll-quick-link-icon">🎮</span>Play Games</Link>
-                <Link href="/blog" className="ll-quick-link"><span className="ll-quick-link-icon">📝</span>Read Blog</Link>
-                <Link href="/profile" className="ll-quick-link"><span className="ll-quick-link-icon">⚙️</span>Profile Settings</Link>
-              </div>
-            </div>
-
           </div>
         </section>
 
