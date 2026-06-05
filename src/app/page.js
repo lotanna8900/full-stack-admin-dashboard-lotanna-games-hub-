@@ -596,9 +596,9 @@ export default function HomePage() {
                 <div className="ll-stat-icon-wrap" style={{ background: 'rgba(245,158,11,.15)', border: '1px solid rgba(245,158,11,.3)' }}>🌐</div>
                 <div className="ll-stat-label">Follow The Studio</div>
                 <div className="ll-social-links-container">
-                  <a href="https://twitter.com" target="_blank" rel="noreferrer" className="ll-social-badge">🐦 Twitter / X</a>
-                  <a href="https://youtube.com" target="_blank" rel="noreferrer" className="ll-social-badge">📺 YouTube</a>
-                  <a href="https://instagram.com" target="_blank" rel="noreferrer" className="ll-social-badge">📸 Instagram</a>
+                  <a href="https://x.com/LotaLabs" target="_blank" rel="noreferrer" className="ll-social-badge">🐦 Twitter / X</a>
+                  <a href="https://youtube.com/@playlotalabs" target="_blank" rel="noreferrer" className="ll-social-badge">📺 YouTube</a>
+                  <a href="https://instagram.com/lota_labs" target="_blank" rel="noreferrer" className="ll-social-badge">📸 Instagram</a>
                 </div>
               </div>
             </div>
