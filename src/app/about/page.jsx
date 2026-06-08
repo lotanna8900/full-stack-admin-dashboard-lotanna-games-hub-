@@ -222,11 +222,11 @@ export default function AboutPage() {
                   
                   <div className="profile-stats" style={{ display: 'flex', justifyContent: 'center', gap: '2rem', padding: '1rem 0', borderTop: '1px solid var(--slate)' }}>
                     <div className="profile-stat">
-                      <div className="stat-value" style={{ fontSize: '1.5rem', color: 'var(--white)', fontWeight: 'bold' }}>100k+</div>
+                      <div className="stat-value" style={{ fontSize: '1.5rem', color: 'var(--white)', fontWeight: 'bold' }}>200k+</div>
                       <div className="stat-label" style={{ fontSize: '0.75rem', color: 'var(--fog)', textTransform: 'uppercase' }}>Words Written</div>
                     </div>
                     <div className="profile-stat">
-                      <div className="stat-value" style={{ fontSize: '1.5rem', color: 'var(--white)', fontWeight: 'bold' }}>5+</div>
+                      <div className="stat-value" style={{ fontSize: '1.5rem', color: 'var(--white)', fontWeight: 'bold' }}>2</div>
                       <div className="stat-label" style={{ fontSize: '0.75rem', color: 'var(--fog)', textTransform: 'uppercase' }}>Projects</div>
                     </div>
                   </div>
