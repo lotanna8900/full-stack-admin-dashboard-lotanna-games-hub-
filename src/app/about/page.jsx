@@ -27,16 +27,6 @@ const styles = `
     gap: 1.5rem;
   }
 
-  .stack-grid {
-    list-style-type: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 1.25rem;
-    color: var(--ash);
-    font-size: 1.05rem;
-  }
-
   .about-features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -82,7 +72,6 @@ const styles = `
     }
 
     .philosophy-grid { grid-template-columns: 1fr; }
-    .stack-grid { grid-template-columns: 1fr; }
   }
 
   /* ── STRICT MOBILE CLEANUP ── */
@@ -106,7 +95,7 @@ export default function AboutPage() {
             <div className="dashboard-title">
               <h1 style={{ fontSize: '2.5rem', color: 'var(--white)', marginBottom: '0.5rem' }}>About Us</h1>
               <p className="dashboard-subtitle" style={{ fontSize: '1.1rem', color: 'var(--fog)' }}>
-                Architecting the intersection of Interactive Fiction, Blockchain, and Digital Storytelling.
+                Crafting immersive interactive fiction, deep narratives, and player-driven digital storytelling.
               </p>
             </div>
           </div>
@@ -120,15 +109,14 @@ export default function AboutPage() {
                 <div className="about-section">
                   <div className="about-section-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
                     <span className="about-section-icon" style={{ fontSize: '1.5rem' }}>👋</span>
-                    <h2 className="about-section-title" style={{ fontSize: '1.5rem', color: 'var(--white)', margin: 0 }}>The Engineering</h2>
+                    <h2 className="about-section-title" style={{ fontSize: '1.5rem', color: 'var(--white)', margin: 0 }}>The Creator</h2>
                   </div>
                   <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--ash)', marginBottom: '1rem' }}>
-                    I'm <strong>Lotanna</strong>, a Senior Product Engineer and the Founder of Lota Labs. I specialize in building 
-                    complex, stateful systems and <strong>highly immersive interactive experiences</strong>.
+                    I'm <strong>Lotanna</strong>, an indie game developer and interactive fiction writer. I specialize in building 
+                    <strong> experiences that are highly immersive, and choice-driven.</strong> Experiences that blur the line between traditional reading and dynamic gaming.
                   </p>
                   <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--ash)' }}>
-                    I'm not the sort of dev that just writes code; Nope, I engineer reliability. Currently, I am a Core Contributor to Hive (YC S24), 
-                    where I built an offline analysis tool called <code>hive diff</code> to streamline complex system evaluations. I merge this rigorous backend engineering with high-performance frontend product design to build worlds where your choices actually matter.
+                    I'm not the sort of developer who just writes linear paths. I do way more. I merge deep world-building with intricate narrative mechanics to build worlds where your choices actually matter. My work draws heavily from dark fantasy and noir aesthetics, focusing on character-driven stories where every decision carries weight.
                   </p>
                 </div>
 
@@ -138,13 +126,10 @@ export default function AboutPage() {
                     <h2 className="about-section-title" style={{ fontSize: '1.5rem', color: 'var(--white)', margin: 0 }}>The Lota Labs Vision</h2>
                   </div>
                   <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--ash)', marginBottom: '1rem' }}>
-                    Lota Labs is our flagship studio and technical proof of work. It is a vertically integrated 
-                    <strong> "Story-to-Chain" platform</strong> designed to solve the ownership gap in interactive media. 
+                    Lota Labs is an ambitious indie game studio dedicated to pushing the boundaries of interactive fiction. It is a platform designed to solve the immersion gap in text-based media, ensuring that readers feel true agency over the stories that they inhabit. 
                   </p>
                   <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--ash)' }}>
-                    It features a custom-built Node-Based Runtime that compiles standard fiction scripts into 
-                    interactive React components, triggering real-time Web3 events based on user choices. 
-                    This isn't a template. This is a proprietary engine built on <strong>Next.js 15, PostgreSQL,</strong> and <strong>Graph Theory</strong>.
+                    Over here we don't use cookie-cutter narrative templates. We build custom storytelling engines that allow for complex branching, which means that every decision you make ripples throughout the game. Long-term, our goal is to grow Lota Labs into a collaborative creative studio, partnering with other talented writers and artists to push the boundaries of what interactive storytelling can achieve.
                   </p>
                 </div>
 
@@ -160,10 +145,10 @@ export default function AboutPage() {
 
                   <div className="philosophy-highlight">
                     <h3 style={{ fontSize: '1.2rem', color: 'var(--gold-bright)', marginBottom: '0.75rem', fontFamily: 'var(--font-title)' }}>
-                      ✦ True Ownership of Your Story
+                      ✦ True Player Agency
                     </h3>
                     <p style={{ fontSize: '1.05rem', lineHeight: '1.7', color: 'var(--bone)' }}>
-                      We are pioneering the bridge between interactive narrative and true digital ownership. For traditional players, it is a seamless, immersive RPG. But for those who want to go deeper, you can connect your wallet and forge your choices into the blockchain. The artifacts you earn actually belong to you. <strong>No friction, no forced jargon. Just absolute player agency.</strong>
+                      We are pioneering a deeper level of interactive narrative. You are not just reading a book; you are forging your own path, and the consequences of your actions belong entirely to you. We design seamless, immersive RPG experiences that respect your time and intelligence. <strong>No illusions of choice. Just absolute player agency.</strong>
                     </p>
                   </div>
 
@@ -187,30 +172,16 @@ export default function AboutPage() {
                   </div>
                 </div>
 
-                {/* --- RESUME --- */}
-                <div className="about-section">
-                  <div className="about-section-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-                    <span className="about-section-icon" style={{ fontSize: '1.5rem' }}>🛠️</span>
-                    <h2 className="about-section-title" style={{ fontSize: '1.5rem', color: 'var(--white)', margin: 0 }}>The Stack</h2>
-                  </div>
-                  <ul className="stack-grid">
-                    <li style={{ background: 'var(--deep)', padding: '1.25rem', borderRadius: '4px', border: '1px solid var(--slate)' }}><strong>Core:</strong> Next.js (App Router), TypeScript, Python</li>
-                    <li style={{ background: 'var(--deep)', padding: '1.25rem', borderRadius: '4px', border: '1px solid var(--slate)' }}><strong>Database:</strong> Supabase/PostgreSQL</li>
-                    <li style={{ background: 'var(--deep)', padding: '1.25rem', borderRadius: '4px', border: '1px solid var(--slate)' }}><strong>Web3:</strong> Wagmi, Viem, Solidity Integration</li>
-                    <li style={{ background: 'var(--deep)', padding: '1.25rem', borderRadius: '4px', border: '1px solid var(--slate)' }}><strong>Infra:</strong> Docker, Git, CI/CD Pipelines</li>
-                  </ul>
-                </div>
-
                 <div className="about-features-grid">
                   <div className="about-feature-card" style={{ background: 'var(--deep)', padding: '1.5rem', border: '1px solid var(--slate)', borderRadius: '4px' }}>
-                    <div className="feature-icon" style={{ fontSize: '2rem', marginBottom: '1rem' }}>📈</div>
-                    <h3 style={{ color: 'var(--white)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Digital Strategy</h3>
-                    <p style={{ color: 'var(--fog)', fontSize: '0.9rem', lineHeight: '1.5' }}>Translating complex narrative mechanics into engaging community content.</p>
+                    <div className="feature-icon" style={{ fontSize: '2rem', marginBottom: '1rem' }}>🖋️</div>
+                    <h3 style={{ color: 'var(--white)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>World Building</h3>
+                    <p style={{ color: 'var(--fog)', fontSize: '0.9rem', lineHeight: '1.5' }}>Translating complex lore into engaging, multi-layered interactive worlds.</p>
                   </div>
                   <div className="about-feature-card" style={{ background: 'var(--deep)', padding: '1.5rem', border: '1px solid var(--slate)', borderRadius: '4px' }}>
                     <div className="feature-icon" style={{ fontSize: '2rem', marginBottom: '1rem' }}>🎮</div>
                     <h3 style={{ color: 'var(--white)', marginBottom: '0.5rem', fontSize: '1.1rem' }}>Games</h3>
-                    <p style={{ color: 'var(--fog)', fontSize: '0.9rem', lineHeight: '1.5' }}>Playable demos powered by the Lota Labs narrative engine.</p>
+                    <p style={{ color: 'var(--fog)', fontSize: '0.9rem', lineHeight: '1.5' }}>Playable demo adventures powered by the Lota Labs narrative engine.</p>
                   </div>
                 </div>
 
@@ -220,14 +191,11 @@ export default function AboutPage() {
                     <h2 className="about-section-title" style={{ fontSize: '1.5rem', color: 'var(--gold-bright)', margin: 0 }}>Partner With Us</h2>
                   </div>
                   <p style={{ fontSize: '1.1rem', lineHeight: '1.8', color: 'var(--bone)' }}>
-                   While scaling Lota Labs, we remain open to strategic collaborations. Whether you need a technical architect for production-grade Web3 features, or a digital strategist to elevate your brand's content, let's talk.
+                   While scaling Lota Labs, we remain open to strategic collaborations. Whether you are a writer with a vision, an artist, or need a digital content strategist to elevate your brand's narrative, let's talk.
                   </p>
                   <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
                     <a href="mailto:lotanna8900@gmail.com" className="btn btn-primary" style={{ background: 'linear-gradient(135deg, var(--ember) 0%, var(--ember-hot) 100%)', padding: '0.75rem 1.5rem', fontWeight: 'bold', textDecoration: 'none', color: 'var(--white)', borderRadius: '4px' }}>
                       📧 Contact Lota Labs
-                    </a>
-                    <a href="https://github.com/lotanna8900" target="_blank" rel="noopener noreferrer" className="btn" style={{ background: 'transparent', border: '1px solid var(--fog)', padding: '0.75rem 1.5rem', textDecoration: 'none', color: 'var(--white)', borderRadius: '4px' }}>
-                      🔗 View GitHub
                     </a>
                   </div>
                 </div>
@@ -250,16 +218,16 @@ export default function AboutPage() {
                   </div>
                   
                   <h3 className="profile-name" style={{ fontSize: '1.8rem', color: 'var(--white)', marginBottom: '0.25rem', fontFamily: 'var(--font-display)' }}>Lotanna</h3>
-                  <p className="profile-title" style={{ fontSize: '0.9rem', color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '1.5rem' }}>Founder & Technical Architect</p>
+                  <p className="profile-title" style={{ fontSize: '0.9rem', color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '1.5rem' }}>Founder & Lead Developer</p>
                   
                   <div className="profile-stats" style={{ display: 'flex', justifyContent: 'center', gap: '2rem', padding: '1rem 0', borderTop: '1px solid var(--slate)' }}>
                     <div className="profile-stat">
-                      <div className="stat-value" style={{ fontSize: '1.5rem', color: 'var(--white)', fontWeight: 'bold' }}>4+</div>
-                      <div className="stat-label" style={{ fontSize: '0.75rem', color: 'var(--fog)', textTransform: 'uppercase' }}>Years Exp</div>
+                      <div className="stat-value" style={{ fontSize: '1.5rem', color: 'var(--white)', fontWeight: 'bold' }}>100k+</div>
+                      <div className="stat-label" style={{ fontSize: '0.75rem', color: 'var(--fog)', textTransform: 'uppercase' }}>Words Written</div>
                     </div>
                     <div className="profile-stat">
                       <div className="stat-value" style={{ fontSize: '1.5rem', color: 'var(--white)', fontWeight: 'bold' }}>5+</div>
-                      <div className="stat-label" style={{ fontSize: '0.75rem', color: 'var(--fog)', textTransform: 'uppercase' }}>Major Projects</div>
+                      <div className="stat-label" style={{ fontSize: '0.75rem', color: 'var(--fog)', textTransform: 'uppercase' }}>Projects</div>
                     </div>
                   </div>
                 </div>

@@ -262,7 +262,6 @@ export default function GameDetailPage({ params: paramsProp }) {
   const [error, setError] = useState(null);
   
   const [isGamePlayerOpen, setIsGamePlayerOpen] = useState(false);
-  const [walletAddress, setWalletAddress] = useState(null);
   const [session, setSession] = useState(null);
 
   useEffect(() => {
@@ -311,11 +310,6 @@ export default function GameDetailPage({ params: paramsProp }) {
     }
     return () => { document.body.style.overflow = ''; document.body.style.height = ''; document.body.style.touchAction = ''; };
   }, [isGamePlayerOpen]);
-
-  const handleMintTrigger = (itemName) => {
-    if (!walletAddress) { alert("⚠️ HOLD UP! \n\nYou need to connect your wallet to save this item."); return; }
-    alert(`✅ SIGNATURE REQUEST SENT\n\n👤 User: ${walletAddress}\n⚔️ Item: [${itemName}]`);
-  };
 
   if (loading) {
     return (
@@ -404,9 +398,6 @@ export default function GameDetailPage({ params: paramsProp }) {
             <div className="gl-player-header">
               <span className="gl-player-title">▶ {game.title}</span>
               <div className="gl-player-controls">
-                {game.title !== 'The Midnight Suspect' && (
-                  <WalletConnect onConnect={(addr) => setWalletAddress(addr)} />
-                )}
                 <button onClick={() => setIsGamePlayerOpen(false)} className="gl-player-close">✕</button>
               </div>
             </div>
@@ -417,7 +408,7 @@ export default function GameDetailPage({ params: paramsProp }) {
               ) : game.title === 'The Midnight Suspect' ? (
                 <MidnightEngine storyContent={midnightData} />
               ) : (
-                <StoryEngine storyContent={demoData} onMintTrigger={handleMintTrigger} />
+                <StoryEngine storyContent={demoData} />
               )}
             </div>
           </div>

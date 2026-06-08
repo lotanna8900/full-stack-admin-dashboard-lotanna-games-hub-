@@ -7,7 +7,6 @@ import StoryEngine from '../../components/StoryEngine';
 import demoData from '../../app/data/demo.json';
 import MidnightEngine from '../../components/MidnightEngine';
 import midnightData from '../../app/data/midnight.json';
-import WalletConnect from '../../components/WalletConnect';
 import FugitiveEngine from '../../components/FugitiveEngine';
 import fugitiveData from '../../app/data/fugitive.json';
 
@@ -728,7 +727,6 @@ export default function SnippetsPage() {
   const [editingSnippet, setEditingSnippet] = useState(null);
   const [isGamePlayerOpen, setIsGamePlayerOpen] = useState(false);
   const [activeGameTitle, setActiveGameTitle] = useState('');
-  const [walletAddress, setWalletAddress] = useState(null);
   const [newSnippetTitle, setNewSnippetTitle] = useState('');
   const [newSnippetDescription, setNewSnippetDescription] = useState('');
   const [newSnippetGameUrl, setNewSnippetGameUrl] = useState('');
@@ -773,11 +771,6 @@ export default function SnippetsPage() {
   const closeNewSnippetModal = () => { setIsNewSnippetModalOpen(false); setNewSnippetTitle(''); setNewSnippetDescription(''); setNewSnippetGameUrl(''); setNewSnippetImageUrl(''); };
   const openEditSnippetModal = (snippet) => { setEditingSnippet(snippet); setNewSnippetTitle(snippet.title); setNewSnippetDescription(snippet.description || ''); setNewSnippetGameUrl(snippet.game_url); setNewSnippetImageUrl(snippet.image_url || ''); setIsEditSnippetModalOpen(true); };
   const closeEditSnippetModal = () => { setIsEditSnippetModalOpen(false); setEditingSnippet(null); setNewSnippetTitle(''); setNewSnippetDescription(''); setNewSnippetGameUrl(''); setNewSnippetImageUrl(''); };
-
-  const handleMintTrigger = (itemName) => {
-    if (!walletAddress) { alert("⚠️ HOLD UP! \n\nYou need to connect your wallet (top right) to save this item to the BNB Chain."); return; }
-    alert(`✅ SIGNATURE REQUEST SENT\n\n👤 User: ${walletAddress}\n⚔️ Item: [${itemName}]\n🔗 Chain: BNB Testnet`);
-  };
 
   const handleCreateSnippet = async (event) => {
     event.preventDefault();
@@ -1025,9 +1018,6 @@ export default function SnippetsPage() {
             <div className="gl-player-header">
               <span className="gl-player-title">{activeGameTitle}</span>
               <div className="gl-player-controls">
-                {activeGameTitle !== 'The Midnight Suspect' && (
-                  <WalletConnect onConnect={(addr) => setWalletAddress(addr)} />
-                )}
                 <button onClick={() => setIsGamePlayerOpen(false)} className="gl-player-close">✕</button>
               </div>
             </div>
@@ -1038,7 +1028,7 @@ export default function SnippetsPage() {
               ) : activeGameTitle === 'The Midnight Suspect' ? (
                 <MidnightEngine storyContent={midnightData} />
               ) : (
-                <StoryEngine storyContent={demoData} onMintTrigger={handleMintTrigger} />
+                <StoryEngine storyContent={demoData} />
               )}
             </div>
           </div>

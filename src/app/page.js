@@ -543,7 +543,7 @@ export default function HomePage() {
           <div className="ll-newsletter-inner">
             <h2 className="ll-manifesto-heading">Join the <em>Vanguard.</em></h2>
             <p style={{color: 'var(--ash)', fontSize: '1.1rem', marginTop: '0.5rem'}}>
-              Get notified the exact moment new chapters, devlogs, and exclusive Web3 artifacts drop. No spam, just stories.
+              Get notified when new chapters, games, and lore drop. No spam, just stories.
             </p>
             <form className="ll-newsletter-form" onSubmit={handleSubscribe}>
               <input 
