@@ -282,9 +282,11 @@ export default function GameDetailPage({ params: paramsProp }) {
         if (fetchError) throw fetchError;
         setGame(data);
 
-        await supabase.rpc('increment_view_count', {
-          item_id: gameId,
+        supabase.rpc('increment_view_count', {
+          item_id: data.id, 
           item_type: 'snippet'
+        }).then(({error: rpcError}) => {
+           if (rpcError) console.error('Error incrementing view count:', rpcError);
         });
 
       } catch (err) {
