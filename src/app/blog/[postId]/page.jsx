@@ -2,13 +2,15 @@ import { Suspense } from 'react';
 import { supabase } from '../../utils/supabaseClient'; 
 import BlogPostPageContent from './BlogPostPageContent';
 
-// --- 1. THE METADATA FUNCTION (RUNS ON SERVER) ---
 export async function generateMetadata({ params }) {
   const { postId } = params; 
+  const isUUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(postId);
+  const searchColumn = isUUID ? 'id' : 'slug';
+
   const { data: post, error } = await supabase
     .from('posts')
     .select('title, content, image_url') 
-    .eq('id', postId) // Your param is 'postId'
+    .eq(searchColumn, postId) 
     .single();
 
   if (error || !post) {
@@ -31,7 +33,7 @@ export async function generateMetadata({ params }) {
       description: description,
       images: [
         {
-          // IMPORTANT: Add a default fallback image URL here for posts without an image
+          // Add a default fallback image URL here for posts without an image
           url: post.image_url || 'https://rkhmjcwqsmgzqtmvdblm.supabase.co/storage/v1/object/public/admin-assets/logo.png', 
           width: 1200,
           height: 630,
@@ -43,7 +45,7 @@ export async function generateMetadata({ params }) {
       card: 'summary_large_image',
       title: `${post.title} | Lota Labs`,
       description: description,
-       // IMPORTANT: Add a default fallback image URL here
+       // Add a default fallback image URL here
       images: [post.image_url || 'https://rkhmjcwqsmgzqtmvdblm.supabase.co/storage/v1/object/public/admin-assets/1761839450595_logo.png'],
     },
   };

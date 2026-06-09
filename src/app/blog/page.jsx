@@ -735,6 +735,7 @@ export default function BlogListPage() {
   const [session, setSession] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
+  const [newPostSlug, setNewPostSlug] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -759,21 +760,21 @@ export default function BlogListPage() {
     return () => subscription?.unsubscribe();
   }, []);
 
-  const openNewPostModal = () => setIsNewPostModalOpen(true);
-  const closeNewPostModal = () => { setIsNewPostModalOpen(false); setNewPostTitle(''); setNewPostContent(''); setNewPostImageUrl(''); setNewPostCtaText(''); setNewPostCtaLink(''); };
-  const openEditPostModal = (post) => { setEditingPost(post); setNewPostTitle(post.title); setNewPostContent(post.content); setNewPostImageUrl(post.image_url || ''); setNewPostCtaText(post.cta_text || ''); setNewPostCtaLink(post.cta_link || ''); setIsEditPostModalOpen(true); };
-  const closeEditPostModal = () => { setIsEditPostModalOpen(false); setEditingPost(null); setNewPostTitle(''); setNewPostContent(''); setNewPostImageUrl(''); setNewPostCtaText(''); setNewPostCtaLink(''); };
+  const openNewPostModal = () => { setIsNewPostModalOpen(true); setNewPostTitle(''); setNewPostContent(''); setNewPostImageUrl(''); setNewPostCtaText(''); setNewPostCtaLink(''); setNewPostSlug(''); };
+  const closeNewPostModal = () => { setIsNewPostModalOpen(false); setNewPostTitle(''); setNewPostContent(''); setNewPostImageUrl(''); setNewPostCtaText(''); setNewPostCtaLink(''); setNewPostSlug(''); };
+  const openEditPostModal = (post) => { setEditingPost(post); setNewPostTitle(post.title); setNewPostContent(post.content); setNewPostImageUrl(post.image_url || ''); setNewPostCtaText(post.cta_text || ''); setNewPostCtaLink(post.cta_link || ''); setNewPostSlug(post.slug || ''); setIsEditPostModalOpen(true); };
+  const closeEditPostModal = () => { setIsEditPostModalOpen(false); setEditingPost(null); setNewPostTitle(''); setNewPostContent(''); setNewPostImageUrl(''); setNewPostCtaText(''); setNewPostCtaLink(''); setNewPostSlug(''); };
 
   const handleCreatePost = async (event) => {
     event.preventDefault(); if (!session) return;
-    const { data, error } = await supabase.from('posts').insert([{ title: newPostTitle, content: newPostContent, image_url: newPostImageUrl || null, cta_text: newPostCtaText || null, cta_link: newPostCtaLink || null, author_id: session.user.id }]).select('*, comments(*, author:profiles(username, avatar_url))').single();
+    const { data, error } = await supabase.from('posts').insert([{ title: newPostTitle, slug: newPostSlug || null, content: newPostContent, image_url: newPostImageUrl || null, cta_text: newPostCtaText || null, cta_link: newPostCtaLink || null, author_id: session.user.id }]).select('*, comments(*, author:profiles(username, avatar_url))').single();
     if (error) { console.error('Error creating post:', error); alert('Could not create post.'); }
     else { setPosts([data, ...posts]); closeNewPostModal(); }
   };
 
   const handleUpdatePost = async (event) => {
     event.preventDefault(); if (!editingPost) return;
-    const { data, error } = await supabase.from('posts').update({ title: newPostTitle, content: newPostContent, image_url: newPostImageUrl || null, cta_text: newPostCtaText || null, cta_link: newPostCtaLink || null }).eq('id', editingPost.id).select('*, comments(*, author:profiles(username, avatar_url))').single();
+    const { data, error } = await supabase.from('posts').update({ title: newPostTitle, slug: newPostSlug || null, content: newPostContent, image_url: newPostImageUrl || null, cta_text: newPostCtaText || null, cta_link: newPostCtaLink || null }).eq('id', editingPost.id).select('*, comments(*, author:profiles(username, avatar_url))').single();
     if (error) { console.error('Error updating post:', error); alert('Could not update post.'); }
     else { setPosts(posts.map(p => (p.id === editingPost.id ? data : p))); closeEditPostModal(); }
   };
@@ -969,6 +970,10 @@ export default function BlogListPage() {
         <input type="text" className="bl-form-input" placeholder="Enter post title" value={newPostTitle} onChange={(e) => setNewPostTitle(e.target.value)} required />
       </div>
       <div className="bl-form-group">
+        <label className="bl-form-label">URL Slug (Optional)</label>
+        <input type="text" className="bl-form-input" placeholder="my-custom-url" value={newPostSlug} onChange={(e) => setNewPostSlug(e.target.value)} />
+      </div>
+      <div className="bl-form-group">
         <label className="bl-form-label">Content</label>
         <textarea className="bl-form-textarea-tall" placeholder="Write your blog post content here..." value={newPostContent} onChange={(e) => setNewPostContent(e.target.value)} />
       </div>
@@ -1044,7 +1049,7 @@ export default function BlogListPage() {
 
                 {/* Actions */}
                 <div className="bl-post-actions">
-                  <Link href={`/blog/${post.id}`} className="bl-btn bl-btn-primary">Read More</Link>
+                  <Link href={`/blog/${post.slug || post.id}`} className="bl-btn bl-btn-primary">Read More</Link>
 
                   <div className="bl-sub-wrap">
                     {session && subscriptions.some(sub => sub.post_id === post.id) ? (

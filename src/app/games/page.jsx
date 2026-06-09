@@ -733,6 +733,8 @@ export default function SnippetsPage() {
   const [newSnippetImageUrl, setNewSnippetImageUrl] = useState('');
   const [session, setSession] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [newSnippetSlug, setNewSnippetSlug] = useState('');
+  const [newSnippetBlogUrl, setNewSnippetBlogUrl] = useState('');
 
   useEffect(() => {
     setLoading(true);
@@ -767,15 +769,15 @@ export default function SnippetsPage() {
     return () => { document.body.style.overflow = ''; document.body.style.height = ''; document.body.style.touchAction = ''; };
   }, [isGamePlayerOpen]);
 
-  const openNewSnippetModal = () => { setIsNewSnippetModalOpen(true); setNewSnippetTitle(''); setNewSnippetDescription(''); setNewSnippetGameUrl(''); setNewSnippetImageUrl(''); };
-  const closeNewSnippetModal = () => { setIsNewSnippetModalOpen(false); setNewSnippetTitle(''); setNewSnippetDescription(''); setNewSnippetGameUrl(''); setNewSnippetImageUrl(''); };
-  const openEditSnippetModal = (snippet) => { setEditingSnippet(snippet); setNewSnippetTitle(snippet.title); setNewSnippetDescription(snippet.description || ''); setNewSnippetGameUrl(snippet.game_url); setNewSnippetImageUrl(snippet.image_url || ''); setIsEditSnippetModalOpen(true); };
-  const closeEditSnippetModal = () => { setIsEditSnippetModalOpen(false); setEditingSnippet(null); setNewSnippetTitle(''); setNewSnippetDescription(''); setNewSnippetGameUrl(''); setNewSnippetImageUrl(''); };
+  const openNewSnippetModal = () => { setIsNewSnippetModalOpen(true); setNewSnippetTitle(''); setNewSnippetDescription(''); setNewSnippetGameUrl(''); setNewSnippetImageUrl(''); setNewSnippetSlug(''); setNewSnippetBlogUrl(''); };
+  const closeNewSnippetModal = () => { setIsNewSnippetModalOpen(false); setNewSnippetTitle(''); setNewSnippetDescription(''); setNewSnippetGameUrl(''); setNewSnippetImageUrl(''); setNewSnippetSlug(''); setNewSnippetBlogUrl(''); };
+  const openEditSnippetModal = (snippet) => { setEditingSnippet(snippet); setNewSnippetTitle(snippet.title); setNewSnippetDescription(snippet.description || ''); setNewSnippetGameUrl(snippet.game_url); setNewSnippetImageUrl(snippet.image_url || ''); setNewSnippetSlug(snippet.slug || ''); setNewSnippetBlogUrl(snippet.blog_url || ''); setIsEditSnippetModalOpen(true); };
+  const closeEditSnippetModal = () => { setIsEditSnippetModalOpen(false); setEditingSnippet(null); setNewSnippetTitle(''); setNewSnippetDescription(''); setNewSnippetGameUrl(''); setNewSnippetImageUrl(''); setNewSnippetSlug(''); setNewSnippetBlogUrl(''); };
 
   const handleCreateSnippet = async (event) => {
     event.preventDefault();
     if (!session) return;
-    const { data, error } = await supabase.from('snippets').insert([{ title: newSnippetTitle, description: newSnippetDescription, game_url: newSnippetGameUrl, image_url: newSnippetImageUrl || null, author_id: session.user.id }]).select().single();
+    const { data, error } = await supabase.from('snippets').insert([{ title: newSnippetTitle, slug: newSnippetSlug || null, blog_url: newSnippetBlogUrl || null, description: newSnippetDescription, game_url: newSnippetGameUrl, image_url: newSnippetImageUrl || null, author_id: session.user.id }]).select().single();
     if (error) { console.error('Error creating snippet:', error); alert('Could not create the snippet.'); }
     else { setSnippets([data, ...snippets]); closeNewSnippetModal(); }
   };
@@ -783,7 +785,7 @@ export default function SnippetsPage() {
   const handleUpdateSnippet = async (event) => {
     event.preventDefault();
     if (!editingSnippet) return;
-    const { data, error } = await supabase.from('snippets').update({ title: newSnippetTitle, description: newSnippetDescription, game_url: newSnippetGameUrl, image_url: newSnippetImageUrl || null }).eq('id', editingSnippet.id).select().single();
+    const { data, error } = await supabase.from('snippets').update({ title: newSnippetTitle, slug: newSnippetSlug || null, blog_url: newSnippetBlogUrl || null, description: newSnippetDescription, game_url: newSnippetGameUrl, image_url: newSnippetImageUrl || null }).eq('id', editingSnippet.id).select().single();
     if (error) { console.error('Error updating snippet:', error); alert('Could not update the snippet.'); }
     else { setSnippets(snippets.map(s => (s.id === editingSnippet.id ? data : s))); closeEditSnippetModal(); }
   };
@@ -895,7 +897,7 @@ export default function SnippetsPage() {
                       >
                         ▶ Play Now
                       </a>
-                      <Link href="/blog" className="gl-btn-devlog">
+                      <Link href={snippet.blog_url || "/blog"} className="gl-btn-devlog">
                         Read Devlog →
                       </Link>
                     </div>
@@ -907,7 +909,12 @@ export default function SnippetsPage() {
                       Added {new Date(snippet.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                     </div>
                     {snippet.description && (
-                      <p className="gl-card-desc">{snippet.description}</p>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                        <p className="gl-card-desc">{snippet.description}</p>
+                        <Link href={`/games/${snippet.slug || snippet.id}`} style={{ fontSize: '0.85rem', color: 'var(--gold)', textDecoration: 'none', fontStyle: 'italic', alignSelf: 'flex-start' }}>
+                          Read more...
+                        </Link>
+                      </div>
                     )}
 
                     {userRole === 'admin' && (
@@ -967,6 +974,14 @@ export default function SnippetsPage() {
                   <label className="gl-form-label">Cover Image URL (Optional)</label>
                   <input type="url" className="gl-form-input" placeholder="https://..." value={newSnippetImageUrl} onChange={(e) => setNewSnippetImageUrl(e.target.value)} />
                 </div>
+                <div className="gl-form-group">
+                  <label className="gl-form-label">URL Slug (Optional)</label>
+                  <input type="text" className="gl-form-input" placeholder="e.g., keepers-vigil" value={newSnippetSlug} onChange={(e) => setNewSnippetSlug(e.target.value)} />
+                </div>
+                <div className="gl-form-group">
+                  <label className="gl-form-label">Devlog Link (Optional)</label>
+                  <input type="text" className="gl-form-input" placeholder="e.g., /blog/keepers-vigil-update" value={newSnippetBlogUrl} onChange={(e) => setNewSnippetBlogUrl(e.target.value)} />
+                </div>
                 <div className="gl-form-actions">
                   <button type="button" className="gl-form-cancel" onClick={closeNewSnippetModal}>Cancel</button>
                   <button type="submit" className="gl-form-submit">Add Title</button>
@@ -999,6 +1014,14 @@ export default function SnippetsPage() {
                 <div className="gl-form-group">
                   <label className="gl-form-label">Cover Image URL (Optional)</label>
                   <input type="url" className="gl-form-input" value={newSnippetImageUrl} onChange={(e) => setNewSnippetImageUrl(e.target.value)} />
+                </div>
+                <div className="gl-form-group">
+                  <label className="gl-form-label">URL Slug (Optional)</label>
+                  <input type="text" className="gl-form-input" placeholder="e.g., keepers-vigil" value={newSnippetSlug} onChange={(e) => setNewSnippetSlug(e.target.value)} />
+                </div>
+                <div className="gl-form-group">
+                  <label className="gl-form-label">Devlog Link (Optional)</label>
+                  <input type="text" className="gl-form-input" placeholder="e.g., /blog/keepers-vigil-update" value={newSnippetBlogUrl} onChange={(e) => setNewSnippetBlogUrl(e.target.value)} />
                 </div>
                 <div className="gl-form-actions">
                   <button type="button" className="gl-form-cancel" onClick={closeEditSnippetModal}>Cancel</button>

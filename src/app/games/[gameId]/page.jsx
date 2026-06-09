@@ -376,7 +376,7 @@ export default function GameDetailPage({ params: paramsProp }) {
                 </a>
               )}
               
-              <Link href="/blog" className="gd-btn-blog">
+              <Link href={game.blog_url || "/blog"} className="gd-btn-blog">
                 Read Devlogs
               </Link>
             </div>

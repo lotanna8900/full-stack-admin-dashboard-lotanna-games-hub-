@@ -15,7 +15,7 @@ export default function BlogPostPageContent({ params: paramsProp }) {
   // --- State Variables ---
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
-  const [updates, setUpdates] = useState([]); // <-- NEW: Timeline Updates State
+  const [updates, setUpdates] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -78,17 +78,14 @@ export default function BlogPostPageContent({ params: paramsProp }) {
       setLoading(true);
       setError(null);
       try {
-        const { error: rpcError } = await supabase.rpc('increment_view_count', {
-          item_id: postId,
-          item_type: 'post'
-        });
-        if (rpcError) console.error('Error incrementing view count:', rpcError);
+        const isUUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(postId);
+        const searchColumn = isUUID ? 'id' : 'slug';
 
-        // MODIFIED: Now fetching post_updates along with comments
+        // 1. Fetch the post first using either slug or ID
         const { data: postData, error: postError } = await supabase
           .from('posts')
           .select('*, comments(*, author:profiles(username, avatar_url)), post_updates(*)')
-          .eq('id', postId)
+          .eq(searchColumn, postId)
           .single();
           
         if (postError) throw postError;
@@ -96,8 +93,15 @@ export default function BlogPostPageContent({ params: paramsProp }) {
         if (postData) {
           setPost(postData);
           setComments(postData.comments || []);
-          // Sort updates newest first
           setUpdates((postData.post_updates || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+          
+          // 2. Now increment the view count using the true post.id (UUID)
+          supabase.rpc('increment_view_count', {
+            item_id: postData.id,
+            item_type: 'post'
+          }).then(({error: rpcError}) => {
+             if (rpcError) console.error('Error incrementing view count:', rpcError);
+          });
         } else {
           setError('Post not found.');
         }
@@ -265,9 +269,11 @@ export default function BlogPostPageContent({ params: paramsProp }) {
 
       {/* Post Content */}
       <h1 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>{post.title}</h1>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-        Published on: {new Date(post.created_at).toLocaleDateString()}
-      </p>
+      <div style={{ color: 'var(--text-secondary)', marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+        <span>Published on: {new Date(post.created_at).toLocaleDateString()}</span>
+        <span>•</span>
+        <span>{post.view_count || 0} Views</span>
+      </div>
       
       {post.image_url && (
         <div style={{ position: 'relative', width: '100%', height: '400px', margin: '2rem 0', borderRadius: '12px', overflow: 'hidden' }}>
